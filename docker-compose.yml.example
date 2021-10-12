@@ -1,0 +1,39 @@
+version: '3.1'
+
+services:
+  db:
+    image: mariadb:10.3
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 
+    networks:
+      - db-final-network
+
+  apache:
+    container_name: apache
+    image: mobingi/ubuntu-apache2-php7:7.2
+    restart: always
+    ports:
+      - 8000:80
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - db-final-network
+    depends_on:
+      - mariadb
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8001:80
+    environment:
+      PMA_HOSTS: db
+    depends_on:
+      - db
+    networks:
+      - db-final-network
+networks:
+  db-final-network:

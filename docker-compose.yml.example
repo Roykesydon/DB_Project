@@ -22,7 +22,7 @@ services:
     networks:
       - db-final-network
     depends_on:
-      - mariadb
+      - db
 
   phpmyadmin:
     image: phpmyadmin

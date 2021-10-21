@@ -1,2 +1,3 @@
 docker-compose.yml
 /mysql
+/frontend/helloworld/public/config.json

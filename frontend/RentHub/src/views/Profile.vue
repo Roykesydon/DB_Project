@@ -1,0 +1,309 @@
+<template>
+  <v-card class="my-15 mx-auto px-10 py-5" max-width="70%" height="85%">
+    <v-container class="fill-height">
+      <v-row class="fill-height" height="100%" width="50%" style="width: 50%">
+        <v-col md="5">
+          <div style="height: 100%">
+            <v-row>
+              <v-col cols="12">
+                <v-img
+                  src="https://picsum.photos/510/300?random"
+                  aspect-ratio="1"
+                  max-height="250px"
+                  max-width="250px"
+                  id="profileImg"
+                  class="mx-auto my-auto"
+                ></v-img>
+              </v-col>
+            </v-row>
+            <div class="text-h4 my-3" style="text-align: center">
+              {{ name }}
+            </div>
+            <v-divider class="my-7"></v-divider>
+            <div>
+              <div class="text-h5 text-truncate">電話：{{ phone_number }}</div>
+
+              <div class="text-h5 text-truncate">信箱：{{ email }}</div>
+            </div>
+          </div>
+        </v-col>
+        <v-col md="7" class="fill-width">
+          <v-card class="pa-10" outlined color="transparent">
+            <span class="text-h4 mb-4">出租房屋</span>
+            <v-virtual-scroll
+              :bench="benched"
+              :items="items"
+              height="620"
+              item-height="400"
+              class="sc3 pa-5"
+            >
+              <template v-slot:default="{ item }">
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-card
+                      class="ma-10 mx-auto my-0"
+                      elevation="20"
+                      height="350px"
+                      max-width="500"
+                    >
+                      <!-- <carousel
+                        :perPage="1"
+                        :loop="true"
+                        :centerMode="true"
+                        paginationPosition="bottom-overlay"
+                        :paginationActiveColor="primary"
+                        :paginationEnabled="true"
+                        :navigationEnabled="false"
+                        
+                        class="ma-10"
+                      >
+                        <slide v-for="(item_src, j) in item.src" :key="j">
+                          <v-img
+                            :src="item_src"
+                            aspect-ratio="2.0"
+                            max-height="300"
+                            class="my-auto mx-auto"
+                          ></v-img>
+                        </slide>
+                      </carousel> -->
+                      <v-carousel
+                        height="250"
+                        hide-delimiter-background
+                        delimiter-icon="mdi-minus"
+                        show-arrows-on-hover
+                      >
+                        <v-carousel-item
+                          v-for="(item_src, i) in item.src"
+                          :key="i"
+                        >
+                          <v-img
+                            :src="item_src"
+                            aspect-ratio="2.0"
+                            class="my-auto"
+                          ></v-img>
+                        </v-carousel-item>
+                      </v-carousel>
+                      <v-row>
+                        <v-col cols="8">
+                          <span>
+                            <div class="text-h5 ma-3 mb-0 text-truncate">
+                              {{ item.title }}
+                            </div>
+                            <div class="text-h7 ma-3 mt-0 grey--text text--lighten-1">
+                              {{ item.cost }} 元/月
+                            </div>
+                          </span>
+                        </v-col>
+                        <v-col cols="4" class="my-auto mx-auto text-md-center">
+                          <v-btn
+                            class="ma-2 pr-5"
+                            outlined
+                            color="primary"
+                            :href="getRoomRoute(item.roomID)"
+                          >
+                            查看詳情
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-card>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+            </v-virtual-scroll>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card>
+</template>
+
+<script>
+import { Carousel, Slide } from "vue-carousel";
+export default {
+  name: "Profile",
+
+  components: {
+    Carousel,
+    Slide,
+  },
+
+  mounted() {},
+
+  data: () => ({
+    name: "Roykesydone",
+    phone_number: "123456789",
+    email: "haha@jaskdjaks.com",
+    benched: 20,
+    items: [
+      {
+        title: "台北101超級無敵大全台最高豪宅",
+        src: [
+          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
+          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
+          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
+          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
+        ],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: [
+          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
+          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
+          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
+          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
+        ],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: [
+          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
+          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
+          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
+          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
+        ],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+      {
+        title: "台北101",
+        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
+        address: "台北市信義區信義路五段7號",
+        cost: 18000,
+        capacity: 3,
+        squareMeters: 11.0,
+        roomID: 123456,
+      },
+    ],
+  }),
+  methods: {
+    getRoomRoute(id) {
+      return "/room/" + String(id);
+    },
+  },
+  created: function () {},
+};
+</script>
+
+<style  scoped>
+#profileImg {
+  border-radius: 50%;
+}
+
+/* Scroll 3 */
+.sc3::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.sc3::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 10px;
+}
+.sc3::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
+
+/* .VueCarousel-pagination{
+  float:left;
+  position: absolute;
+} */
+
+/* .VueCarousel-dot{
+  float:left;
+  position: absolute;
+} */
+</style>

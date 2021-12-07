@@ -60,16 +60,18 @@ class RentRoom{
         $stmt = $this->conn->prepare( $query );
     
         // bind id of product to be updated
-        $stmt->bindParam(1, $this->user_ID);
+        //$stmt->bindParam(1, $this->user_ID);
     
         // execute query
         $stmt->execute();
+
+        return $stmt;
     
         // get retrieved row
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        //$row = $stmt->fetch(PDO::FETCH_ASSOC);
     
         // set values to object properties
-        $this->room_ID = $row['room_ID'];
+        /*$this->room_ID = $row['room_ID'];
         $this->user_ID = $row['user_ID'];
         $this->room_name = $row['room_name'];
         $this->address = $row['address'];
@@ -79,7 +81,7 @@ class RentRoom{
         $this->room_longitude = $row['room_longitude'];
         $this->room_city = $row['room_city'];
         $this->post_date = $row['post_date'];
-        $this->live_number = $row['live_number'];
+        $this->live_number = $row['live_number'];*/
     }
 }
 ?>

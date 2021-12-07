@@ -21,9 +21,51 @@ $db=$database->getConnection();
 $rentRoom = new RentRoom($db);
 
 // read the details of rentRoom to be edited
-$rentRoom->readAllRoom();
+//$rentRoom->readAllRoom();
 
-if($rentRoom->room_ID!=null){
+$index = $_GET['index'];
+
+//query rentRoom
+$stmt = $rentRoom->readAllRoom();
+//get the room nums
+$num = $stmt->rowCount();
+
+
+// check if more than 0 record found
+if($num > 0)
+{
+    //room array
+    $rentRoom_arr = array();
+    $rentRoom_arr["records"] = array();
+
+    while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+    {
+        //get the room data
+        $rentRoom_item = array(
+            "room_ID" =>  $row['room_ID'],
+            "user_ID" => $row['user_ID'],
+            "room_name" => $row['room_name'],
+            "address" => $row['address'],
+            "cost" => $row['cost'],
+            "room_info" => $row['room_info'],
+            "room_latitude" => $row['room_latitude'],
+            "room_longitude" => $row['room_longitude'],
+            "room_city" => $row['room_city'],
+            "post_date" => $row['post_date'],
+            "live_number" => $row['live_number']
+        );
+
+        //push the room data into array
+        array_push($rentRoom_arr["records"],$rentRoom_item);
+    }
+
+    // set response code - 200 OK
+    http_response_code(200);
+  
+    // show products data in json format
+    echo json_encode($rentRoom_arr);
+}
+/*if($rentRoom->room_ID!=null){
     // create array
     $rentRoom_arr = array(
         "room_ID" =>  $rentRoom->room_ID,
@@ -44,7 +86,7 @@ if($rentRoom->room_ID!=null){
   
     // make it json format
     echo json_encode($rentRoom_arr);
-}
+}*/
   
 else{
     // set response code - 404 Not found

@@ -2,7 +2,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
-header("Content-Type: application/json; charset=utf8mb4");
+header("Content-Type: application/json; charset=utf-8");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 function msg($success,$status,$message,$extra = []){
@@ -27,9 +27,9 @@ if($_SERVER["REQUEST_METHOD"] != "POST"):
     $returnData = msg(0,404,'Page Not Found!');
 
 // CHECKING EMPTY FIELDS
-elseif(!isset($data->name) 
+elseif(!isset($data->name)
     || !isset($data->id)
-    || !isset($data->email) 
+    || !isset($data->email)
     || !isset($data->password)
     || !isset($data->phoneNumber)
     || empty(trim($data->name))
@@ -45,12 +45,14 @@ elseif(!isset($data->name)
 // IF THERE ARE NO EMPTY FIELDS THEN-
 else:
     
+    // erase space
     $name = trim($data->name);
     $id = trim($data->id);
     $email = trim($data->email);
     $password = trim($data->password);
     $phoneNumber = trim($data->phoneNumber);
 
+    // check valid input
     if(!filter_var($email, FILTER_VALIDATE_EMAIL)):
         $returnData = msg(0,422,'Invalid Email Address!');
     
@@ -68,13 +70,13 @@ else:
 
     else:
         try{
-
+            // write into DB
             $check_email = "SELECT `email` FROM `user` WHERE `email`=:email";
             $check_email_stmt = $conn->prepare($check_email);
             $check_email_stmt->bindValue(':email', $email,PDO::PARAM_STR);
             $check_email_stmt->execute();
 
-            $check_userID = "SELECT `email` FROM `user` WHERE `user_ID`=:id";
+            $check_userID = "SELECT `user_ID` FROM `user` WHERE `user_ID`=:id";
             $check_userID_stmt = $conn->prepare($check_userID);
             $check_userID_stmt->bindValue(':id', $id,PDO::PARAM_STR);
             $check_userID_stmt->execute();

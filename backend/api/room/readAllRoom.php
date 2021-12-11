@@ -65,28 +65,6 @@ if($num > 0)
     // show products data in json format
     echo json_encode($rentRoom_arr);
 }
-/*if($rentRoom->room_ID!=null){
-    // create array
-    $rentRoom_arr = array(
-        "room_ID" =>  $rentRoom->room_ID,
-        "user_ID" => $rentRoom->user_ID,
-        "room_name" => $rentRoom->room_name,
-        "address" => $rentRoom->address,
-        "cost" => $rentRoom->cost,
-        "room_info" => $rentRoom->room_info,
-        "room_latitude" => $rentRoom->room_latitude,
-        "room_longitude" => $rentRoom->room_longitude,
-        "room_city" => $rentRoom->room_city,
-        "post_date" => $rentRoom->post_date,
-        "live_number" => $rentRoom->live_number
-    );
-  
-    // set response code - 200 OK
-    http_response_code(200);
-  
-    // make it json format
-    echo json_encode($rentRoom_arr);
-}*/
   
 else{
     // set response code - 404 Not found

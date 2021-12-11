@@ -83,5 +83,35 @@ class RentRoom{
         $this->post_date = $row['post_date'];
         $this->live_number = $row['live_number'];*/
     }
+
+    function createRoom(){
+        // query to insert record
+        $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?);";
+
+        // prepare query statement
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(1,$this->room_ID);
+        $stmt->bindParam(2,$this->user_ID);
+        $stmt->bindParam(3,$this->room_name);
+        $stmt->bindParam(4,$this->address);
+        $stmt->bindParam(5,$this->cost);
+        $stmt->bindParam(6,$this->room_info);
+        $stmt->bindParam(7,$this->room_latitude);
+        $stmt->bindParam(8,$this->room_longitude);
+        $stmt->bindParam(9,$this->room_city);
+        $stmt->bindParam(10,$this->post_date);
+        $stmt->bindParam(11,$this->live_number);
+
+        //execute the SQL instruction
+        if($stmt->execute())
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
 }
 ?>

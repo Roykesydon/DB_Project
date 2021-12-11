@@ -1,8 +1,8 @@
 <?php
-require './JWT/JWT.php';
-require './JWT/ExpiredException.php';
-require './JWT/SignatureInvalidException.php';
-require './JWT/BeforeValidException.php';
+require dirname(__FILE__).'/JWT/JWT.php';
+require dirname(__FILE__).'/JWT/ExpiredException.php';
+require dirname(__FILE__).'/JWT/SignatureInvalidException.php';
+require dirname(__FILE__).'/JWT/BeforeValidException.php';
 
 use \Firebase\JWT\JWT;
 

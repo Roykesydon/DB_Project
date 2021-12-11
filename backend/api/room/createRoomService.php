@@ -44,7 +44,8 @@ if(
     !empty($data["ac"]) &&
     !empty($data["wasing_machine"]) &&
     !empty($data["can_cooking"]) &&
-    !empty($data["can_keep_pet"])
+    !empty($data["can_keep_pet"]) &&
+    !empty($data["elevator"])
 )
 {
     $roomService->room_ID = $data["room_ID"];
@@ -57,6 +58,7 @@ if(
     $roomService->washing_machine = $data["wasing_machine"];
     $roomService->can_cooking = $data["can_cooking"];
     $roomService->can_keep_pet = $data["can_keep_pet"];
+    $roomService->elevator = $data["elevator"];
 
     //create the roomService
     if($roomService->createRoomService())

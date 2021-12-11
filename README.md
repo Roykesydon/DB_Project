@@ -24,9 +24,11 @@ docker-compose up
 cd backend/initDB/
 pipenv install
 pipenv run python initDB.py
+
+記得IP需連到Docker Container內的IP，使用以下指令查詢查詢docker container IP：
+docker inspect container_ID | grep "IPAddress"
 ```
 
 ## Port
  - 8000 : API
  - 8001 : PhpMyAdmin
- - 3306 : MariaDB

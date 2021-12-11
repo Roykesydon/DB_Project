@@ -16,6 +16,7 @@ class RentRoom{
     public $room_city;
     public $post_date;
     public $live_number;
+    public $room_area;
 
     // constructor with $db as database connection
     public function __construct($db){
@@ -50,6 +51,7 @@ class RentRoom{
         $this->room_city = $row['room_city'];
         $this->post_date = $row['post_date'];
         $this->live_number = $row['live_number'];
+        $this->room_area = $row["room_area"];
     }
 
     function readAllRoom(){
@@ -86,7 +88,7 @@ class RentRoom{
 
     function createRoom(){
         // query to insert record
-        $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?);";
+        $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?,?);";
 
         // prepare query statement
         $stmt = $this->conn->prepare($query);
@@ -102,6 +104,7 @@ class RentRoom{
         $stmt->bindParam(9,$this->room_city);
         $stmt->bindParam(10,$this->post_date);
         $stmt->bindParam(11,$this->live_number);
+        $stmt->bindParam(12,$this->room_area);
 
         //execute the SQL instruction
         if($stmt->execute())

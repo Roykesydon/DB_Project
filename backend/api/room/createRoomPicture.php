@@ -1,22 +1,18 @@
 <?php
-
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Credentials: true");
-header("Content-Type: application/json; charset=utf-8");
+header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-
 // database connection will be here
 // include database and object files
 define('__ROOT__', dirname(dirname(__FILE__)));
 
-require_once __ROOT__.'/config/database.php';
+require __ROOT__.'/config/database.php';
 
 require_once __ROOT__.'/objects/roomPicture.php';
 
-require './config/database.php';
-require './middleware/auth.php';
+require_once __ROOT__.'/middleware/auth.php';
 
 // instantiate database and roomPicture object
 $database = new Database();
@@ -41,12 +37,16 @@ if($auth->isAuth())
 {
     // enter here if is log in
     $returnData = $auth->isAuth();
-    echo "以".$returnData['user']['user_ID']."登入";
+
+    // echo "以".$returnData['user']['user_ID']."登入";
     // write code below
-    if(//check not null
-        !empty($data["room_ID"])
+    $thisUser = $returnData['user']['user_ID'];
+    $user_ID = $data["user_ID"];
+    if( //check not null
+        !empty($data["room_ID"])     
     )
     {
+        //set room property values
         $roomPicture->room_ID = $data["room_ID"];
         $roomPicture->pictureURL_one = $data["pictureURL_one"];
         $roomPicture->pictureURL_two = $data["pictureURL_two"];
@@ -57,22 +57,21 @@ if($auth->isAuth())
         $roomPicture->pictureURL_seven = $data["pictureURL_seven"];
         $roomPicture->pictureURL_eight = $data["pictureURL_eight"];
 
-
-        //create the roomPicture
+        //create the room
         if($roomPicture->createRoomPicture())
         {
             // set response code - 201 created
             http_response_code(201);
-    
+          
             // tell the user
-            echo json_encode(array("message" => "Roompicture was created."));
+            echo json_encode(array("message" => "RoomPicture was created."));
         }
-        // if unable to create the roomPicture, tell the user
+        // if unable to create the product, tell the user
         else
         {
             // set response code - 503 service unavailable
             http_response_code(503);
-    
+
             // tell the user
             echo json_encode(array("message" => "Unable to create roomPicture."));
         }
@@ -81,11 +80,11 @@ if($auth->isAuth())
     {
         // set response code - 400 bad request
         http_response_code(400);
-    
+
         // tell the user
         echo json_encode(array("message" => "Unable to create roomPicture. Data is incomplete."));
     }
-} else{
+}else{
     echo "invalid token\n";
 }
 

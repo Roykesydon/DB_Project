@@ -49,6 +49,7 @@ cursor.execute(
         room_city varchar(20) NOT NULL, \
         post_date varchar(30), \
         live_number varchar(3), \
+        room_area varchar(9), \
         PRIMARY KEY (room_ID), \
         FOREIGN KEY (user_ID) REFERENCES user(user_ID) \
     );")
@@ -65,7 +66,8 @@ cursor.execute(
         pictureURL_six varchar(300), \
         pictureURL_seven varchar(300), \
         pictureURL_eight varchar(300), \
-        PRIMARY KEY (room_ID) \
+        PRIMARY KEY (room_ID), \
+        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) \
     );")
 connection.commit()
 
@@ -81,7 +83,9 @@ cursor.execute(
         washing_machine boolean NOT NULL, \
         can_cooking boolean NOT NULL, \
         can_keep_pet boolean NOT NULL, \
-        PRIMARY KEY (room_ID) \
+        elevator boolean NOT NULL, \
+        PRIMARY KEY (room_ID), \
+        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) \
     );")
 connection.commit()
 
@@ -98,6 +102,7 @@ cursor.execute(
         user_ID_eight varchar(50), \
         user_ID_nine varchar(50), \
         user_ID_ten varchar(50), \
-        PRIMARY KEY (room_ID) \
+        PRIMARY KEY (room_ID), \
+        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) \
     );")
 connection.commit()

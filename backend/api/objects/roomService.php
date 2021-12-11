@@ -15,6 +15,7 @@ class RoomService{
     public $washing_machine;
     public $can_cooking;
     public $can_keep_pet;
+    public $elevator;
 
     // constructor with $db as database connection
     public function __construct($db){
@@ -24,7 +25,7 @@ class RoomService{
     function createRoomService()
     {
         // query to insert record
-        $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?);";
+        $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?);";
 
         // prepare query statement
         $stmt = $this->conn->prepare($query);
@@ -39,6 +40,7 @@ class RoomService{
         $stmt->bindParam(8,$this->washing_machine);
         $stmt->bindParam(9,$this->can_cooking);
         $stmt->bindParam(10,$this->can_keep_pet);
+        $stmt->bindParam(11,$this->elevator);
 
         if($stmt->execute())
         {

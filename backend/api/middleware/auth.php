@@ -1,9 +1,8 @@
 <?php
-
 // database connection will be here
 // include database and object files
 define('__ROOT__', dirname(dirname(__FILE__)));
-require_once __ROOT__.'/JWTHandler.php';
+require __ROOT__.'/JWTHandler.php';
 
 class Auth extends JwtHandler{
     protected $db;

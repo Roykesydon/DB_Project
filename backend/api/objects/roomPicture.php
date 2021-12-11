@@ -38,6 +38,7 @@ class RoomPicture{
         $stmt->bindParam(8,$this->pictureURL_seven);
         $stmt->bindParam(9,$this->pictureURL_eight);
 
+
         if($stmt->execute())
         {
             return true;

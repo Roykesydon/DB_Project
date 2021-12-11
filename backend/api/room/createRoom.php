@@ -20,7 +20,6 @@ $db=$database->getConnection();
 // initialize object
 $rentRoom = new RentRoom($db);
 
-
 //instantiate authentication objects
 $allHeaders = getallheaders();
 $auth = new Auth($db,$allHeaders);

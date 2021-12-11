@@ -20,7 +20,6 @@ $db=$database->getConnection();
 // initialize object
 $roomPicture = new RoomPicture($db);
 
-
 //instantiate authentication objects
 $allHeaders = getallheaders();
 $auth = new Auth($db,$allHeaders);
@@ -38,6 +37,7 @@ if($auth->isAuth())
 {
     // enter here if is log in
     $returnData = $auth->isAuth();
+
     // echo "以".$returnData['user']['user_ID']."登入";
     // write code below
     $thisUser = $returnData['user']['user_ID'];
@@ -62,7 +62,7 @@ if($auth->isAuth())
         {
             // set response code - 201 created
             http_response_code(201);
-
+          
             // tell the user
             echo json_encode(array("message" => "RoomPicture was created."));
         }

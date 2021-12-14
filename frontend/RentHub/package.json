@@ -7,10 +7,17 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@vueform/slider": "^2.0.7",
     "core-js": "^3.6.5",
+    "random-sentence": "^1.0.4",
+    "v-tooltip": "^3.0.0-beta.1",
     "vue": "^2.6.11",
     "vue-carousel": "^0.18.0",
+    "vue-cookies": "^1.7.4",
+    "vue-mugen-scroll": "^0.2.6",
+    "vue-range-component": "^1.0.3",
     "vue-router": "^3.2.0",
+    "vue-toast-notification": "^0.6.2",
     "vuetify": "^2.4.0",
     "vuex": "^3.4.0"
   },
@@ -19,6 +26,7 @@
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
+    "@vue/composition-api": "^1.4.1",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
     "vue-cli-plugin-vuetify": "~2.4.3",

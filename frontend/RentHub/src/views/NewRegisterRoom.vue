@@ -6,75 +6,80 @@
     color="transparent"
     outlined
   >
-    <v-container class="fill-height">
-      <v-row class="fill-height" height="100%" width="50%" style="width: 50%">
-        <v-col md="7">
-          <v-card width="100%" class="text-center fill-height">
-            <div id="map"></div>
-          </v-card>
-        </v-col>
-        <v-col md="5" class="fill-width">
-          <div class="text-h5 mb-2">填寫資料</div>
-          <div class="d-flex mb-0">
-            <v-text-field
-              class="mb-0 pb-0"
-              placeholder="地址"
-              outlined
-              clearable
-              v-model="address"
-            ></v-text-field>
-          </div>
-          <div class="d-flex mb-5">
-            <v-spacer></v-spacer>
-            <v-btn color="primary mx-5" @click="relocateMapWithAddress">
-              同步至地圖標記
-            </v-btn>
-            <v-btn color="primary" @click="relocateAddressWithMarker">
-              同步至輸入地址
-            </v-btn>
-          </div>
-          <div>
-            <v-select
-              :items="roomTags"
-              item-text="text"
-              attach
-              chips
-              label="tag"
-              v-model="tags"
-              multiple
-              outlined
-            ></v-select>
-          </div>
+    <v-stepper v-model="currentStep">
+      <v-stepper-header>
+        <v-stepper-step :complete="currentStep > 1" step="1">
+          輸入地址
+        </v-stepper-step>
 
-          <v-divider></v-divider>
+        <v-divider></v-divider>
 
-          <v-textarea
-            no-resize
-            outlined
-            name="description"
-            label="介紹"
-            value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
-          ></v-textarea>
+        <v-stepper-step :complete="currentStep > 2" step="2">
+          Name of step 2
+        </v-stepper-step>
 
-          <div class="d-flex">
-            <v-file-input
-              label="File input"
-              outlined
-              dense
-              class="my-auto"
-            ></v-file-input>
-            <v-btn class="ma-5 my-auto mb-7" x-large color="primary">
-              上傳圖片
-            </v-btn>
-          </div>
+        <v-divider></v-divider>
 
-          <div class="d-flex align-end" style="height: 27%">
-            <v-spacer></v-spacer>
-            <v-btn color="primary" x-large> 登記房屋 </v-btn>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
+        <v-stepper-step step="3"> Name of step 3 </v-stepper-step>
+      </v-stepper-header>
+
+      <v-stepper-items>
+        <v-stepper-content step="1">
+          <v-row class="fill-height">
+            <v-col cols="5">
+              <v-card
+                width="100%"
+                height="300"
+                class="text-center fill-height"
+                color="transparent"
+                outlined
+              >
+                <div id="map" style="height: 100%"></div>
+              </v-card>
+            </v-col>
+            <v-col cols="1" class="mx-auto" height="auto">
+              <v-divider vertical class="mx-5"></v-divider>
+            </v-col>
+            <v-col cols="5">
+              <div class="d-flex mb-0">
+                <v-text-field
+                  class="mr-5"
+                  placeholder="地址"
+                  outlined
+                  clearable
+                  v-model="address"
+                ></v-text-field>
+                <v-btn x-large color="primary" @click="relocateMapWithAddress">
+                  與地圖同步
+                </v-btn>
+              </div>
+            </v-col>
+          </v-row>
+
+          <div class="text-h5 mb-2 mt-5">輸入地址</div>
+
+          <v-btn color="primary" @click="currentStep = 2"> Continue </v-btn>
+
+          <v-btn text> Cancel </v-btn>
+        </v-stepper-content>
+
+        <v-stepper-content step="2">
+          <v-card class="mb-12" color="grey lighten-1" height="200px"></v-card>
+
+          <v-btn color="primary" @click="currentStep = 3"> Continue </v-btn>
+
+          <v-btn text> Cancel </v-btn>
+        </v-stepper-content>
+
+        <v-stepper-content step="3">
+          <v-card class="mb-12" color="grey lighten-1" height="200px"></v-card>
+
+          <v-btn color="primary" @click="currentStep = 1"> Continue </v-btn>
+
+          <v-btn text> Cancel </v-btn>
+        </v-stepper-content>
+      </v-stepper-items>
+    </v-stepper>
   </v-card>
 </template>
 
@@ -99,38 +104,46 @@ export default {
   },
 
   data: () => ({
+    currentStep: 1,
     map: null,
-    geocoder: null,
     address: "",
     markers: [],
-    tags: null,
     roomTags: [
       {
-        text: "Wi-Fi",
+        text: "hello",
       },
       {
-        text: "有線網路",
+        text: "run",
       },
       {
-        text: "電視",
+        text: "null",
       },
       {
-        text: "冰箱",
+        text: "hell",
       },
       {
-        text: "停車位",
+        text: "helo",
       },
       {
-        text: "冷氣",
+        text: "ello",
       },
       {
-        text: "洗衣機",
+        text: "hello2",
       },
       {
-        text: "開伙",
+        text: "hello3",
       },
       {
-        text: "養寵物",
+        text: "hello4",
+      },
+      {
+        text: "hello5",
+      },
+      {
+        text: "hello6",
+      },
+      {
+        text: "hello7",
       },
     ],
     nightModeStyles: [
@@ -530,33 +543,6 @@ export default {
       }
     },
 
-    relocateAddressWithMarker() {
-      let marker = this.markers[0];
-      let lat = marker.getPosition().lat();
-      let lng = marker.getPosition().lng();
-      const latlng = {
-        lat: parseFloat(lat),
-        lng: parseFloat(lng),
-      };
-      let _this = this;
-      this.geocoder
-        .geocode({ location: latlng })
-        .then((response) => {
-          if (response.results[0]) {
-            console.log(response.results[0].formatted_address);
-            _this.address = response.results[0].formatted_address;
-
-            // _this.deleteMarkers();
-            // _this.addMarker(latlng, _this.map)
-            // infowindow.setContent(response.results[0].formatted_address);
-            // infowindow.open(map, newMarker);
-          } else {
-            window.alert("No results found");
-          }
-        })
-        .catch((e) => window.alert("Geocoder failed due to: " + e));
-    },
-
     moveToOnlyMarker() {
       if (this.markers.length == 1) {
         this.smoothlyAnimatePanTo(this.map, this.markers[0].position);
@@ -568,9 +554,8 @@ export default {
 
     addMarker(position, map) {
       const marker = new google.maps.Marker({
-        position: position,
-        map: map,
-        draggable: true,
+        position,
+        map,
       });
 
       this.markers.push(marker);
@@ -601,7 +586,6 @@ export default {
     },
 
     relocateMapWithAddress() {
-      console.log(this.tags);
       let location = null;
       var request = {
         query: this.address,
@@ -639,7 +623,7 @@ export default {
         lat: 25.0374865, // 經度
         lng: 121.5647688, // 緯度
       };
-      this.geocoder = new google.maps.Geocoder();
+
       // 建立地圖
       this.map = new google.maps.Map(document.getElementById("map"), {
         center: location, // 中心點座標

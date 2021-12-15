@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@vueform/slider": "^2.0.7",
+    "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "random-sentence": "^1.0.4",
     "v-tooltip": "^3.0.0-beta.1",

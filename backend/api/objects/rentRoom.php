@@ -16,6 +16,7 @@ class RentRoom{
     public $room_city;
     public $post_date;
     public $live_number;
+    public $room_area;
 
     // constructor with $db as database connection
     public function __construct($db){
@@ -50,6 +51,7 @@ class RentRoom{
         $this->room_city = $row['room_city'];
         $this->post_date = $row['post_date'];
         $this->live_number = $row['live_number'];
+        $this->room_area = $row["room_area"];
     }
 
     function readAllRoom(){
@@ -60,16 +62,18 @@ class RentRoom{
         $stmt = $this->conn->prepare( $query );
     
         // bind id of product to be updated
-        $stmt->bindParam(1, $this->user_ID);
+        //$stmt->bindParam(1, $this->user_ID);
     
         // execute query
         $stmt->execute();
+
+        return $stmt;
     
         // get retrieved row
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        //$row = $stmt->fetch(PDO::FETCH_ASSOC);
     
         // set values to object properties
-        $this->room_ID = $row['room_ID'];
+        /*$this->room_ID = $row['room_ID'];
         $this->user_ID = $row['user_ID'];
         $this->room_name = $row['room_name'];
         $this->address = $row['address'];
@@ -79,7 +83,38 @@ class RentRoom{
         $this->room_longitude = $row['room_longitude'];
         $this->room_city = $row['room_city'];
         $this->post_date = $row['post_date'];
-        $this->live_number = $row['live_number'];
+        $this->live_number = $row['live_number'];*/
     }
+
+    function createRoom(){
+        // query to insert record
+        $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?,?);";
+
+        // prepare query statement
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(1,$this->room_ID);
+        $stmt->bindParam(2,$this->user_ID);
+        $stmt->bindParam(3,$this->room_name);
+        $stmt->bindParam(4,$this->address);
+        $stmt->bindParam(5,$this->cost);
+        $stmt->bindParam(6,$this->room_info);
+        $stmt->bindParam(7,$this->room_latitude);
+        $stmt->bindParam(8,$this->room_longitude);
+        $stmt->bindParam(9,$this->room_city);
+        $stmt->bindParam(10,$this->post_date);
+        $stmt->bindParam(11,$this->live_number);
+        $stmt->bindParam(12,$this->room_area);
+
+        //execute the SQL instruction
+        if($stmt->execute())
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
 }
 ?>

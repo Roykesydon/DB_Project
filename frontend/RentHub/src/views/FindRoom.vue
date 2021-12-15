@@ -9,7 +9,6 @@
       style="max-width: 1300px"
     >
       <div class="mx-10 pa-2 my-0 pb-0">
-
         <v-container>
           <div class="text-h5 mb-1">在此搜尋</div>
           <div class="d-flex mb-0">
@@ -20,8 +19,29 @@
               clearable
               id="keyWord"
               :value="keyWord"
-              style="height:100px;"
+              style="height: 100px"
             ></v-text-field>
+            <v-select
+              :items="cities"
+              item-text="text"
+              attach
+              chips
+              label="城市"
+              v-model="selectTags"
+              multiple
+              outlined
+              class="sc3"
+              style="max-width: 220px; width: 220px"
+            >
+              <template v-slot:selection="{ item, index }">
+                <v-chip v-if="index === 0" label color="primary">
+                  <span>{{ item }}</span>
+                </v-chip>
+                <span v-if="index === 1" class="grey--text text-caption">
+                  (+{{ selectTags.length - 1 }} others)
+                </span>
+              </template></v-select
+            >
             <v-select
               :items="roomTags"
               item-text="text"
@@ -32,11 +52,11 @@
               multiple
               outlined
               class="sc3"
-              style="max-width:220px;width:220px"
+              style="max-width: 220px; width: 220px"
             >
               <template v-slot:selection="{ item, index }">
-                <v-chip v-if="index === 0" label>
-                  <span>{{ item.text }}</span>
+                <v-chip v-if="index === 0" label color="primary">
+                  <span>{{ item }}</span>
                 </v-chip>
                 <span v-if="index === 1" class="grey--text text-caption">
                   (+{{ selectTags.length - 1 }} others)
@@ -44,9 +64,15 @@
               </template></v-select
             >
             <VDropdown>
-              <v-btn x-large height="55px" color="#424242" outlined elevation="0">
+              <v-btn
+                x-large
+                height="56px"
+                color="#424242"
+                outlined
+                elevation="0"
+              >
                 <div id="priceButtonText">
-                $ {{ priceRange[0] }} ~ {{ priceRange[1] }}
+                  $ {{ priceRange[0] }} ~ {{ priceRange[1] }}
                 </div>
               </v-btn>
               <template #popper style="width=500px;">
@@ -66,7 +92,14 @@
               </template>
             </VDropdown>
 
-            <v-btn dark x-large class="ml-10" color="primary" height="55px" @click="searchWithFilter">
+            <v-btn
+              dark
+              x-large
+              class="ml-10"
+              color="primary"
+              height="55px"
+              @click="searchWithFilter"
+            >
               搜尋
             </v-btn>
           </div>
@@ -151,34 +184,17 @@ export default {
     priceMax: 20000,
     value: 20,
     roomTags: [
-      {
-        text: "Wi-Fi",
-      },
-      {
-        text: "有線網路",
-      },
-      {
-        text: "電視",
-      },
-      {
-        text: "冰箱",
-      },
-      {
-        text: "停車位",
-      },
-      {
-        text: "冷氣",
-      },
-      {
-        text: "洗衣機",
-      },
-      {
-        text: "開伙",
-      },
-      {
-        text: "養寵物",
-      },
+      "Wi-Fi",
+      "有線網路",
+      "電視",
+      "冰箱",
+      "停車位",
+      "冷氣",
+      "洗衣機",
+      "開伙",
+      "養寵物",
     ],
+    cities: ["台北市", "基隆市", "桃園市"],
     items: [],
   }),
   mounted() {
@@ -192,10 +208,10 @@ export default {
     // console.log(this.$cookies.isKey("user_session"));
   },
   computed: {
-    selectTagsLength: function () {
-      if (this.selectTags == null) return 0;
-      else return this.selectTags.length;
-    },
+    // selectTagsLength: function () {
+    //   if (this.selectTags == null) return 0;
+    //   else return this.selectTags.length;
+    // },
   },
   created: function () {
     VueRangeSlider.methods.handleKeyup = () => console.log;
@@ -290,14 +306,13 @@ div::-webkit-scrollbar-thumb {
   border-radius: 10px;
 }
 
-
 .v-text-field .v-input__control .v-input__slot {
   height: 50px !important;
   display: flex !important;
   align-items: center !important;
 }
 
-#priceButtonText{
-  color: var(--v-primary) !important; 
+#priceButtonText {
+  color: var(--v-primary) !important;
 }
 </style>

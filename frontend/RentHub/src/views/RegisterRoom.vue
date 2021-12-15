@@ -14,64 +14,72 @@
           </v-card>
         </v-col>
         <v-col md="5" class="fill-width">
-          <div class="text-h5 mb-2">填寫資料</div>
-          <div class="d-flex mb-0">
-            <v-text-field
-              class="mb-0 pb-0"
-              placeholder="地址"
-              outlined
-              clearable
-              v-model="address"
-            ></v-text-field>
-          </div>
-          <div class="d-flex mb-5">
-            <v-spacer></v-spacer>
-            <v-btn color="primary mx-5" @click="relocateMapWithAddress">
-              同步至地圖標記
-            </v-btn>
-            <v-btn color="primary" @click="relocateAddressWithMarker">
-              同步至輸入地址
-            </v-btn>
-          </div>
-          <div>
-            <v-select
-              :items="roomTags"
-              item-text="text"
-              attach
-              chips
-              label="tag"
-              v-model="tags"
-              multiple
-              outlined
-            ></v-select>
-          </div>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <div class="text-h5 mb-2">填寫資料</div>
+            <div class="d-flex mb-0">
+              <v-text-field
+                class="mb-0 pb-0"
+                placeholder="地址"
+                outlined
+                clearable
+                v-model="address"
+              ></v-text-field>
+            </div>
+            <div class="d-flex mb-5">
+              <v-spacer></v-spacer>
+              <v-btn color="primary mx-5" @click="relocateMapWithAddress">
+                同步至地圖標記
+              </v-btn>
+              <v-btn color="primary" @click="relocateAddressWithMarker">
+                同步至輸入地址
+              </v-btn>
+            </div>
+            <div>
+              <v-select
+                :items="roomTags"
+                item-text="text"
+                attach
+                chips
+                label="tag"
+                v-model="tags"
+                multiple
+                outlined
+              ></v-select>
+            </div>
 
-          <v-divider></v-divider>
+            <v-divider></v-divider>
 
-          <v-textarea
-            no-resize
-            outlined
-            name="description"
-            label="介紹"
-            value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
-          ></v-textarea>
-
-          <div class="d-flex">
-            <v-file-input
-              label="File input"
+            <v-textarea
+              no-resize
               outlined
-              dense
-              class="my-auto"
-            ></v-file-input>
-            <v-btn class="ma-5 my-auto mb-7" x-large color="primary">
+              name="description"
+              label="介紹"
+              value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
+            ></v-textarea>
+
+            <div class="d-flex">
+              <v-file-input
+                label="上傳照片(可選取多張)"
+                outlined
+                dense
+                multiple
+                class="my-auto"
+                accept="image/png, image/jpeg, image/bmp"
+                v-model="uploadPictures"
+                prepend-icon="mdi-camera"
+              ></v-file-input>
+              <!-- <v-btn class="ma-5 my-auto mb-7" x-large color="primary">
               上傳圖片
-            </v-btn>
-          </div>
+            </v-btn> -->
+            </div>
 
-          <div class="d-flex align-end" style="height: 27%">
-            <v-spacer></v-spacer>
-            <v-btn color="primary" x-large> 登記房屋 </v-btn>
-          </div>
+            <div class="d-flex align-end" style="height: 27%">
+              <v-spacer></v-spacer>
+              <v-btn color="primary" x-large @click="resgisterRoom()">
+                登記房屋
+              </v-btn>
+            </div>
+          </v-form>
         </v-col>
       </v-row>
     </v-container>
@@ -104,35 +112,26 @@ export default {
     address: "",
     markers: [],
     tags: null,
+    uploadPictures: null,
+    valid: false,
+    rules: {
+      required: (value) => !!value || "必填",
+      files: (v) => {
+        return !v || v.size < 30000000 || "檔案最多 30 MB";
+      },
+    },
     roomTags: [
-      {
-        text: "Wi-Fi",
-      },
-      {
-        text: "有線網路",
-      },
-      {
-        text: "電視",
-      },
-      {
-        text: "冰箱",
-      },
-      {
-        text: "停車位",
-      },
-      {
-        text: "冷氣",
-      },
-      {
-        text: "洗衣機",
-      },
-      {
-        text: "開伙",
-      },
-      {
-        text: "養寵物",
-      },
+      "Wi-Fi",
+      "有線網路",
+      "電視",
+      "冰箱",
+      "停車位",
+      "冷氣",
+      "洗衣機",
+      "開伙",
+      "養寵物",
     ],
+    cities: ["台北市", "基隆市", "桃園市"],
     nightModeStyles: [
       {
         elementType: "geometry",
@@ -425,6 +424,61 @@ export default {
      * returns true if map.panTo(destLatLng) would be smoothly animated
      * at optionalZoomLevel.
      **/
+    resgisterRoom() {
+      console.log(this.uploadPictures);
+      let formData = new FormData();
+      formData.append("file", this.uploadPictures[0]);
+      formData.append("user_ID",'12345678');
+      this.$axios
+        .post("http://localhost:8000/api/testUploadPicture.php", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            console.log("success!");
+            Vue.$toast.open({
+              message: "註冊成功! 正在跳轉頁面",
+              type: "success",
+              position: "top",
+              duration: 2000,
+              // all of other options may go here
+            });
+            this.signUpOverlay = false;
+            let _this = this;
+            setTimeout(function () {
+              _this.$router.push("findRoom");
+            }, 2000);
+            this.$cookies.set("accessKey", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
+            this.alreadyLogin = true;
+            console.table(res.data);
+          } else {
+            console.log("error!");
+            console.log(res);
+            let errorMessage = res.data.message;
+            if (errorMessage == "This E-mail already in use!")
+              errorMessage = "Email 已經被使用";
+            else if (errorMessage == "This user_ID already in use!")
+              errorMessage = "帳號已經被使用";
+
+            Vue.$toast.open({
+              message: errorMessage,
+              type: "error",
+              position: "top",
+              duration: 4000,
+              // all of other options may go here
+            });
+            console.log(res);
+            console.log(res.data.message);
+          }
+        })
+        .catch((error) => {
+          console.log("network error!");
+          console.error(error);
+        });
+      console.log(this.uploadPictures);
+    },
     willAnimatePanTo(map, destLatLng, optionalZoomLevel) {
       var dimen = this.getMapDimenInPixels(map);
 

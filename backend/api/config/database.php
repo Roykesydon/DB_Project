@@ -19,8 +19,11 @@ class Database{
         try{
             $this->conn = new PDO("mysql:host={$this->mysql_address};port={$this->mysql_portnumber};dbname={$this->mysql_database}",$this->mysql_username,$this->mysql_password);
             $this->conn->exec("set names utf8mb4");
-        }catch(PDOException $exception){
-            echo "Connection error: " . $exception->getMessage();
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false); // SQL Injection
+        }catch(PDOException $e){
+            echo "Connection error: " . $e->getMessage();
+            exit;
         }
   
         return $this->conn;

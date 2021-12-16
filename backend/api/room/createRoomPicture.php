@@ -42,47 +42,75 @@ if($auth->isAuth())
     // write code below
     $thisUser = $returnData['user']['user_ID'];
     $user_ID = $data["user_ID"];
-    if( //check not null
-        !empty($data["room_ID"])     
-    )
-    {
-        //set room property values
-        $roomPicture->room_ID = $data["room_ID"];
-        $roomPicture->pictureURL_one = $data["pictureURL_one"];
-        $roomPicture->pictureURL_two = $data["pictureURL_two"];
-        $roomPicture->pictureURL_three = $data["pictureURL_three"];
-        $roomPicture->pictureURL_four = $data["pictureURL_four"];
-        $roomPicture->pictureURL_five = $data["pictureURL_five"];
-        $roomPicture->pictureURL_six = $data["pictureURL_six"];
-        $roomPicture->pictureURL_seven = $data["pictureURL_seven"];
-        $roomPicture->pictureURL_eight = $data["pictureURL_eight"];
 
-        //create the room
-        if($roomPicture->createRoomPicture())
+    //check if created
+    $check_room_ID = "SELECT `room_ID` FROM `roomPicture` WHERE `room_ID` = ?;";
+
+    $check_room_ID_stmt = $db->prepare($check_room_ID);
+
+    $check_room_ID_stmt->bindValue(1,$data["room_ID"]);
+
+    $check_room_ID_stmt->execute();
+
+    $check_room = "SELECT `room_ID` FROM `rentRoom` WHERE `room_ID` = ?;";
+
+    $check_room_stmt = $db->prepare($check_room);
+
+    $check_room_stmt->bindValue(1,$data["room_ID"]);
+
+    $check_room_stmt->execute();
+
+    if($check_room_ID_stmt->rowCount())
+    {
+        echo json_encode(array("message" => "Unable to create roomPicture. Because the room has created."));
+    }
+    else if($check_room_stmt->rowCount() == 0)
+    {
+        echo json_encode(array("message" => "Unable to create roomPicture. Because we don't have the room!"));
+    }
+    else{
+        if( //check not null
+            !empty($data["room_ID"])     
+        )
         {
-            // set response code - 201 created
-            http_response_code(201);
-          
-            // tell the user
-            echo json_encode(array("message" => "RoomPicture was created."));
+            //set room property values
+            $roomPicture->room_ID = $data["room_ID"];
+            $roomPicture->pictureURL_one = $data["pictureURL_one"];
+            $roomPicture->pictureURL_two = $data["pictureURL_two"];
+            $roomPicture->pictureURL_three = $data["pictureURL_three"];
+            $roomPicture->pictureURL_four = $data["pictureURL_four"];
+            $roomPicture->pictureURL_five = $data["pictureURL_five"];
+            $roomPicture->pictureURL_six = $data["pictureURL_six"];
+            $roomPicture->pictureURL_seven = $data["pictureURL_seven"];
+            $roomPicture->pictureURL_eight = $data["pictureURL_eight"];
+    
+            //create the room
+            if($roomPicture->createRoomPicture())
+            {
+                // set response code - 201 created
+                http_response_code(201);
+              
+                // tell the user
+                echo json_encode(array("message" => "RoomPicture was created."));
+            }
+            // if unable to create the Picture, tell the user
+            else
+            {
+                // set response code - 503 service unavailable
+                http_response_code(503);
+    
+                // tell the user
+                echo json_encode(array("message" => "Unable to create roomPicture."));
+            }
         }
-        // if unable to create the product, tell the user
         else
         {
-            // set response code - 503 service unavailable
-            http_response_code(503);
-
+            // set response code - 400 bad request
+            http_response_code(400);
+    
             // tell the user
-            echo json_encode(array("message" => "Unable to create roomPicture."));
+            echo json_encode(array("message" => "Unable to create roomPicture. Data is incomplete."));
         }
-    }
-    else
-    {
-        // set response code - 400 bad request
-        http_response_code(400);
-
-        // tell the user
-        echo json_encode(array("message" => "Unable to create roomPicture. Data is incomplete."));
     }
 }else{
     echo "invalid token\n";

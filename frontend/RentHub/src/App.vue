@@ -47,6 +47,7 @@
           :z-index="11"
           :ripple="false"
           @mousedown.stop=""
+          color="#292929"
         >
           <!-- <v-card
             color="secondary"
@@ -99,6 +100,7 @@
           :ripple="false"
           @mousedown.stop=""
           v-if="loginOrSignUp == 1"
+          color="#292929"
         >
           <v-form ref="signUpForm" v-model="signUpValid" lazy-validation>
             <v-text-field

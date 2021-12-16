@@ -15,6 +15,19 @@
             password : 自己填(與上面一樣)
             database : db_final
 
+    - config.js("/frontend/RentHub/public/config.js")
+        export const googleMapAPI = "填入你申請的 API 金鑰";
+        需要至少開啟三項服務
+            - Geocoding API
+            - Maps JavaScript API
+            - Places API
+
+## Frontend
+```
+npm install
+npm run serve (開發用)
+```
+
 ## Backend
 ```
 in DB_Project開啟服務(需先填完所有config):

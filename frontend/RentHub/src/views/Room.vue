@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="my-5 mx-auto px-10 py-5"
+    class="my-5 mx-auto px-10 py-5 pt-0"
     max-width="80%"
     height="85%"
     outlined
@@ -8,34 +8,222 @@
   >
     <v-container class="fill-height">
       <v-row class="fill-height" height="100%" width="50%" style="width: 50%">
-        <v-col md="6">
+        <v-col md="6" v-if="!isRoomOwner" class="">
+          <!-- <v-card color="primary"  class="text-h5 mb-2 mt-3 pa-10 pt-2 " style="float:left; z-index=-1;position: absolute;top:-10px; left:80px;" width="400px"><div class="text-truncate">{{ ownerRoomName }}</div></v-card> -->
+          <div class="text-truncate text-h3 ma-3 ml-0">{{ ownerRoomName }}</div>
+          <v-hover v-slot="{ hover }">
+            <v-card elevation="24" style="z-index=10;">
+              <v-expand-transition
+                ><v-card
+                  width="30%"
+                  :color="hover ? '' : 'transparent'"
+                  v-show="hover"
+                  disabled
+                  :class="{
+                    'show-card': hover,
+                    'transparent--text': !hover,
+                    'ma-5 pa-3 mx-auto': true,
+                  }"
+                  style="
+                    z-index: 10;
+                    position: absolute;
+                    top: 0px;
+                    left: -230px;
+                  "
+                  elevation="0"
+                  >點按圖片可切換全圖模式</v-card
+                ></v-expand-transition
+              >
+              <v-carousel
+                height="290px"
+                hide-delimiter-background
+                delimiter-icon="mdi-minus"
+                show-arrows-on-hover
+              >
+                <v-carousel-item v-for="(item_src, i) in roomInfo.src" :key="i">
+                  <v-img
+                    :src="item_src"
+                    aspect-ratio="2.0"
+                    class="my-auto"
+                    :contain="roomImageContain"
+                    @click="roomImageContain = !roomImageContain"
+                    height="100%"
+                  ></v-img>
+                </v-carousel-item>
+              </v-carousel>
+            </v-card>
+          </v-hover>
+          <div class="d-flex mb-0 sc3 mt-5">
+            <v-text-field
+              class=""
+              label="地址"
+              placeholder="地址"
+              readonly
+              outlined
+              v-model="notOwnAddress"
+            ></v-text-field>
+            <v-text-field
+              class="ml-5"
+              label="城市"
+              placeholder="城市"
+              readonly
+              outlined
+              v-model="selectCity"
+            ></v-text-field>
+            <v-text-field
+              class="ml-5"
+              label="月租"
+              placeholder="月租"
+              readonly
+              outlined
+              v-model="ownerRoomCost"
+            ></v-text-field>
+          </div>
+          <v-select
+            :items="roomTags"
+            item-text="text"
+            attach
+            chips
+            readonly
+            label="標籤"
+            v-model="selectTags"
+            multiple
+            outlined
+            class=""
+          >
+            <template v-slot:selection="{ item, index }">
+              <v-chip color="primary">
+                <span>{{ item }}</span>
+              </v-chip>
+            </template></v-select
+          >
+          <v-textarea
+            no-resize
+            outlined
+            class="hide-scrollbar"
+            name="description"
+            label="介紹"
+            readonly
+            height="300px"
+            v-model="notOwnDescription"
+          ></v-textarea>
+          <div class="d-flex align-end">
+            <v-spacer></v-spacer>
+            <v-dialog v-model="dialog" persistent max-width="470">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="primary" x-large dark v-bind="attrs" v-on="on">
+                  屋主資訊
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-title class="text-h5"> 屋主資訊 </v-card-title>
+                <div class="ma-5 mx-10">
+                  姓名：{{ ownerName }}<br />
+                  電話：{{ ownerPhoneNumber }}<br />
+                  信箱：{{ ownerEmail }}<br />
+                </div>
+                <v-img
+                  src="../assets/blank-profile-picture.png"
+                  aspect-ratio="1"
+                  height="150px"
+                  width="150px"
+                  id="profileImg"
+                  class="mx-auto my-auto"
+                  style="float:right; z-index=-1;position: absolute; top:20px; right:20px;"
+                ></v-img>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="primary" text @click="dialog = false">
+                    關閉
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </div>
+        </v-col>
+
+        <v-col md="6" v-if="isRoomOwner">
           <div class="text-h5 mb-2 mt-3">房間資料</div>
           <v-card width="100%" height="40%" class="text-center fill-height">
             <div id="map"></div>
           </v-card>
-          
+
           <div class="d-flex mb-0 sc3 mt-5">
             <v-text-field
               class="mr-5"
               placeholder="地址"
               outlined
               clearable
-              v-model="address"
+              id="address"
             ></v-text-field>
-            <v-btn x-large color="primary" @click="relocateMapWithAddress">
-              與地圖同步
+            <v-btn
+              x-large
+              color="secondary mx-5 ml-0"
+              @click="relocateMapWithAddress"
+            >
+              同步至地圖標記
+            </v-btn>
+            <v-btn color="secondary" x-large @click="relocateAddressWithMarker">
+              同步至輸入地址
             </v-btn>
           </div>
-          <div>
+          <div class="d-flex">
+            <v-text-field
+              class=""
+              label="房屋名稱"
+              placeholder="房屋名稱"
+              id="roomName"
+              :value="roomName"
+              outlined
+            ></v-text-field>
+            <v-text-field
+              class="ml-5"
+              label="月租"
+              id="roomCost"
+              :value="roomCost"
+              placeholder="月租"
+              outlined
+            ></v-text-field>
+          </div>
+          <div class="d-flex">
             <v-select
               :items="roomTags"
               item-text="text"
               attach
               chips
-              label="tag"
+              label="標籤"
+              v-model="selectTags"
               multiple
               outlined
-            ></v-select>
+              class="mr-5"
+            >
+              <template v-slot:selection="{ item, index }">
+                <v-chip v-if="index == 0" color="primary">
+                  <span>{{ item }}</span>
+                </v-chip>
+                <span v-if="index === 1" class="grey--text text-caption">
+                  (+{{ selectTags.length - 1 }} others)
+                </span>
+              </template></v-select
+            >
+            <v-select
+              :items="cities"
+              item-text="text"
+              attach
+              chips
+              required
+              label="城市"
+              :rules="[rules.required]"
+              v-model="selectCity"
+              outlined
+              class="sc3"
+            >
+              <template v-slot:selection="{ item, index }">
+                <v-chip v-if="index === 0" color="primary">
+                  <span>{{ item }}</span>
+                </v-chip>
+              </template></v-select
+            >
           </div>
 
           <v-divider></v-divider>
@@ -46,6 +234,7 @@
             class="hide-scrollbar"
             name="description"
             label="介紹"
+            height="300px"
             id="description"
             value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
           ></v-textarea>
@@ -57,21 +246,47 @@
               dense
               class="my-auto"
             ></v-file-input>
+            <v-dialog v-model="dialog" persistent max-width="470">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  class="ma-5 my-auto mb-7 mr-0"
+                  x-large
+                  color="error"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  刪除房屋
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-title class="text-h5">
+                  您確定要刪除房屋嗎
+                </v-card-title>
+                <v-card-text
+                  >按下確認後，資料不會留存，若是誤刪想恢復，必須重新填寫資料。
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="primary" text @click="deleteRoom()">
+                    確認刪除
+                  </v-btn>
+                  <v-btn color="error" text @click="dialog = false">
+                    取消
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
             <v-btn class="ma-5 my-auto mb-7 mr-0" x-large color="primary">
-              上傳圖片
+              更新資訊
             </v-btn>
           </div>
+        </v-col>
+        <v-col cols="1" class="mx-auto" height="150%">
+          <v-divider vertical class="mx-5"></v-divider>
+        </v-col>
 
-          <div class="d-flex align-end" style="">
-            <v-spacer></v-spacer>
-            <v-btn color="primary" x-large> 登記房屋 </v-btn>
-          </div>
-        </v-col>
-        <v-col cols="1" class="mx-auto" height="auto">
-        <v-divider vertical class="mx-5"></v-divider>
-        </v-col>
         <v-col md="5" class="fill-width fill-height">
-          <v-card class="pa-10" outlined color="transparent">
+          <v-card class="pa-10" outlined color="transparent" height="1000px">
             <span class="text-h4 mb-4">同城市的其他房屋</span>
             <v-virtual-scroll
               :bench="benched"
@@ -154,10 +369,38 @@ export default {
   name: "RegisterRoom",
 
   mounted() {
-    let recaptchaScript = document.createElement("script");
     // // AIzaSyA07oLGCFBea5dZRB179KhJKhrbkUzTzpE
     // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.$config.GOOGLE-MAP-API-KEY )
     // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.googleMapAPI )
+    console.log(this.$route.params["id"]);
+    this.isRoomOwner = false;
+    if (!this.isRoomOwner) {
+      this.notOwnAddress = "測試地址";
+      this.selectCity = "台北市";
+      this.selectTags = [
+        "Wi-Fi",
+        "有線網路",
+        "電視",
+        "冰箱",
+        "停車位",
+        "冷氣",
+        "洗衣機",
+        "開伙",
+        "養寵物",
+      ];
+      this.ownerRoomName = "新北市第一大豪宅";
+      this.ownerRoomCost = 8600;
+      this.notOwnDescription =
+        "這屋子有夠棒，這屋子棒到一個不行，這屋子棒到不能再更棒了！要說為什麼，要從這屋子說起，這屋子雖然屋齡高，但老酒越陳越香！這屋子有夠棒，這屋子棒到一個不行，這屋子棒到不能再更棒了！要說為什麼，要從這屋子說起，這屋子雖然屋齡高，但老酒越陳越香這屋子有夠棒，這屋子棒到一個不行，這屋子棒到不能再更棒了！要說為什麼，要從這屋子說起，這屋子雖然屋齡高，但老酒越陳越香";
+      this.ownerPhoneNumber = "085465465123";
+      this.ownerEmail = "123123@123.asdas";
+      this.ownerName = "大地主";
+    } else {
+      this.roomName = "測試名稱";
+      // console.log(document.getElementById("roomName").value)
+      // document.getElementById("roomName").text = "測試名稱"
+    }
+    let recaptchaScript = document.createElement("script");
     recaptchaScript.setAttribute(
       "src",
       "https://maps.googleapis.com/maps/api/js?key=" +
@@ -165,14 +408,43 @@ export default {
         "&libraries=places"
     );
     document.head.appendChild(recaptchaScript);
+
     initMap();
   },
 
   data: () => ({
+    roomImageContain: false,
     map: null,
+    notOwnAddress: "",
     address: "",
+    ownerRoomName: "",
+    ownerRoomCost: 0,
     markers: [],
+    roomName: "",
     benched: 20,
+    selectTags: [],
+    rules: CONFIG.rules,
+    isRoomOwner: true,
+    notOwnDescription: "",
+    dialog: false,
+    ownerPhoneNumber: "",
+    ownerEmail: "",
+    ownerName: "",
+    roomCost: 0,
+    roomInfo: {
+      title: "台北101超級無敵大全台最高豪宅",
+      src: [
+        "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
+        "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
+        "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
+        "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
+      ],
+      address: "台北市信義區信義路五段7號",
+      cost: 18000,
+      capacity: 3,
+      squareMeters: 11.0,
+      roomID: 123456,
+    },
     items: [
       {
         title: "台北101超級無敵大全台最高豪宅",
@@ -308,279 +580,24 @@ export default {
       },
     ],
     roomTags: [
-      {
-        text: "hello",
-      },
-      {
-        text: "run",
-      },
-      {
-        text: "null",
-      },
-      {
-        text: "hell",
-      },
-      {
-        text: "helo",
-      },
-      {
-        text: "ello",
-      },
-      {
-        text: "hello2",
-      },
-      {
-        text: "hello3",
-      },
-      {
-        text: "hello4",
-      },
-      {
-        text: "hello5",
-      },
-      {
-        text: "hello6",
-      },
-      {
-        text: "hello7",
-      },
+      "Wi-Fi",
+      "有線網路",
+      "電視",
+      "冰箱",
+      "停車位",
+      "冷氣",
+      "洗衣機",
+      "開伙",
+      "養寵物",
     ],
-    nightModeStyles: [
-      {
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#1d2c4d",
-          },
-        ],
-      },
-      {
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#8ec3b9",
-          },
-        ],
-      },
-      {
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#1a3646",
-          },
-        ],
-      },
-      {
-        featureType: "administrative.country",
-        elementType: "geometry.stroke",
-        stylers: [
-          {
-            color: "#4b6878",
-          },
-        ],
-      },
-      {
-        featureType: "administrative.land_parcel",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#64779e",
-          },
-        ],
-      },
-      {
-        featureType: "administrative.province",
-        elementType: "geometry.stroke",
-        stylers: [
-          {
-            color: "#4b6878",
-          },
-        ],
-      },
-      {
-        featureType: "landscape.man_made",
-        elementType: "geometry.stroke",
-        stylers: [
-          {
-            color: "#334e87",
-          },
-        ],
-      },
-      {
-        featureType: "landscape.natural",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#023e58",
-          },
-        ],
-      },
-      {
-        featureType: "poi",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#283d6a",
-          },
-        ],
-      },
-      {
-        featureType: "poi",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#6f9ba5",
-          },
-        ],
-      },
-      {
-        featureType: "poi",
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#1d2c4d",
-          },
-        ],
-      },
-      {
-        featureType: "poi.park",
-        elementType: "geometry.fill",
-        stylers: [
-          {
-            color: "#023e58",
-          },
-        ],
-      },
-      {
-        featureType: "poi.park",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#3C7680",
-          },
-        ],
-      },
-      {
-        featureType: "road",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#304a7d",
-          },
-        ],
-      },
-      {
-        featureType: "road",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#98a5be",
-          },
-        ],
-      },
-      {
-        featureType: "road",
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#1d2c4d",
-          },
-        ],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#2c6675",
-          },
-        ],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "geometry.stroke",
-        stylers: [
-          {
-            color: "#255763",
-          },
-        ],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#b0d5ce",
-          },
-        ],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#023e58",
-          },
-        ],
-      },
-      {
-        featureType: "transit",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#98a5be",
-          },
-        ],
-      },
-      {
-        featureType: "transit",
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#1d2c4d",
-          },
-        ],
-      },
-      {
-        featureType: "transit.line",
-        elementType: "geometry.fill",
-        stylers: [
-          {
-            color: "#283d6a",
-          },
-        ],
-      },
-      {
-        featureType: "transit.station",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#3a4762",
-          },
-        ],
-      },
-      {
-        featureType: "water",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#0e1626",
-          },
-        ],
-      },
-      {
-        featureType: "water",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#4e6d70",
-          },
-        ],
-      },
-    ],
+    cities: ["台北市", "基隆市", "桃園市"],
+    selectCity: null,
+    nightModeStyles: CONFIG.nightModeStyles,
   }),
 
   methods: {
+    deleteRoom() {},
+
     getRoomRoute(id) {
       return "/room/" + String(id);
     },
@@ -745,6 +762,33 @@ export default {
       }
     },
 
+    relocateAddressWithMarker() {
+      let marker = this.markers[0];
+      let lat = marker.getPosition().lat();
+      let lng = marker.getPosition().lng();
+      const latlng = {
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
+      };
+      let _this = this;
+      this.geocoder
+        .geocode({ location: latlng })
+        .then((response) => {
+          if (response.results[0]) {
+            console.log(response.results[0].formatted_address);
+            _this.address = response.results[0].formatted_address;
+
+            // _this.deleteMarkers();
+            // _this.addMarker(latlng, _this.map)
+            // infowindow.setContent(response.results[0].formatted_address);
+            // infowindow.open(map, newMarker);
+          } else {
+            window.alert("No results found");
+          }
+        })
+        .catch((e) => window.alert("Geocoder failed due to: " + e));
+    },
+
     moveToOnlyMarker() {
       if (this.markers.length == 1) {
         this.smoothlyAnimatePanTo(this.map, this.markers[0].position);
@@ -756,8 +800,9 @@ export default {
 
     addMarker(position, map) {
       const marker = new google.maps.Marker({
-        position,
-        map,
+        position: position,
+        map: map,
+        draggable: true,
       });
 
       this.markers.push(marker);
@@ -788,6 +833,7 @@ export default {
     },
 
     relocateMapWithAddress() {
+      console.log(this.tags);
       let location = null;
       var request = {
         query: this.address,
@@ -825,7 +871,7 @@ export default {
         lat: 25.0374865, // 經度
         lng: 121.5647688, // 緯度
       };
-
+      this.geocoder = new google.maps.Geocoder();
       // 建立地圖
       this.map = new google.maps.Map(document.getElementById("map"), {
         center: location, // 中心點座標
@@ -847,21 +893,13 @@ export default {
       this.addMarker(location, this.map);
 
       this.map.setOptions({
-        styles: this.nightModeStyles,
+        styles: CONFIG.nightModeStyles,
       });
     },
+
     async geoCoding(address) {
       // const result = document.querySelector('.result');
 
-      // fetch('https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=台北市南港區忠孝東路七段576號&inputtype=textquery&fields=formatted_address,name,rating,opening_hours,geometry&key='+this.googleMapAPI, {mode: 'no-cors'})
-      //   .then(response =>{
-      //     console.log(response)
-      //     return  response.json();//解析成一個json 物件
-      //   }).then((jsonData) => {
-      //     console.log(jsonData);
-      //   }).catch((err) => {
-      //     console.log('錯誤:', err);
-      //   });
       var request = {
         query: address,
         fields: ["name", "geometry"],
@@ -907,6 +945,10 @@ export default {
 </script>
 
 <style  scoped>
+.show-card {
+  color: rgba(255, 255, 255, 1) !important;
+}
+
 #map {
   height: 100%;
   width: 100%;
@@ -938,5 +980,9 @@ html {
 .sc3::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.4);
   border-radius: 10px;
+}
+
+#profileImg {
+  border-radius: 50%;
 }
 </style>

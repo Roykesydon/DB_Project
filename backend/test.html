@@ -29,5 +29,17 @@
         password:<input type="password" id="password" name="password" value="aaa">
         <input type="submit" value="送出資料">
     </form>
+    <form action="http://localhost:8000/api/login.php" method="post">
+        email:<input type="text" id="email" name="email" value="aaa" id='a'>
+        password:<input type="password" id="password" name="password" value="aaa">
+        <input type="submit" value="送出資料">
+    </form>
+    <br/><br/>
+    <form action="http://localhost:8000/api/testUploadPicture.php" method="post" enctype="multipart/form-data">
+        user_ID:<input type="text" id="user_ID" name="user_ID">
+        Select image to upload:
+        <input type="file" name="file1">
+        <input type="submit" value="Upload Image" name="submit">
+      </form>
 </body>
 </html>

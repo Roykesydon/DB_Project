@@ -1,5 +1,11 @@
 <template>
-  <v-card class="my-15 mx-auto px-10 py-5" max-width="70%" height="85%" color="transparent" outlined>
+  <v-card
+    class="my-15 mx-auto px-10 py-5"
+    max-width="70%"
+    height="85%"
+    color="transparent"
+    outlined
+  >
     <v-container class="fill-height">
       <v-row class="fill-height" height="100%" width="50%" style="width: 50%">
         <v-col md="7">
@@ -8,57 +14,145 @@
           </v-card>
         </v-col>
         <v-col md="5" class="fill-width">
-          <div class="text-h5 mb-2">填寫資料</div>
-          <div class="d-flex mb-0">
-            <v-text-field
-              class="mr-5"
-              placeholder="地址"
-              outlined
-              clearable
-              v-model="address"
-            ></v-text-field>
-            <v-btn x-large color="primary" @click="relocateMapWithAddress">
-              與地圖同步
-            </v-btn>
-          </div>
-          <div>
-            <v-select
-              :items="roomTags"
-              item-text="text"
-              attach
-              chips
-              label="tag"
-              multiple
-              outlined
-            ></v-select>
-          </div>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <div class="text-h5 mb-2">填寫資料</div>
+            <div class="d-flex mb-0">
+              <v-text-field
+                class="mb-0 pb-0"
+                placeholder="地址"
+                outlined
+                clearable
+                v-model="address"
+                :rules="[rules.required]"
+              ></v-text-field>
+            </div>
+            <div class="d-flex mb-5">
+              <v-spacer></v-spacer>
+              <v-btn color="primary mx-5" @click="relocateMapWithAddress">
+                同步至地圖標記
+              </v-btn>
+              <v-btn color="primary" @click="relocateAddressWithMarker">
+                同步至輸入地址
+              </v-btn>
+            </div>
+            <div class="d-flex">
+              <v-text-field
+                class=""
+                label="名稱"
+                placeholder="名稱"
+                readonly
+                outlined
+                :rules=[rules.required]
+                v-model="roomName"
+              ></v-text-field>
+              <v-text-field
+                class=""
+                label="月租"
+                placeholder="月租"
+                :rules=[rules.required]
+                readonly
+                outlined
+                v-model="roomCost"
+              ></v-text-field>
+            </div>
+            <div class="d-flex">
+              <v-select
+                :items="roomTags"
+                item-text="text"
+                attach
+                chips
+                label="標籤"
+                v-model="selectTags"
+                multiple
+                outlined
+                class=""
+              >
+                <template v-slot:selection="{ item, index }">
+                  <v-chip v-if="index == 0" color="primary">
+                    <span>{{ item }}</span>
+                  </v-chip>
+                  <span v-if="index === 1" class="grey--text text-caption">
+                    (+{{ selectTags.length - 1 }} others)
+                  </span>
+                </template></v-select
+              >
+              <div>
+                <v-select
+                  :items="cities"
+                  item-text="text"
+                  attach
+                  chips
+                  required
+                  label="城市"
+                  :rules="[rules.required]"
+                  v-model="selectCity"
+                  outlined
+                  class="sc3"
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <v-chip v-if="index === 0" color="primary">
+                      <span>{{ item }}</span>
+                    </v-chip>
+                  </template></v-select
+                >
+              </div>
+            </div>
 
-          <v-divider></v-divider>
+            <v-divider></v-divider>
 
-          <v-textarea
-            no-resize
-            outlined
-            name="description"
-            label="介紹"
-            value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
-          ></v-textarea>
-
-          <div class="d-flex">
-            <v-file-input
-              label="File input"
+            <v-textarea
+              no-resize
               outlined
-              dense
-              class="my-auto"
-            ></v-file-input>
-            <v-btn class="ma-5 my-auto mb-7" x-large color="primary">
+              label="介紹"
+              v-model="description"
+            ></v-textarea>
+
+            <div class="d-flex">
+              <v-file-input
+                label="上傳照片(可選取多張)"
+                outlined
+                dense
+                multiple
+                class="my-auto"
+                :rules="[rules.arrayRequired]"
+                accept="image/png, image/jpeg, image/bmp"
+                v-model="uploadPictures"
+                prepend-icon="mdi-camera"
+              ></v-file-input>
+              <!-- <v-btn class="ma-5 my-auto mb-7" x-large color="primary">
               上傳圖片
-            </v-btn>
-          </div>
+            </v-btn> -->
+            </div>
 
-          <div class="d-flex align-end" style="height: 27%">
-            <v-spacer></v-spacer>
-            <v-btn color="primary" x-large> 登記房屋 </v-btn>
-          </div>
+            <div class="d-flex align-end" style="height: 27%">
+              <v-spacer></v-spacer>
+              <v-dialog v-model="dialog" persistent max-width="470">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="primary" x-large dark v-bind="attrs" v-on="on">
+                    登記房屋
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="text-h5">
+                    你是否已經確認您填的地址可以對映到 google 地圖上？
+                  </v-card-title>
+                  <v-card-text
+                    >您的房間位置能否正確顯示在 google
+                    地圖上，對您和您的客戶來說至關重要。麻煩務必同步後親自確認。
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" text @click="registerRoom()">
+                      確認無誤
+                    </v-btn>
+                    <v-btn color="error" text @click="dialog = false">
+                      取消
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </div>
+          </v-form>
         </v-col>
       </v-row>
     </v-container>
@@ -86,280 +180,31 @@ export default {
   },
 
   data: () => ({
+    roomName:null,
+    roomCost:null,
+    dialog: false,
     map: null,
+    geocoder: null,
     address: "",
     markers: [],
+    selectTags: [],
+    uploadPictures: [],
+    valid: false,
+    description: "",
+    rules: CONFIG.rules,
     roomTags: [
-      {
-        text: "hello",
-      },
-      {
-        text: "run",
-      },
-      {
-        text: "null",
-      },
-      {
-        text: "hell",
-      },
-      {
-        text: "helo",
-      },
-      {
-        text: "ello",
-      },
-      {
-        text: "hello2",
-      },
-      {
-        text: "hello3",
-      },
-      {
-        text: "hello4",
-      },
-      {
-        text: "hello5",
-      },
-      {
-        text: "hello6",
-      },
-      {
-        text: "hello7",
-      },
+      "Wi-Fi",
+      "有線網路",
+      "電視",
+      "冰箱",
+      "停車位",
+      "冷氣",
+      "洗衣機",
+      "開伙",
+      "養寵物",
     ],
-    nightModeStyles: [
-      {
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#1d2c4d",
-          },
-        ],
-      },
-      {
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#8ec3b9",
-          },
-        ],
-      },
-      {
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#1a3646",
-          },
-        ],
-      },
-      {
-        featureType: "administrative.country",
-        elementType: "geometry.stroke",
-        stylers: [
-          {
-            color: "#4b6878",
-          },
-        ],
-      },
-      {
-        featureType: "administrative.land_parcel",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#64779e",
-          },
-        ],
-      },
-      {
-        featureType: "administrative.province",
-        elementType: "geometry.stroke",
-        stylers: [
-          {
-            color: "#4b6878",
-          },
-        ],
-      },
-      {
-        featureType: "landscape.man_made",
-        elementType: "geometry.stroke",
-        stylers: [
-          {
-            color: "#334e87",
-          },
-        ],
-      },
-      {
-        featureType: "landscape.natural",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#023e58",
-          },
-        ],
-      },
-      {
-        featureType: "poi",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#283d6a",
-          },
-        ],
-      },
-      {
-        featureType: "poi",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#6f9ba5",
-          },
-        ],
-      },
-      {
-        featureType: "poi",
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#1d2c4d",
-          },
-        ],
-      },
-      {
-        featureType: "poi.park",
-        elementType: "geometry.fill",
-        stylers: [
-          {
-            color: "#023e58",
-          },
-        ],
-      },
-      {
-        featureType: "poi.park",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#3C7680",
-          },
-        ],
-      },
-      {
-        featureType: "road",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#304a7d",
-          },
-        ],
-      },
-      {
-        featureType: "road",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#98a5be",
-          },
-        ],
-      },
-      {
-        featureType: "road",
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#1d2c4d",
-          },
-        ],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#2c6675",
-          },
-        ],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "geometry.stroke",
-        stylers: [
-          {
-            color: "#255763",
-          },
-        ],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#b0d5ce",
-          },
-        ],
-      },
-      {
-        featureType: "road.highway",
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#023e58",
-          },
-        ],
-      },
-      {
-        featureType: "transit",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#98a5be",
-          },
-        ],
-      },
-      {
-        featureType: "transit",
-        elementType: "labels.text.stroke",
-        stylers: [
-          {
-            color: "#1d2c4d",
-          },
-        ],
-      },
-      {
-        featureType: "transit.line",
-        elementType: "geometry.fill",
-        stylers: [
-          {
-            color: "#283d6a",
-          },
-        ],
-      },
-      {
-        featureType: "transit.station",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#3a4762",
-          },
-        ],
-      },
-      {
-        featureType: "water",
-        elementType: "geometry",
-        stylers: [
-          {
-            color: "#0e1626",
-          },
-        ],
-      },
-      {
-        featureType: "water",
-        elementType: "labels.text.fill",
-        stylers: [
-          {
-            color: "#4e6d70",
-          },
-        ],
-      },
-    ],
+    cities: ["台北市", "基隆市", "桃園市"],
+    selectCity: null,
   }),
 
   methods: {
@@ -419,6 +264,75 @@ export default {
      * returns true if map.panTo(destLatLng) would be smoothly animated
      * at optionalZoomLevel.
      **/
+    registerRoom() {
+      this.dialog = false;
+      if (!this.$refs.form.validate()) return;
+      // console.log(this.uploadPictures);
+      let formData = new FormData();
+      if (this.uploadPictures.length)
+        formData.append("file", this.uploadPictures[0]);
+      formData.append("user_ID", "12345678");
+      formData.append("selectTags", this.selectTags);
+      formData.append("selectCity", this.selectCity);
+      formData.append("description", this.description);
+
+      console.log({
+        file: this.uploadPictures,
+        user_ID: "12345678",
+        description: this.description,
+        selectTags: this.selectTags,
+        selectCity: this.selectCity,
+      });
+      this.$axios
+        .post("http://localhost:8000/api/testUploadPicture.php", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            console.log("success!");
+            Vue.$toast.open({
+              message: "註冊成功! 正在跳轉頁面",
+              type: "success",
+              position: "top",
+              duration: 2000,
+              // all of other options may go here
+            });
+            this.signUpOverlay = false;
+            let _this = this;
+            setTimeout(function () {
+              _this.$router.push("findRoom");
+            }, 2000);
+            this.$cookies.set("accessKey", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
+            this.alreadyLogin = true;
+            console.table(res.data);
+          } else {
+            console.log("error!");
+            console.log(res);
+            let errorMessage = res.data.message;
+            if (errorMessage == "This E-mail already in use!")
+              errorMessage = "Email 已經被使用";
+            else if (errorMessage == "This user_ID already in use!")
+              errorMessage = "帳號已經被使用";
+
+            Vue.$toast.open({
+              message: errorMessage,
+              type: "error",
+              position: "top",
+              duration: 4000,
+              // all of other options may go here
+            });
+            console.log(res);
+            console.log(res.data.message);
+          }
+        })
+        .catch((error) => {
+          console.log("network error!");
+          console.error(error);
+        });
+      console.log(this.uploadPictures);
+    },
     willAnimatePanTo(map, destLatLng, optionalZoomLevel) {
       var dimen = this.getMapDimenInPixels(map);
 
@@ -524,6 +438,33 @@ export default {
       }
     },
 
+    relocateAddressWithMarker() {
+      let marker = this.markers[0];
+      let lat = marker.getPosition().lat();
+      let lng = marker.getPosition().lng();
+      const latlng = {
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
+      };
+      let _this = this;
+      this.geocoder
+        .geocode({ location: latlng })
+        .then((response) => {
+          if (response.results[0]) {
+            console.log(response.results[0].formatted_address);
+            _this.address = response.results[0].formatted_address;
+
+            // _this.deleteMarkers();
+            // _this.addMarker(latlng, _this.map)
+            // infowindow.setContent(response.results[0].formatted_address);
+            // infowindow.open(map, newMarker);
+          } else {
+            window.alert("No results found");
+          }
+        })
+        .catch((e) => window.alert("Geocoder failed due to: " + e));
+    },
+
     moveToOnlyMarker() {
       if (this.markers.length == 1) {
         this.smoothlyAnimatePanTo(this.map, this.markers[0].position);
@@ -535,8 +476,9 @@ export default {
 
     addMarker(position, map) {
       const marker = new google.maps.Marker({
-        position,
-        map,
+        position: position,
+        map: map,
+        draggable: true,
       });
 
       this.markers.push(marker);
@@ -567,6 +509,7 @@ export default {
     },
 
     relocateMapWithAddress() {
+      console.log(this.tags);
       let location = null;
       var request = {
         query: this.address,
@@ -604,7 +547,7 @@ export default {
         lat: 25.0374865, // 經度
         lng: 121.5647688, // 緯度
       };
-
+      this.geocoder = new google.maps.Geocoder();
       // 建立地圖
       this.map = new google.maps.Map(document.getElementById("map"), {
         center: location, // 中心點座標
@@ -626,7 +569,7 @@ export default {
       this.addMarker(location, this.map);
 
       this.map.setOptions({
-        styles: this.nightModeStyles,
+        styles: CONFIG.nightModeStyles,
       });
     },
     async geoCoding(address) {
@@ -682,10 +625,26 @@ export default {
       this.initMap();
     });
   },
+  components: {
+    // 'Config':'Config'
+  },
 };
 </script>
 
 <style  scoped>
+div::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+div::-webkit-scrollbar-track {
+  background-color: rgba(30, 30, 30, 1);
+  /* border-radius: 10px; */
+}
+div::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
+
 #map {
   height: 100%;
   width: 100%;

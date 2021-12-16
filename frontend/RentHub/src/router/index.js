@@ -22,7 +22,7 @@ const routes = [
   {
     path: '/test',
     name: 'Test',
-    component: () => import( '../views/Test.vue')
+    component: () => import( '../views/Test2.vue')
   },
   {
     path: '/findRoom',
@@ -35,7 +35,7 @@ const routes = [
     component: () => import( '../views/RegisterRoom.vue')
   },
   {
-    path: '/profile',
+    path: '/profile/:id',
     name: 'profile',
     component: () => import( '../views/Profile.vue')
   },

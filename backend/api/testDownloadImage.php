@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") :
 else :
     // $files = $data->files;
 
-    $returnData = msg(0, 422, $_POST['user_ID'] . $_FILES["file"]["name"]);
+    $returnData = msg(0, 422, $_POST['user_ID'] . $_FILES["file1"]["name"]);
 
 
     $uploaddir = '../files/roomImages/';
@@ -52,6 +52,11 @@ else :
     } else {
         $returnData = msg(0, 422, "File upload fail\n");
     }
+
+    $filename="download.txt";
+    header("Content-disposition: attachment;filename=$filename");
+    readfile($filename);
+  
 // // Do the work for each file
 
 // echo $files;

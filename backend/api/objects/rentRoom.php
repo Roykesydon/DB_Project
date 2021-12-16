@@ -54,9 +54,9 @@ class RentRoom{
         $this->room_area = $row["room_area"];
     }
 
-    function readAllRoom(){
+    function readAllRoom($index){
         // query to read single record
-        $query = "SELECT * FROM {$this->table_name};";
+        $query = "SELECT * FROM {$this->table_name} ORDER BY 'room_ID' LIMIT ?, ?;";
 
         // prepare query statement
         $stmt = $this->conn->prepare( $query );
@@ -65,7 +65,7 @@ class RentRoom{
         //$stmt->bindParam(1, $this->user_ID);
     
         // execute query
-        $stmt->execute();
+        $stmt->execute(array($index*20, 20));
 
         return $stmt;
     

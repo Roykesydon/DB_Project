@@ -14,14 +14,17 @@
           width="100%"
           :src="require(`@/assets/${item_src}`)"
           height="905"
-          ><v-overlay :value="overlay" :opacity="0.7" class="align-start-center"></v-overlay
+          ><v-overlay
+            :value="overlay"
+            :opacity="0.7"
+            class="align-start-center"
+          ></v-overlay
         ></v-img>
       </v-carousel-item>
     </v-carousel>
-
     <div id="floatDiv">
       <div class="text-h1 font-weight-black">RentHub</div>
-      <div class="text-h4 font-weight-thin">台灣最好的租屋網</div>
+      <div class="text-h4 font-weight-thin">也許不是台灣最好的租屋網</div>
     </div>
   </v-card>
 </template>
@@ -30,15 +33,26 @@
 export default {
   name: "Home",
   data: () => ({
+    showTitle: false,
     overlay: true,
-    indexBackground:[
+    indexBackground: [
       "olexandr-ignatov-w72a24brINI-unsplash.jpg",
       "chastity-cortijo-M8iGdeTSOkg-unsplash.jpg",
       "FBXuXp57eM0.jpg",
       "ralph-ravi-kayden-FqqiAvJejto-unsplash.jpg",
-    ]
+    ],
   }),
-  components: {},
+
+  methods: {
+    sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    },
+  },
+  mounted() {
+    // this.sleep(2000).then((response) => {
+    //   this.showTitle = true;
+    // });
+  },
 };
 </script>
 

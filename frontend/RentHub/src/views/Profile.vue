@@ -7,7 +7,7 @@
             <v-row>
               <v-col cols="12">
                 <v-img
-                  src="../assets/blank-profile-picture.png"
+                  :src="getUserPofilePictureUrl()"
                   aspect-ratio="1"
                   height="250px"
                   width="250px"
@@ -39,8 +39,7 @@
                     hide-details="auto"
                     readonly
                   ></v-text-field>
-                  </v-col
-                >
+                </v-col>
                 <v-col cols="9" v-if="isSelfProfile">
                   <v-text-field
                     class="ma-3 my-auto"
@@ -74,21 +73,29 @@
                 </v-col>
                 <v-col cols="9">
                   <v-file-input
-                    label="上傳照片(可選取多張)"
+                    label="上傳照片"
                     outlined
                     dense
-                    multiple
                     class="my-auto"
-                    :rules="[rules.arrayRequired]"
                     accept="image/png, image/jpeg, image/bmp"
-                    v-model="uploadPictures"
+                    v-model="uploadPicture"
                   ></v-file-input
                 ></v-col>
               </v-row>
             </div>
-            <div class="d-flex align-end" style="height: 80px" v-if="isSelfProfile">
+            <div
+              class="d-flex align-end"
+              style="height: 80px"
+              v-if="isSelfProfile"
+            >
               <v-spacer></v-spacer>
-              <v-btn color="primary" x-large dark style="float: right">
+              <v-btn
+                color="primary"
+                x-large
+                dark
+                style="float: right"
+                @click="updateProfile()"
+              >
                 更新資料
               </v-btn>
             </div>
@@ -193,6 +200,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import { Carousel, Slide } from "vue-carousel";
 import * as CONFIG from "../../public/config";
 export default {
@@ -203,15 +211,19 @@ export default {
     Slide,
   },
 
-  mounted() {},
+  mounted() {
+    this.isSelfProfile = true;
+  },
 
   data: () => ({
     isSelfProfile: false,
+    profileImage:'../assets/blank-profile-picture.png',
     name: "Roykesydone",
     rules: CONFIG.rules,
     phone_number: "12345678910",
     email: "haha@jaskdjaks.com",
     benched: 20,
+    uploadPicture: null,
     items: [
       {
         title: "台北101超級無敵大全台最高豪宅",
@@ -350,6 +362,64 @@ export default {
   methods: {
     getRoomRoute(id) {
       return "/room/" + String(id);
+    },
+
+    getUserPofilePictureUrl(){
+      return "http://localhost:8000/api/user/getProfileImage.php?user_ID="+this.$route.params["id"];
+    },
+
+    updateProfile() {
+      console.log(this.$cookies.get("token"));
+      console.log(`Bearer ${this.$cookies.get("token")}`);
+      let formData = new FormData();
+      formData.append("file", this.uploadPicture);
+      // formData.append("user_ID", "12345678");
+      // formData.append("selectTags", this.selectTags);
+      // formData.append("selectCity", this.selectCity);
+      // formData.append("description", this.description);
+      this.$axios
+        .post("http://localhost:8000/api/user/uploadProfile.php", formData, {
+          headers: {
+            Authorization: `Bearer ${this.$cookies.get("token")}`,
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            console.log(res.data);
+            Vue.$toast.open({
+              message: "上傳成功",
+              type: "success",
+              position: "top",
+              duration: 2000,
+            });
+          } else {
+            let errorMessage = res.data.message;
+            if (errorMessage == "Invalid Email Address!")
+              errorMessage = "信箱不存在";
+            else if (errorMessage == "Invalid Password!")
+              errorMessage = "密碼錯誤";
+            Vue.$toast.open({
+              message: errorMessage,
+              type: "error",
+              position: "top",
+              duration: 4000,
+              // all of other options may go here
+            });
+            console.log("error!");
+            console.log(res.data.message);
+          }
+        })
+        .catch((error) => {
+          Vue.$toast.open({
+            message: "發生錯誤",
+            type: "error",
+            position: "top",
+            duration: 3000,
+            // all of other options may go here
+          });
+          console.log("network error!");
+          console.error(error);
+        });
     },
   },
   created: function () {},

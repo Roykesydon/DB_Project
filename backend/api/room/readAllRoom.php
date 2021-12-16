@@ -26,18 +26,20 @@ $rentRoom = new RentRoom($db);
 $index = $_GET['index'];
 
 //query rentRoom
-$stmt = $rentRoom->readAllRoom();
+$stmt = $rentRoom->readAllRoom($index);
 //get the room nums
 $num = $stmt->rowCount();
 
 
+
+
+//room array
+$rentRoom_arr = array();
+$rentRoom_arr["records"] = array();
+
 // check if more than 0 record found
 if($num > 0)
 {
-    //room array
-    $rentRoom_arr = array();
-    $rentRoom_arr["records"] = array();
-
     while($row = $stmt->fetch(PDO::FETCH_ASSOC))
     {
         //get the room data
@@ -58,19 +60,11 @@ if($num > 0)
         //push the room data into array
         array_push($rentRoom_arr["records"],$rentRoom_item);
     }
+}
+// set response code - 200 OK
+http_response_code(200);
 
-    // set response code - 200 OK
-    http_response_code(200);
-  
-    // show products data in json format
-    echo json_encode($rentRoom_arr);
-}
-  
-else{
-    // set response code - 404 Not found
-    http_response_code(404);
-  
-    // tell the user rentRoom does not exist
-    echo json_encode(array("message" => "rentRoom does not exist."));
-}
+// show products data in json format
+echo json_encode($rentRoom_arr);
+
 ?>

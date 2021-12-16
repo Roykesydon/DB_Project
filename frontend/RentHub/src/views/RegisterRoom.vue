@@ -559,6 +559,7 @@ export default {
           terrain 顯示基於地形信息的物理地圖。
         */
         mapTypeId: "roadmap",
+        disableDefaultUI: true,
       });
 
       // 放置marker

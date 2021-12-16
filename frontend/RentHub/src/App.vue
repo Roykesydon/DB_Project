@@ -213,7 +213,8 @@ export default {
   },
   methods: {
     signOut() {
-      this.$cookies.remove("accessKey");
+      this.$cookies.remove("token");
+      this.alreadyLogin = false;
       Vue.$toast.open({
         message: "登出成功! 重新導至首頁",
         type: "success",
@@ -224,8 +225,7 @@ export default {
       let _this = this;
       setTimeout(function () {
         _this.$router.push("/");
-      }, 2000);
-      this.alreadyLogin = false;
+      }, 2000);    
     },
     getProfileUrl() {
       return "/profile/" + "123456";
@@ -240,6 +240,7 @@ export default {
         .post("http://localhost:8000/api/login.php", userInfo)
         .then((res) => {
           if (res.data.success) {
+            console.log(res.data);
             Vue.$toast.open({
               message: "登入成功! 正在跳轉頁面",
               type: "success",
@@ -252,7 +253,7 @@ export default {
             setTimeout(function () {
               _this.$router.push("findRoom");
             }, 2000);
-            this.$cookies.set("accessKey", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
+            this.$cookies.set("token", res.data.token);
             this.alreadyLogin = true;
           } else {
             let errorMessage = res.data.message;

@@ -373,7 +373,7 @@ export default {
     // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.$config.GOOGLE-MAP-API-KEY )
     // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.googleMapAPI )
     console.log(this.$route.params["id"]);
-    this.isRoomOwner = false;
+    this.isRoomOwner = true;
     if (!this.isRoomOwner) {
       this.notOwnAddress = "測試地址";
       this.selectCity = "台北市";
@@ -883,6 +883,7 @@ export default {
           terrain 顯示基於地形信息的物理地圖。
         */
         mapTypeId: "roadmap",
+        disableDefaultUI: true,
       });
 
       // 放置marker

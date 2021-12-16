@@ -1,4 +1,6 @@
 docker-compose.yml
 /mysql
 /backend/initDB/config.yml
+/backend/files/profileImages/*
+/backend/files/roomImages/*
 /frontend/helloworld/public/config.json

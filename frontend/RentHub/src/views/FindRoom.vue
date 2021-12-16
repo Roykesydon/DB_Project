@@ -27,18 +27,18 @@
               attach
               chips
               label="城市"
-              v-model="selectTags"
+              v-model="selectCities"
               multiple
               outlined
               class="sc3"
               style="max-width: 220px; width: 220px"
             >
               <template v-slot:selection="{ item, index }">
-                <v-chip v-if="index === 0" label color="primary">
+                <v-chip v-if="index === 0"  color="primary">
                   <span>{{ item }}</span>
                 </v-chip>
                 <span v-if="index === 1" class="grey--text text-caption">
-                  (+{{ selectTags.length - 1 }} others)
+                  (+{{ selectCities.length - 1 }} others)
                 </span>
               </template></v-select
             >
@@ -51,11 +51,11 @@
               v-model="selectTags"
               multiple
               outlined
-              class="sc3"
+              class=""
               style="max-width: 220px; width: 220px"
             >
               <template v-slot:selection="{ item, index }">
-                <v-chip v-if="index === 0" label color="primary">
+                <v-chip v-if="index === 0"  color="primary">
                   <span>{{ item }}</span>
                 </v-chip>
                 <span v-if="index === 1" class="grey--text text-caption">
@@ -76,7 +76,7 @@
                 </div>
               </v-btn>
               <template #popper style="width=500px;">
-                <div class="ma-5">
+                <div>
                   <vue-range-slider
                     v-model="priceRange"
                     width="500px"
@@ -178,7 +178,8 @@ export default {
     keyWord: null,
     loading: false,
     page: 1,
-    selectTags: null,
+    selectTags: [],
+    selectCities: [],
     priceRange: [0, 20000],
     priceMin: 0,
     priceMax: 20000,
@@ -199,6 +200,7 @@ export default {
   }),
   mounted() {
     this.fetchTestData();
+    // console.log(document.getElementById("keyWord").value);
     // console.log(this.$cookies.isKey("user_session"));
     // console.log(this.$cookies.get("user_session"));
     // this.$cookies.set("user_session","25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");

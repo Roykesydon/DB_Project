@@ -1,4 +1,5 @@
 <template>
+  <!-- 我對於把幾乎所有東西都寫在 View 感到抱歉，這專案給的時間有點不足 -->
   <v-app :style="cssProps">
     <v-app-bar app color="primary" dark>
       <a href="/" class="block-link">
@@ -11,8 +12,8 @@
             transition="scale-transition"
             width="40"
           /> -->
-          <span class="text-h4 ml-6 white--text"> RentHub </span>
-        </div>
+        <span class="text-h4 ml-4 mr-2 white--text"> RentHub </span>
+        <!-- </div> -->
       </a>
       <v-btn class="ma-1" text href="/findRoom"> 找租屋處 </v-btn>
 
@@ -20,7 +21,7 @@
 
       <v-spacer></v-spacer>
       <div v-if="alreadyLogin">
-        <v-btn class="ma-1" text href="/profile"> 個人資料 </v-btn>
+        <v-btn class="ma-1" text :href="getProfileUrl()"> 個人資料 </v-btn>
         <v-btn class="ma-1" text @click="signOut()"> 登出 </v-btn>
       </div>
       <div v-if="!alreadyLogin">
@@ -47,10 +48,19 @@
           :ripple="false"
           @mousedown.stop=""
         >
+          <!-- <v-card
+            color="secondary"
+            style="z-index=-1;position: absolute; top:-50px; left:150px;"
+            width="80px"
+            height = "80px"
+          >
+            <v-icon x-large color="white" class="mx-auto" style="z-index=-1;position: absolute; top:20px; left:20px;"> mdi-account-plus </v-icon>
+          </v-card> -->
           <v-form ref="loginForm" v-model="signUpValid" lazy-validation>
             <v-text-field
               class="ma-3"
               label="信箱"
+              prepend-icon="mdi-email-outline"
               counter
               maxlength="50"
               :rules="[rules.required, rules.email]"
@@ -60,6 +70,7 @@
             <v-text-field
               class="ma-3"
               label="密碼"
+              prepend-icon="mdi-lock"
               :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
               :type="showPassword ? 'text' : 'password'"
               @click:append="showPassword = !showPassword"
@@ -93,6 +104,7 @@
             <v-text-field
               class="ma-3"
               label="帳號"
+              prepend-icon="mdi-account-circle-outline"
               v-model="account"
               counter
               :rules="[rules.required, rules.id]"
@@ -103,6 +115,7 @@
               class="ma-3"
               v-model="name"
               label="姓名"
+              prepend-icon="mdi-file-document-outline"
               counter
               :rules="[rules.required, rules.name]"
               maxlength="30"
@@ -113,6 +126,7 @@
               v-model="email"
               counter
               label="電子郵件"
+              prepend-icon="mdi-email-outline"
               maxlength="50"
               :rules="[rules.required, rules.email]"
               hide-details="auto"
@@ -124,6 +138,7 @@
               :rules="[rules.required, rules.phoneNumber]"
               maxlength="25"
               label="手機號碼"
+              prepend-icon="mdi-cellphone"
               hide-details="auto"
             ></v-text-field>
             <v-text-field
@@ -136,11 +151,13 @@
               :rules="[rules.required, rules.password]"
               maxlength="70"
               label="密碼"
+              prepend-icon="mdi-lock"
               hide-details="auto"
             ></v-text-field>
             <v-text-field
               class="ma-3"
               label="確認密碼"
+              prepend-icon="mdi-lock"
               :append-icon="showCheckPassword ? 'mdi-eye' : 'mdi-eye-off'"
               :type="showCheckPassword ? 'text' : 'password'"
               @click:append="showCheckPassword = !showCheckPassword"
@@ -172,6 +189,8 @@
 
 <script>
 import Vue from "vue";
+import * as CONFIG from "../public/config";
+
 export default {
   name: "App",
   mounted() {
@@ -205,6 +224,9 @@ export default {
         _this.$router.push("/");
       }, 2000);
       this.alreadyLogin = false;
+    },
+    getProfileUrl() {
+      return "/profile/" + "123456";
     },
     login() {
       if (!this.$refs.loginForm.validate()) return;
@@ -332,35 +354,7 @@ export default {
     },
   },
   data: () => ({
-    rules: {
-      required: (value) => !!value || "必填",
-      name: (v) => {
-        return (
-          (v != null && v.length >= 3 && v.length <= 30) || "必須介在 3~30 個字"
-        );
-      },
-      id: (v) => {
-        return (
-          (v != null && v.length >= 3 && v.length <= 50) || "必須介在 3~50 個字"
-        );
-      },
-      email: (value) => {
-        const pattern =
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return (value != null && pattern.test(value)) || "email 格式錯誤";
-      },
-      phoneNumber: (v) => {
-        return (
-          (v != null && v.length >= 10 && v.length <= 25) ||
-          "必須介在 10~25 個字"
-        );
-      },
-      password: (v) => {
-        return (
-          (v != null && v.length >= 8 && v.length <= 70) || "必須介在 8~70 個字"
-        );
-      },
-    },
+    rules: CONFIG.rules,
     signUpValid: false,
     loginOverlay: false,
     loginOrSignUp: 0,

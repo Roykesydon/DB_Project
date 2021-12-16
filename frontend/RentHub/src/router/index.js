@@ -35,7 +35,7 @@ const routes = [
     component: () => import( '../views/RegisterRoom.vue')
   },
   {
-    path: '/profile',
+    path: '/profile/:id',
     name: 'profile',
     component: () => import( '../views/Profile.vue')
   },

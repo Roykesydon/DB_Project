@@ -1,29 +1,96 @@
 <template>
   <v-card class="my-15 mx-auto px-10 py-5" max-width="70%" height="85%">
     <v-container class="fill-height">
-      <v-row class="fill-height" height="100%" width="50%" style="width: 50%">
+      <v-row class="fill-height" height="100%" width="50%">
         <v-col md="5">
           <div style="height: 100%">
             <v-row>
               <v-col cols="12">
                 <v-img
-                  src="https://picsum.photos/510/300?random"
+                  src="../assets/blank-profile-picture.png"
                   aspect-ratio="1"
-                  max-height="250px"
-                  max-width="250px"
+                  height="250px"
+                  width="250px"
                   id="profileImg"
                   class="mx-auto my-auto"
                 ></v-img>
               </v-col>
             </v-row>
-            <div class="text-h4 my-3" style="text-align: center">
+            <div
+              class="text-h4 my-3"
+              style="text-align: center"
+              v-if="isSelfProfile"
+            >
               {{ name }}
             </div>
             <v-divider class="my-7"></v-divider>
             <div>
-              <div class="text-h5 text-truncate">電話：{{ phone_number }}</div>
-
-              <div class="text-h5 text-truncate">信箱：{{ email }}</div>
+              <v-row>
+                <v-col cols="3" class="my-auto align-end">
+                  <div class="text-h5 text-lg-right">電話：</div>
+                </v-col>
+                <v-col cols="9" v-if="!isSelfProfile">
+                  <v-text-field
+                    class="ma-3 my-auto"
+                    v-model="phone_number"
+                    counter
+                    :rules="[rules.required, rules.phoneNumber]"
+                    maxlength="25"
+                    hide-details="auto"
+                    readonly
+                  ></v-text-field>
+                  </v-col
+                >
+                <v-col cols="9" v-if="isSelfProfile">
+                  <v-text-field
+                    class="ma-3 my-auto"
+                    v-model="phone_number"
+                    counter
+                    :rules="[rules.required, rules.phoneNumber]"
+                    maxlength="25"
+                    hide-details="auto"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3" class="my-auto">
+                  <div class="text-h5 text-lg-right">信箱：</div>
+                </v-col>
+                <v-col cols="9">
+                  <v-text-field
+                    class="ma-3 my-auto"
+                    v-model="email"
+                    counter
+                    readonly
+                    :rules="[rules.required, rules.phoneNumber]"
+                    maxlength="50"
+                    hide-details="auto"
+                  ></v-text-field
+                ></v-col>
+              </v-row>
+              <v-row v-if="isSelfProfile">
+                <v-col cols="3">
+                  <div class="text-h5 text-lg-right">頭像：</div>
+                </v-col>
+                <v-col cols="9">
+                  <v-file-input
+                    label="上傳照片(可選取多張)"
+                    outlined
+                    dense
+                    multiple
+                    class="my-auto"
+                    :rules="[rules.arrayRequired]"
+                    accept="image/png, image/jpeg, image/bmp"
+                    v-model="uploadPictures"
+                  ></v-file-input
+                ></v-col>
+              </v-row>
+            </div>
+            <div class="d-flex align-end" style="height: 80px" v-if="isSelfProfile">
+              <v-spacer></v-spacer>
+              <v-btn color="primary" x-large dark style="float: right">
+                更新資料
+              </v-btn>
             </div>
           </div>
         </v-col>
@@ -89,7 +156,15 @@
                             <div class="text-h5 ma-3 mb-0 text-truncate">
                               {{ item.title }}
                             </div>
-                            <div class="text-h7 ma-3 mt-0 grey--text text--lighten-1">
+                            <div
+                              class="
+                                text-h7
+                                ma-3
+                                mt-0
+                                grey--text
+                                text--lighten-1
+                              "
+                            >
                               {{ item.cost }} 元/月
                             </div>
                           </span>
@@ -119,6 +194,7 @@
 
 <script>
 import { Carousel, Slide } from "vue-carousel";
+import * as CONFIG from "../../public/config";
 export default {
   name: "Profile",
 
@@ -130,8 +206,10 @@ export default {
   mounted() {},
 
   data: () => ({
+    isSelfProfile: false,
     name: "Roykesydone",
-    phone_number: "123456789",
+    rules: CONFIG.rules,
+    phone_number: "12345678910",
     email: "haha@jaskdjaks.com",
     benched: 20,
     items: [

@@ -39,19 +39,49 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") :
 else :
     // $files = $data->files;
 
-    $returnData = msg(0, 422, $_POST['user_ID'] . $_FILES["file"]["name"]);
+    $returnData = msg(0, 422, $_POST['user_ID'] . $_FILES["file1"]["name"]);
 
+     # 取得上傳檔案數量
+     $fileCount = count($_FILES['file1']['name']);
 
-    $uploaddir = '../files/roomImages/';
-    // // $target_file = $target_dir . basename($_FILES["unknown.png"]["name"]);
-    // // unknown.png
-    $uploadfile = $uploaddir . basename($_FILES["file1"]["name"]);
-    if (move_uploaded_file($_FILES["file1"]['tmp_name'], $uploadfile)) {
-        //     // if (getimagesize($_FILES["file"]["tmp_name"])) {
-        $returnData = msg(0, 422, $_POST['user_ID'] . "File successfully uploaded.\n");
-    } else {
-        $returnData = msg(0, 422, "File upload fail\n");
-    }
+     for ($i = 0; $i < $fileCount; $i++) {
+         # 檢查檔案是否上傳成功
+         if ($_FILES['file1']['error'][$i] === UPLOAD_ERR_OK)
+         {
+           echo '檔案名稱: ' . $_FILES['file1']['name'][$i] . ".\n";
+           echo '檔案類型: ' . $_FILES['file1']['type'][$i] . ".\n";
+           echo '檔案大小: ' . ($_FILES['file1']['size'][$i] / 1024) . "KB\n";
+           echo '暫存名稱: ' . $_FILES['file1']['tmp_name'][$i] . ".\n";
+ 
+           $uploaddir = "../files/roomImages/";
+       
+           # 檢查檔案是否已經存在
+           if (file_exists($uploaddir . $_FILES['file1']['name'][$i]))
+           {
+             $returnData = msg(0, 422, $_POST['user_ID'] . "file has already existed");
+           } else {
+             $file = $_FILES['file1']['tmp_name'][$i];
+             $dest = $uploaddir . $_FILES['file1']['name'][$i];
+       
+             # 將檔案移至指定位置
+             move_uploaded_file($file, $dest);
+             $returnData = msg(1, 201, $_POST['user_ID'] . "File successfully uploaded.\n");
+           }
+         } else {
+           $returnData = msg(0, 503, $_POST['user_ID'] . $_FILES['file1']['error']);
+         }
+
+        }
+    // $uploaddir = '../files/roomImages/';
+    // // // $target_file = $target_dir . basename($_FILES["unknown.png"]["name"]);
+    // // // unknown.png
+    // $uploadfile = $uploaddir . basename($_FILES["file1"]["name"]);
+    // if (move_uploaded_file($_FILES["file1"]['tmp_name'], $uploadfile)) {
+    //     //     // if (getimagesize($_FILES["file"]["tmp_name"])) {
+    //     $returnData = msg(0, 422, $_POST['user_ID'] . "File successfully uploaded.\n");
+    // } else {
+    //     $returnData = msg(0, 422, "File upload fail\n");
+    // }
 // // Do the work for each file
 
 // echo $files;

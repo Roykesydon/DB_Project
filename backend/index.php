@@ -4,9 +4,19 @@ echo "testing\n";
 
 $data = array();
 
+echo "index 3 value:" . $data[3];
+
+if(!isset($data[3]))
+echo "\nthe value is null";
+
+$test = $data[3];
+
+if(!isset($test))
+echo "\nthe test value is null";
+
 $tt = null;
 
-echo "tt's value = " . $tt . "\n";
+echo "\ntt's value = " . $tt . "\n";
 
 $data["ttt"] = array();
 

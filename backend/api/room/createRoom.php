@@ -54,13 +54,13 @@ else
     //create data array
     $data = json_decode(file_get_contents("php://input"),true);
 
-    echo "Test Auth\n";
+    // echo "Test Auth\n";
 
     if($auth->isAuth())
     {
         // enter here if is log in
         $returnData = $auth->isAuth();
-        echo "以".$returnData['user']['user_ID']."登入\n";
+        // echo "以".$returnData['user']['user_ID']."登入\n";
         // write code below
 
         //now User's user_ID
@@ -80,7 +80,7 @@ else
             $count = $row['roomCount'] + 1;
             $room_ID = $count;
 
-            echo "\ncalculate room ID\n";
+            // echo "\ncalculate room ID\n";
             $allUserRoomID = "SELECT `room_ID` FROM `rentRoom`;";
             $allUserRoomIDStmt = $db->prepare($allUserRoomID);
             $allUserRoomIDStmt->execute();
@@ -108,7 +108,7 @@ else
             $room_ID = 1;
         }
 
-        echo "The room_ID is: " . $room_ID . ".\n";
+        // echo "The room_ID is: " . $room_ID . ".\n";
         //check whether the room has created
         $checkRoom = "SELECT `room_ID` FROM `rentRoom` WHERE `room_ID` = ?;";
         $checkRoomStmt = $db->prepare($checkRoom);
@@ -138,14 +138,17 @@ else
                 !empty($data["room_city"]) &&
                 $fileCount > 0)
             {
-                if(strlen($data["room_name"]) < 2 || strlen($data["room_name"]) > 25)
-                    echo json_encode(array("message" => "Room_name must be >= 2 and <= 25.\n"));
-                else if(strlen($data["address"]) < 6 || strlen($data["address"]) > 50)
-                    echo json_encode(array("message" => "Address must be >= 6 and <= 50.\n"));
+                // echo mb_strlen($data["room_name"],'utf-8');
+                // echo mb_strlen($data["address"],'utf-8');
+                // echo mb_strlen($data["room_city"],'utf-8');
+                if(mb_strlen($data["room_name"],'utf-8') < 1 || mb_strlen($data["room_name"],'utf-8') > 25)
+                    echo json_encode(array("success" => "0","message" => "Room_name must be >= 1 and <= 25."));
+                else if(mb_strlen($data["address"],'utf-8') < 1 || mb_strlen($data["address"],'utf-8') > 50)
+                    echo json_encode(array("success" => "0","message" => "Address must be >= 1 and <= 50."));
                 else if($data["cost"] < 0)
-                    echo json_encode(array("message" => "The cost must be positive!\n"));
-                else if(strlen($data["room_city"]) < 2 || strlen($data["room_city"]) > 20)
-                    echo json_encode(array("message" => "City must be >= 2 and <= 20.\n"));
+                    echo json_encode(array("success" => "0","message" => "The cost must be positive!"));
+                else if(mb_strlen($data["room_city"],'utf-8') < 1 || mb_strlen($data["room_city"],'utf-8') > 20)
+                    echo json_encode(array("success" => "0","message" => "City must be >= 1 and <= 20."));
                 else{
                     
                     //create room
@@ -164,7 +167,7 @@ else
                         "elevator" => 0,
                     );
                     //set the services
-                    echo "tag count : " . count($data["tag"]);
+                    // echo "tag count : " . count($data["tag"]);
                     for($i=0;$i < count($data["tag"]);$i++)
                     {
                         $service[$data["tag"][$i]] = 1;
@@ -179,7 +182,7 @@ else
                     {
                         if($data["files"][$i] > 300)
                         {
-                            echo json_encode(array("message" => "Unable to create Picture" . $data["files"][$i] . ".Because the picture file name is too long.\n"));
+                            echo json_encode(array("success" => "0","message" => "Unable to create Picture" . $data["files"][$i] . ".Because the picture file name is too long.\n"));
                         }
                         else
                         {
@@ -241,115 +244,96 @@ else
                     $roomService->can_keep_pet = $service["can_keep_pet"];
                     $roomService->elevator = $service["elevator"];
 
+                    //Initiates the transaction
+                    $db->beginTransaction();
+
                     //put data into database
-
                     //create the room
-                    if($rentRoom->createRoom())
-                    {
-                        // set response code - 201 created
-                        http_response_code(201);
-                
-                        // tell the user
-                        echo json_encode(array("message" => "Room was created."));
-                    }
-                    // if unable to create the room, tell the user
-                    else
-                    {
-                        // set response code - 503 service unavailable
-                        http_response_code(503);
-                
-                        // tell the user
-                        echo json_encode(array("message" => "Unable to create room."));
-                    }
-                    echo "createRoom OK!\n";
+                    try{
 
-                    //create the roomPicture
-                    if($roomPicture->createRoomPicture())
-                    {
-                        // set response code - 201 created
-                        http_response_code(201);
+                        if($rentRoom->createRoom())
+                        {
+                            // set response code - 201 created
+                            http_response_code(201);
                     
-                        // tell the user
-                        echo json_encode(array("message" => "RoomPicture was created."));
-                    }
-                    // if unable to create the Picture, tell the user
-                    else
-                    {
-                        // set response code - 503 service unavailable
-                        http_response_code(503);
+                            // tell the user
+                            echo json_encode(array("success" => "1","message" => "Roominfo was created.")) . "\n";
+                        }
+
+                        //create the roomPicture
+                        if($roomPicture->createRoomPicture())
+                        {
+                            // set response code - 201 created
+                            http_response_code(201);
+                        
+                            // tell the user
+                            echo json_encode(array("success" => "1","message" => "RoomPicture was created.")) . "\n";
+                        }
+
+                        //create the roomQueue
+                        if($roomQueue->createRoomQueue())
+                        {
+                            // set response code - 201 created
+                            http_response_code(201);
+                    
+                            // tell the user
+                            echo json_encode(array("success" => "1","message" => "roomQueue was created.")) . "\n";
+                        }
+
+                        //create the roomService
+                        if($roomService->createRoomService())
+                        {
+                            // set response code - 201 created
+                            http_response_code(201);
             
-                        // tell the user
-                        echo json_encode(array("message" => "Unable to create roomPicture."));
-                    }
-
-                    //create the roomQueue
-                    if($roomQueue->createRoomQueue())
-                    {
-                        // set response code - 201 created
-                        http_response_code(201);
-                
-                        // tell the user
-                        echo json_encode(array("message" => "roomQueue was created."));
-                    }
-                    // if unable to create the roomQueue
-                    else
-                    {
-                        // set response code - 503 service unavailable
-                        http_response_code(503);
-                
-                        // tell the user
-                        echo json_encode(array("message" => "Unable to create roomQueue."));
-                    }
-
-                    //create the roomService
-                    if($roomService->createRoomService())
-                    {
-                        // set response code - 201 created
-                        http_response_code(201);
-        
-                        // tell the user
-                        echo json_encode(array("message" => "roomService was created."));
-                    }
-                    // if unable to create the roomService
-                    else
-                    {
-                        // set response code - 503 service unavailable
-                        http_response_code(503);
-        
-                        // tell the user
-                        echo json_encode(array("message" => "Unable to create roomService."));
-                    }
-
-                    for ($i = 0; $i < $fileCount; $i++) {
-                        # 檢查檔案是否上傳成功
-                        if ($_FILES['file1']['error'][$i] === UPLOAD_ERR_OK)
-                        {
-                        // echo '檔案名稱: ' . $_FILES['file1']['name'][$i] . ".\n";
-                        // echo '檔案類型: ' . $_FILES['file1']['type'][$i] . ".\n";
-                        // echo '檔案大小: ' . ($_FILES['file1']['size'][$i] / 1024) . "KB\n";
-                        // echo '暫存名稱: ' . $_FILES['file1']['tmp_name'][$i] . ".\n";
-                
-                        $uploaddir = dirname(dirname(dirname(__FILE__))) . "/files/roomImages/";
-                    
-                        # 檢查檔案是否已經存在
-                        if (file_exists($uploaddir . $_FILES['file1']['name'][$i]))
-                        {
-                            echo json_encode(array("message" => "file has already existed."));
-                            // $returnData = msg(0, 422, $_POST['user_ID'] . "file has already existed");
-                        } else {
-                            $file = $_FILES['file1']['tmp_name'][$i];
-                            $dest = $uploaddir . $_FILES['file1']['name'][$i];
-                    
-                            # 將檔案移至指定位置
-                            move_uploaded_file($file, $dest);
-                            echo json_encode(array("message" => $thisUser . "File successfully uploaded."));
-                            // $returnData = msg(1, 201, $_POST['user_ID'] . "File successfully uploaded.\n");
-                        }
-                        } else {
-                            echo json_encode(array("message" => $thisUser . "failed upload."));
+                            // tell the user
+                            echo json_encode(array("success" => "1","message" => "roomService was created.")) . "\n";
                         }
 
+                        //上傳圖片檔到server端
+                        for ($i = 0; $i < $fileCount; $i++) {
+                            # 檢查檔案是否上傳成功
+                            if ($_FILES['file1']['error'][$i] === UPLOAD_ERR_OK)
+                            {
+                                // echo '檔案名稱: ' . $_FILES['file1']['name'][$i] . ".\n";
+                                // echo '檔案類型: ' . $_FILES['file1']['type'][$i] . ".\n";
+                                // echo '檔案大小: ' . ($_FILES['file1']['size'][$i] / 1024) . "KB\n";
+                                // echo '暫存名稱: ' . $_FILES['file1']['tmp_name'][$i] . ".\n";
+                        
+                                $uploaddir = dirname(dirname(dirname(__FILE__))) . "/files/roomImages/";
+                            
+                                # 檢查檔案是否已經存在
+                                if (file_exists($uploaddir . $_FILES['file1']['name'][$i]))
+                                {
+                                    echo json_encode(array("success" => "0","message" => $_FILES['file1']['name'][$i] . " has already existed."));
+                                    // $returnData = msg(0, 422, $_POST['user_ID'] . "file has already existed");
+                                } else {
+                                    $file = $_FILES['file1']['tmp_name'][$i];
+                                    $dest = $uploaddir . $_FILES['file1']['name'][$i];
+                            
+                                    # 將檔案移至指定位置
+                                    move_uploaded_file($file, $dest);
+                                    echo json_encode(array("success" => "1","message" => $thisUser . "File successfully uploaded."));
+                                    // $returnData = msg(1, 201, $_POST['user_ID'] . "File successfully uploaded.\n");
+                                }
+                            } else {
+                                echo json_encode(array("success" => "0","message" => $thisUser . "failed upload."));
+                            }
+    
+                        }
+
+                        //commit the transaction
+                        $db->commit();
+
+                    }catch(PDOException $e)
+                    {
+                        http_response_code(503);
+                        echo $e->getMessage() . "\n";
+                        echo json_encode(array("success" => "0","message" => "Unable to create whole room.")) . "\n";
+                        //Rolls back the transaction
+                        $db->rollBack();
                     }
+
                 }
             }
             else
@@ -358,7 +342,7 @@ else
                 http_response_code(400);
             
                 // tell the user
-                echo json_encode(array("message" => "Unable to create room. Data is incomplete."));
+                echo json_encode(array("success" => "0","message" => "Unable to create room. Data is incomplete."));
             }
             // }else{
             //     echo json_encode(array("message" => "You can't create this room!!!"));

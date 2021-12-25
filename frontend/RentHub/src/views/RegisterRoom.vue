@@ -23,7 +23,7 @@
                 outlined
                 clearable
                 v-model="address"
-                :rules="[rules.required]"
+                :rules="[rules.required, rules.address0]"
               ></v-text-field>
             </div>
             <div class="d-flex mb-5">
@@ -42,14 +42,14 @@
                 placeholder="名稱"
                 readonly
                 outlined
-                :rules=[rules.required]
+                :rules=[rules.required,rules.roomName]
                 v-model="roomName"
               ></v-text-field>
               <v-text-field
                 class=""
                 label="月租"
                 placeholder="月租"
-                :rules=[rules.required]
+                :rules=[rules.required,rules.cost]
                 readonly
                 outlined
                 v-model="roomCost"

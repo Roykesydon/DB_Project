@@ -54,13 +54,13 @@ else
     //create data array
     $data = json_decode(file_get_contents("php://input"),true);
 
-    echo "Test Auth\n";
+    // echo "Test Auth\n";
 
     if($auth->isAuth())
     {
         // enter here if is log in
         $returnData = $auth->isAuth();
-        echo "以".$returnData['user']['user_ID']."登入\n";
+        // echo "以".$returnData['user']['user_ID']."登入\n";
         // write code below
 
         //now User's user_ID
@@ -80,7 +80,7 @@ else
             $count = $row['roomCount'] + 1;
             $room_ID = $count;
 
-            echo "\ncalculate room ID\n";
+            // echo "\ncalculate room ID\n";
             $allUserRoomID = "SELECT `room_ID` FROM `rentRoom`;";
             $allUserRoomIDStmt = $db->prepare($allUserRoomID);
             $allUserRoomIDStmt->execute();
@@ -97,7 +97,7 @@ else
             }
             while(in_array($room_ID,$allRoomIDArray['room_ID']))
             {
-                echo "enter count while loop\n";
+                // echo "enter count while loop\n";
                 $count = $count + 1;
                 $room_ID = $count;
             }
@@ -108,7 +108,7 @@ else
             $room_ID = 1;
         }
 
-        echo "The room_ID is: " . $room_ID . ".\n";
+        // echo "The room_ID is: " . $room_ID . ".\n";
         //check whether the room has created
         $checkRoom = "SELECT `room_ID` FROM `rentRoom` WHERE `room_ID` = ?;";
         $checkRoomStmt = $db->prepare($checkRoom);
@@ -164,7 +164,7 @@ else
                         "elevator" => 0,
                     );
                     //set the services
-                    echo "tag count : " . count($data["tag"]);
+                    // echo "tag count : " . count($data["tag"]);
                     for($i=0;$i < count($data["tag"]);$i++)
                     {
                         $service[$data["tag"][$i]] = 1;

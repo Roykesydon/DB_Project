@@ -94,7 +94,7 @@ class RentRoom{
             // prepare query statement
             $stmt = $this->conn->prepare($query);
             //bind Param to the corresponding question mark placeholder
-            $stmt->bindParam(1,$this->room_ID);
+            $stmt->bindValue(1,0);
             $stmt->bindParam(2,$this->user_ID);
             $stmt->bindParam(3,$this->room_name);
             $stmt->bindParam(4,$this->address);

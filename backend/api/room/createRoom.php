@@ -42,6 +42,9 @@ $returnData = [
     "message" => "Unauthorized"
 ];
 
+$cityList = array("新北市","臺北市","桃園市","臺中市","臺南市","高雄市","新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣","臺東縣","澎湖縣","金門縣","連江縣","基隆市","新竹市","嘉義市");
+// $tagList = array("Wi-Fi","有線網路","電視","冰箱","停車位","冷氣","洗衣機","開伙","養寵物","電梯");
+
 
 // IF REQUEST METHOD IS NOT EQUAL TO POST
 if ($_SERVER["REQUEST_METHOD"] != "POST") 
@@ -54,7 +57,6 @@ else
     //create data array
     $data = json_decode(file_get_contents("php://input"),true);
 
-    // echo "Test Auth\n";
 
     if($auth->isAuth())
     {
@@ -70,66 +72,67 @@ else
         // $user_ID = $returnData['user']['user_ID'];
 
         //calculate the room_ID
-        $userRoomCount = "SELECT COUNT(DISTINCT `room_ID`) as `roomCount` FROM `rentRoom`;";
-        $userRoomCountStmt = $db->prepare($userRoomCount);
-        $userRoomCountStmt->execute();
+        // $userRoomCount = "SELECT COUNT(DISTINCT `room_ID`) as `roomCount` FROM `rentRoom`;";
+        // $userRoomCountStmt = $db->prepare($userRoomCount);
+        // $userRoomCountStmt->execute();
 
-        $row = $userRoomCountStmt->fetch(PDO::FETCH_ASSOC);
-        if($row)
-        {
-            $count = $row['roomCount'] + 1;
-            $room_ID = $count;
+        // $row = $userRoomCountStmt->fetch(PDO::FETCH_ASSOC);
+        // if($row)
+        // {
+        //     $count = $row['roomCount'] + 1;
+        //     $room_ID = $count;
 
-            // echo "\ncalculate room ID\n";
-            $allUserRoomID = "SELECT `room_ID` FROM `rentRoom`;";
-            $allUserRoomIDStmt = $db->prepare($allUserRoomID);
-            $allUserRoomIDStmt->execute();
+        //     // echo "\ncalculate room ID\n";
+        //     $allUserRoomID = "SELECT `room_ID` FROM `rentRoom`;";
+        //     $allUserRoomIDStmt = $db->prepare($allUserRoomID);
+        //     $allUserRoomIDStmt->execute();
 
 
-            $allUserRoomIDResult = $allUserRoomIDStmt->fetchAll(PDO::FETCH_ASSOC);
-            $allRoomIDArray = array(
-                "room_ID" => array()
-            );
+        //     $allUserRoomIDResult = $allUserRoomIDStmt->fetchAll(PDO::FETCH_ASSOC);
+        //     $allRoomIDArray = array(
+        //         "room_ID" => array()
+        //     );
 
-            for($i=0 ; $i<count($allUserRoomIDResult) ; $i++)
-            {
-                $allRoomIDArray["room_ID"][$i] = $allUserRoomIDResult[$i]['room_ID'];
-            }
-            while(in_array($room_ID,$allRoomIDArray['room_ID']))
-            {
-                echo "enter count while loop\n";
-                $count = $count + 1;
-                $room_ID = $count;
-            }
-        }
-        else
-        {
-            // $room_ID = $thisUser . "_1";
-            $room_ID = 1;
-        }
+        //     for($i=0 ; $i<count($allUserRoomIDResult) ; $i++)
+        //     {
+        //         $allRoomIDArray["room_ID"][$i] = $allUserRoomIDResult[$i]['room_ID'];
+        //     }
+        //     while(in_array($room_ID,$allRoomIDArray['room_ID']))
+        //     {
+        //         // echo "enter count while loop\n";
+        //         $count = $count + 1;
+        //         $room_ID = $count;
+        //     }
+        // }
+        // else
+        // {
+        //     // $room_ID = $thisUser . "_1";
+        //     $room_ID = 1;
+        // }
 
         // echo "The room_ID is: " . $room_ID . ".\n";
         //check whether the room has created
-        $checkRoom = "SELECT `room_ID` FROM `rentRoom` WHERE `room_ID` = ?;";
-        $checkRoomStmt = $db->prepare($checkRoom);
-        $checkRoomStmt->bindValue(1,$room_ID);
-        $checkRoomStmt->execute();
+        // $checkRoom = "SELECT `room_ID` FROM `rentRoom` WHERE `room_ID` = ?;";
+        // $checkRoomStmt = $db->prepare($checkRoom);
+        // $checkRoomStmt->bindValue(1,$room_ID);
+        // $checkRoomStmt->execute();
 
-        //check whether the room has created
-        if($checkRoomStmt->rowCount() > 0)
-        {
-            echo json_encode(array("message" => "Unable to create room.Because the room has created."));
-        }
-        else{
+        // //check whether the room has created
+        // if($checkRoomStmt->rowCount() > 0)
+        // {
+        //     echo json_encode(array("success" => 0,"message" => "Unable to create room.Because the room has created."));
+        // }
+        // else{
             //Authentication
 
             # 取得上傳檔案數量
             $fileCount = count($_FILES['file1']['name']);
+            $fileCount = 1;
 
             // if(strcmp($thisUser,$user_ID) == 0)
             // {   
 
-            if( //check not null
+            if( //check value not null
                 !empty($data["room_name"]) && 
                 !empty($data["address"]) &&
                 !empty($data["cost"]) &&
@@ -142,32 +145,36 @@ else
                 // echo mb_strlen($data["address"],'utf-8');
                 // echo mb_strlen($data["room_city"],'utf-8');
                 if(mb_strlen($data["room_name"],'utf-8') < 1 || mb_strlen($data["room_name"],'utf-8') > 25)
-                    echo json_encode(array("success" => "0","message" => "Room_name must be >= 1 and <= 25."));
+                    echo json_encode(array("success" => 0,"message" => "Room_name must be >= 1 and <= 25."));
                 else if(mb_strlen($data["address"],'utf-8') < 1 || mb_strlen($data["address"],'utf-8') > 50)
-                    echo json_encode(array("success" => "0","message" => "Address must be >= 1 and <= 50."));
+                    echo json_encode(array("success" => 0,"message" => "Address must be >= 1 and <= 50."));
                 else if($data["cost"] < 0)
-                    echo json_encode(array("success" => "0","message" => "The cost must be positive!"));
-                else if(mb_strlen($data["room_city"],'utf-8') < 1 || mb_strlen($data["room_city"],'utf-8') > 20)
-                    echo json_encode(array("success" => "0","message" => "City must be >= 1 and <= 20."));
+                    echo json_encode(array("success" => 0,"message" => "The cost must be positive!"));
+                else if(!in_array($data["room_city"],$cityList))
+                    echo json_encode(array("success" => 0,"message" => "City must be in citylist."));
+                else if($data["room_latitude"] < -90.0 || $data["room_latitude"] > 90.0)
+                    echo json_encode(array("success" => 0,"message" => "Latitude must be > -90.0 and < 90.0"));
+                else if($data["room_longtitude"] < -180.0 || $data["room_longtitude"] > 180.0)
+                    echo json_encode(array("success" => 0,"message" => "Longtitude must be > -180.0 and < 180.0"));
                 else{
                     
                     //create room
 
                     //initiate the services
                     $service = array(
-                        "wifi" => 0,
-                        "internet" => 0,
-                        "tv" => 0,
-                        "refrigerator" => 0,
-                        "parking" => 0,
-                        "ac" => 0,
-                        "washing_machine" => 0,
-                        "can_cooking" => 0,
-                        "can_keep_pet" => 0,
-                        "elevator" => 0,
+                        "Wi-Fi" => 0,
+                        "有線網路" => 0,
+                        "電視" => 0,
+                        "冰箱" => 0,
+                        "停車位" => 0,
+                        "冷氣" => 0,
+                        "洗衣機" => 0,
+                        "開伙" => 0,
+                        "養寵物" => 0,
+                        "電梯" => 0,
                     );
-                    //set the services
                     // echo "tag count : " . count($data["tag"]);
+                    //set the services
                     for($i=0;$i < count($data["tag"]);$i++)
                     {
                         $service[$data["tag"][$i]] = 1;
@@ -177,12 +184,15 @@ else
 
                     //initiate roomPicture 
                     $roomPictureURLs = array();
+                    //save the file name that is too long
+                    $nameTooLong = array();
                     //set roomPictureURLs
                     for($i=0;$i<count($data["files"]);$i++)
                     {
-                        if($data["files"][$i] > 300)
+                        if(mb_strlen($data["files"][$i],'utf-8') > 300)
                         {
-                            echo json_encode(array("success" => "0","message" => "Unable to create Picture" . $data["files"][$i] . ".Because the picture file name is too long.\n"));
+                            echo json_encode(array("success" => 0,"message" => "Unable to create Picture" . $data["files"][$i] . ".Because the picture file name is too long.")) . "\n";
+                            array_push($nameTooLong,$data["files"][$i]);
                         }
                         else
                         {
@@ -192,7 +202,7 @@ else
 
 
                     //set room property values
-                    $rentRoom->room_ID = $room_ID;
+                    // $rentRoom->room_ID = $room_ID;
                     $rentRoom->user_ID = $thisUser;
                     $rentRoom->room_name = $data["room_name"];
                     $rentRoom->address = $data["address"];
@@ -208,41 +218,41 @@ else
                     // echo var_dump($rentRoom);
 
                     //set roomPicture property values
-                    $roomPicture->room_ID = $room_ID;
-                    $roomPicture->pictureURL_one = $roomPictureURLs[0];
-                    $roomPicture->pictureURL_two = $roomPictureURLs[1];
-                    $roomPicture->pictureURL_three = $roomPictureURLs[2];
-                    $roomPicture->pictureURL_four = $roomPictureURLs[3];
-                    $roomPicture->pictureURL_five = $roomPictureURLs[4];
-                    $roomPicture->pictureURL_six = $roomPictureURLs[5];
-                    $roomPicture->pictureURL_seven = $roomPictureURLs[6];
-                    $roomPicture->pictureURL_eight = $roomPictureURLs[7];
+                    // $roomPicture->room_ID = $room_ID;
+                    // $roomPicture->pictureURL_one = $roomPictureURLs[0];
+                    // $roomPicture->pictureURL_two = $roomPictureURLs[1];
+                    // $roomPicture->pictureURL_three = $roomPictureURLs[2];
+                    // $roomPicture->pictureURL_four = $roomPictureURLs[3];
+                    // $roomPicture->pictureURL_five = $roomPictureURLs[4];
+                    // $roomPicture->pictureURL_six = $roomPictureURLs[5];
+                    // $roomPicture->pictureURL_seven = $roomPictureURLs[6];
+                    // $roomPicture->pictureURL_eight = $roomPictureURLs[7];
 
                     //set roomQueue property values
-                    $roomQueue->room_ID = $room_ID;
-                    $roomQueue->user_ID_one = $data["user_ID_one"];
-                    $roomQueue->user_ID_two = $data["user_ID_two"];
-                    $roomQueue->user_ID_three = $data["user_ID_three"];
-                    $roomQueue->user_ID_four = $data["user_ID_four"];
-                    $roomQueue->user_ID_five = $data["user_ID_five"];
-                    $roomQueue->user_ID_six = $data["user_ID_six"];
-                    $roomQueue->user_ID_seven = $data["user_ID_seven"];
-                    $roomQueue->user_ID_eight = $data["user_ID_eight"];
-                    $roomQueue->user_ID_nine = $data["user_ID_nine"];
-                    $roomQueue->user_ID_ten = $data["user_ID_ten"];
+                    // $roomQueue->room_ID = $room_ID;
+                    // $roomQueue->user_ID_one = $data["user_ID_one"];
+                    // $roomQueue->user_ID_two = $data["user_ID_two"];
+                    // $roomQueue->user_ID_three = $data["user_ID_three"];
+                    // $roomQueue->user_ID_four = $data["user_ID_four"];
+                    // $roomQueue->user_ID_five = $data["user_ID_five"];
+                    // $roomQueue->user_ID_six = $data["user_ID_six"];
+                    // $roomQueue->user_ID_seven = $data["user_ID_seven"];
+                    // $roomQueue->user_ID_eight = $data["user_ID_eight"];
+                    // $roomQueue->user_ID_nine = $data["user_ID_nine"];
+                    // $roomQueue->user_ID_ten = $data["user_ID_ten"];
 
                     //set roomService property values
-                    $roomService->room_ID = $room_ID;
-                    $roomService->wifi = $service["wifi"];
-                    $roomService->internet = $service["internet"];
-                    $roomService->tv = $service["tv"];
-                    $roomService->refrigerator = $service["refrigerator"];
-                    $roomService->parking = $service["parking"];
-                    $roomService->ac = $service["ac"];
-                    $roomService->washing_machine = $service["washing_machine"];
-                    $roomService->can_cooking = $service["can_cooking"];
-                    $roomService->can_keep_pet = $service["can_keep_pet"];
-                    $roomService->elevator = $service["elevator"];
+                    // $roomService->room_ID = $room_ID;
+                    // $roomService->wifi = $service["wifi"];
+                    // $roomService->internet = $service["internet"];
+                    // $roomService->tv = $service["tv"];
+                    // $roomService->refrigerator = $service["refrigerator"];
+                    // $roomService->parking = $service["parking"];
+                    // $roomService->ac = $service["ac"];
+                    // $roomService->washing_machine = $service["washing_machine"];
+                    // $roomService->can_cooking = $service["can_cooking"];
+                    // $roomService->can_keep_pet = $service["can_keep_pet"];
+                    // $roomService->elevator = $service["elevator"];
 
                     //Initiates the transaction
                     $db->beginTransaction();
@@ -257,37 +267,77 @@ else
                             http_response_code(201);
                     
                             // tell the user
-                            echo json_encode(array("success" => "1","message" => "Roominfo was created.")) . "\n";
+                            echo json_encode(array("success" => 1,"message" => "Roominfo was created.")) . "\n";
                         }
+                        echo "last insert ID: " . $db->lastInsertId() . "\n";
+                        $room_ID = $db->lastInsertId();
 
                         //create the roomPicture
+
+                        //set roomPicture property values
+                        $roomPicture->room_ID = $room_ID;
+                        $roomPicture->pictureURL_one = $roomPictureURLs[0];
+                        $roomPicture->pictureURL_two = $roomPictureURLs[1];
+                        $roomPicture->pictureURL_three = $roomPictureURLs[2];
+                        $roomPicture->pictureURL_four = $roomPictureURLs[3];
+                        $roomPicture->pictureURL_five = $roomPictureURLs[4];
+                        $roomPicture->pictureURL_six = $roomPictureURLs[5];
+                        $roomPicture->pictureURL_seven = $roomPictureURLs[6];
+                        $roomPicture->pictureURL_eight = $roomPictureURLs[7];
+
                         if($roomPicture->createRoomPicture())
                         {
                             // set response code - 201 created
                             http_response_code(201);
                         
                             // tell the user
-                            echo json_encode(array("success" => "1","message" => "RoomPicture was created.")) . "\n";
+                            echo json_encode(array("success" => 1,"message" => "RoomPicture was created.")) . "\n";
                         }
 
                         //create the roomQueue
+
+                        $roomQueue->room_ID = $room_ID;
+                        $roomQueue->user_ID_one = $data["user_ID_one"];
+                        $roomQueue->user_ID_two = $data["user_ID_two"];
+                        $roomQueue->user_ID_three = $data["user_ID_three"];
+                        $roomQueue->user_ID_four = $data["user_ID_four"];
+                        $roomQueue->user_ID_five = $data["user_ID_five"];
+                        $roomQueue->user_ID_six = $data["user_ID_six"];
+                        $roomQueue->user_ID_seven = $data["user_ID_seven"];
+                        $roomQueue->user_ID_eight = $data["user_ID_eight"];
+                        $roomQueue->user_ID_nine = $data["user_ID_nine"];
+                        $roomQueue->user_ID_ten = $data["user_ID_ten"];
+
                         if($roomQueue->createRoomQueue())
                         {
                             // set response code - 201 created
                             http_response_code(201);
                     
                             // tell the user
-                            echo json_encode(array("success" => "1","message" => "roomQueue was created.")) . "\n";
+                            echo json_encode(array("success" => 1,"message" => "roomQueue was created.")) . "\n";
                         }
 
                         //create the roomService
+
+                        //set roomService property values
+                        $roomService->room_ID = $room_ID;
+                        $roomService->wifi = $service["Wi-Fi"];
+                        $roomService->internet = $service["有線網路"];
+                        $roomService->tv = $service["電視"];
+                        $roomService->refrigerator = $service["冰箱"];
+                        $roomService->parking = $service["停車位"];
+                        $roomService->ac = $service["冷氣"];
+                        $roomService->washing_machine = $service["洗衣機"];
+                        $roomService->can_cooking = $service["開伙"];
+                        $roomService->can_keep_pet = $service["養寵物"];
+                        $roomService->elevator = $service["電梯"];
                         if($roomService->createRoomService())
                         {
                             // set response code - 201 created
                             http_response_code(201);
             
                             // tell the user
-                            echo json_encode(array("success" => "1","message" => "roomService was created.")) . "\n";
+                            echo json_encode(array("success" => 1,"message" => "roomService was created.")) . "\n";
                         }
 
                         //上傳圖片檔到server端
@@ -305,19 +355,23 @@ else
                                 # 檢查檔案是否已經存在
                                 if (file_exists($uploaddir . $_FILES['file1']['name'][$i]))
                                 {
-                                    echo json_encode(array("success" => "0","message" => $_FILES['file1']['name'][$i] . " has already existed."));
+                                    echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . " has already existed.")) . "\n";
                                     // $returnData = msg(0, 422, $_POST['user_ID'] . "file has already existed");
-                                } else {
+                                }else if(in_array($_FILES['file1']['name'][$i],$nameTooLong)) 
+                                {
+                                    echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . "'s file name is too long to be stored in database.")) . "\n";
+                                }
+                                else {
                                     $file = $_FILES['file1']['tmp_name'][$i];
                                     $dest = $uploaddir . $_FILES['file1']['name'][$i];
                             
                                     # 將檔案移至指定位置
                                     move_uploaded_file($file, $dest);
-                                    echo json_encode(array("success" => "1","message" => $thisUser . "File successfully uploaded."));
+                                    echo json_encode(array("success" => 1,"message" => $thisUser . "File successfully uploaded.")) . "\n";
                                     // $returnData = msg(1, 201, $_POST['user_ID'] . "File successfully uploaded.\n");
                                 }
                             } else {
-                                echo json_encode(array("success" => "0","message" => $thisUser . "failed upload."));
+                                echo json_encode(array("success" => 0,"message" => $thisUser . "failed upload.")) . "\n";
                             }
     
                         }
@@ -329,7 +383,7 @@ else
                     {
                         http_response_code(503);
                         echo $e->getMessage() . "\n";
-                        echo json_encode(array("success" => "0","message" => "Unable to create whole room.")) . "\n";
+                        echo json_encode(array("success" => 0,"message" => "Unable to create whole room.")) . "\n";
                         //Rolls back the transaction
                         $db->rollBack();
                     }
@@ -342,15 +396,17 @@ else
                 http_response_code(400);
             
                 // tell the user
-                echo json_encode(array("success" => "0","message" => "Unable to create room. Data is incomplete."));
+                echo json_encode(array("success" => 0,"message" => "Unable to create room. Data is incomplete."));
             }
             // }else{
             //     echo json_encode(array("message" => "You can't create this room!!!"));
             // }
-        }
+        // }
     }else{
         echo "invalid token\n";
     }
 }
+//close the database connection
+$db = null;
 
 ?>

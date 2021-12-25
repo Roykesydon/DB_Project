@@ -23,7 +23,7 @@
                 outlined
                 clearable
                 v-model="address"
-                :rules="[rules.required, rules.address0]"
+                :rules="[rules.required, rules.address]"
               ></v-text-field>
             </div>
             <div class="d-flex mb-5">
@@ -40,17 +40,15 @@
                 class=""
                 label="名稱"
                 placeholder="名稱"
-                readonly
                 outlined
-                :rules=[rules.required,rules.roomName]
+                :rules="[rules.required, rules.roomName]"
                 v-model="roomName"
               ></v-text-field>
               <v-text-field
                 class=""
                 label="月租"
                 placeholder="月租"
-                :rules=[rules.required,rules.cost]
-                readonly
+                :rules="[rules.required, rules.cost]"
                 outlined
                 v-model="roomCost"
               ></v-text-field>
@@ -180,8 +178,8 @@ export default {
   },
 
   data: () => ({
-    roomName:null,
-    roomCost:null,
+    roomName: null,
+    roomCost: null,
     dialog: false,
     map: null,
     geocoder: null,
@@ -202,9 +200,35 @@ export default {
       "洗衣機",
       "開伙",
       "養寵物",
+      "電梯",
     ],
-    cities: ["台北市", "基隆市", "桃園市"],
+    cities: [
+      "新北市",
+      "臺北市",
+      "桃園市",
+      "臺中市",
+      "臺南市",
+      "高雄市",
+      "新竹縣",
+      "苗栗縣",
+      "彰化縣",
+      "南投縣",
+      "雲林縣",
+      "嘉義縣",
+      "屏東縣",
+      "宜蘭縣",
+      "花蓮縣",
+      "臺東縣",
+      "澎湖縣",
+      "金門縣",
+      "連江縣",
+      "基隆市",
+      "新竹市",
+      "嘉義市",
+    ],
     selectCity: null,
+    lat: 0,
+    lng: 0,
   }),
 
   methods: {
@@ -269,31 +293,45 @@ export default {
       if (!this.$refs.form.validate()) return;
       // console.log(this.uploadPictures);
       let formData = new FormData();
-      if (this.uploadPictures.length)
-        formData.append("file", this.uploadPictures[0]);
+      for (let i = 0; i < this.uploadPictures.length; i++)
+        formData.append("file1[]", this.uploadPictures[i]);
+
       formData.append("user_ID", "12345678");
-      formData.append("selectTags", this.selectTags);
-      formData.append("selectCity", this.selectCity);
-      formData.append("description", this.description);
+      formData.append("tag", this.selectTags);
+      formData.append("room_city", this.selectCity);
+      formData.append("room_info", this.description);
+      formData.append("cost",this.roomCost);
+      formData.append("address",this.address);
+      formData.append("room_name", this.roomName);
+      formData.append("room_latitude", this.lat);
+      formData.append("room_longtitude", this.lng);
 
       console.log({
-        file: this.uploadPictures,
-        user_ID: "12345678",
-        description: this.description,
-        selectTags: this.selectTags,
-        selectCity: this.selectCity,
+        tag: this.selectTags,
+        room_city: this.selectCity,
+        room_info: this.description,
+        cost: this.roomCost,
+        address: this.address,
+        room_name: this.roomName,
+        room_latitude: this.lat,
+        room_longtitude: this.lng,
       });
+
+      console.log();
+      console.log(formData);
+
       this.$axios
-        .post("http://localhost:8000/api/testUploadPicture.php", formData, {
+        .post("http://localhost:8000/api/room/createRoom.php", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${this.$cookies.get("token")}`,
           },
         })
         .then((res) => {
           if (res.data.success) {
             console.log("success!");
             Vue.$toast.open({
-              message: "註冊成功! 正在跳轉頁面",
+              message: "登記成功!",
               type: "success",
               position: "top",
               duration: 2000,
@@ -301,14 +339,11 @@ export default {
             });
             this.signUpOverlay = false;
             let _this = this;
-            setTimeout(function () {
-              _this.$router.push("findRoom");
-            }, 2000);
             this.$cookies.set("accessKey", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
             this.alreadyLogin = true;
             console.table(res.data);
           } else {
-            console.log("error!");
+            console.log("登記失敗!");
             console.log(res);
             let errorMessage = res.data.message;
             if (errorMessage == "This E-mail already in use!")
@@ -329,7 +364,7 @@ export default {
         })
         .catch((error) => {
           console.log("network error!");
-          console.error(error);
+          console.error(error.response.data.message);
         });
       console.log(this.uploadPictures);
     },
@@ -442,6 +477,8 @@ export default {
       let marker = this.markers[0];
       let lat = marker.getPosition().lat();
       let lng = marker.getPosition().lng();
+      this.lat = lat;
+      this.lng = lng;
       const latlng = {
         lat: parseFloat(lat),
         lng: parseFloat(lng),
@@ -523,6 +560,8 @@ export default {
           // console.log(results);
           console.log(results["0"]["geometry"]["location"]["lat"]());
           console.log(results["0"]["geometry"]["location"]["lng"]());
+          _this.lat = results["0"]["geometry"]["location"]["lat"]();
+          _this.lng = results["0"]["geometry"]["location"]["lng"]();
           location = {
             lat: results["0"]["geometry"]["location"]["lat"](),
             lng: results["0"]["geometry"]["location"]["lng"](),

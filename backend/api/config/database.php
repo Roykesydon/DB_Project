@@ -6,8 +6,8 @@
 
 class Database{
     // specify your own database credentials
-    private $mysql_address = "172.21.0.2"; // mariaDB's IP
-    private $mysql_username = "dbuser";   // 設定連接資料庫用戶帳號
+    private $mysql_address = "172.22.0.2"; // mariaDB's IP
+    private $mysql_username = "root";   // 設定連接資料庫用戶帳號
     private $mysql_password = "dbpasswd";   // 設定連接資料庫用戶的密碼
     private $mysql_database = "db_final";   // 設成你在 mysql 創的資料庫
     private $mysql_portnumber = "3306"; // port number

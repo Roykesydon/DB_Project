@@ -24,32 +24,43 @@ class RoomQueue{
 
     function createRoomQueue()
     {
-        // query to insert record
-        $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?);";
+        try{
+            // query to insert record
+            $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?);";
 
-        // prepare query statement
-        $stmt = $this->conn->prepare($query);
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
 
-        $stmt->bindParam(1,$this->room_ID);
-        $stmt->bindParam(2,$this->user_ID_one);
-        $stmt->bindParam(3,$this->user_ID_two);
-        $stmt->bindParam(4,$this->user_ID_three);
-        $stmt->bindParam(5,$this->user_ID_four);
-        $stmt->bindParam(6,$this->user_ID_five);
-        $stmt->bindParam(7,$this->user_ID_six);
-        $stmt->bindParam(8,$this->user_ID_seven);
-        $stmt->bindParam(9,$this->user_ID_eight);
-        $stmt->bindParam(10,$this->user_ID_nine);
-        $stmt->bindParam(11,$this->user_ID_ten);
+            $stmt->bindParam(1,$this->room_ID);
+            $stmt->bindParam(2,$this->user_ID_one);
+            $stmt->bindParam(3,$this->user_ID_two);
+            $stmt->bindParam(4,$this->user_ID_three);
+            $stmt->bindParam(5,$this->user_ID_four);
+            $stmt->bindParam(6,$this->user_ID_five);
+            $stmt->bindParam(7,$this->user_ID_six);
+            $stmt->bindParam(8,$this->user_ID_seven);
+            $stmt->bindParam(9,$this->user_ID_eight);
+            $stmt->bindParam(10,$this->user_ID_nine);
+            $stmt->bindParam(11,$this->user_ID_ten);
+            //execute the SQL stmt
+            $stmt->execute();
 
-        if($stmt->execute())
-        {
             return true;
-        }
-        else
+        }catch(PDOException $e)
         {
-            return false;
+            // tell the user
+            echo json_encode(array("success" => "0","message" => "Unable to create roomQueue.")) . "\n";
+            throw $e;
         }
+
+        // if($stmt->execute())
+        // {
+        //     return true;
+        // }
+        // else
+        // {
+        //     return false;
+        // }
     }
 
 }

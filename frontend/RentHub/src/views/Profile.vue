@@ -418,7 +418,7 @@ export default {
             // all of other options may go here
           });
           console.log("network error!");
-          console.error(error);
+          console.error(error.response);
         });
     },
   },

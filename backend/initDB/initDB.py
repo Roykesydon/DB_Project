@@ -91,7 +91,7 @@ connection.commit()
 
 cursor.execute(
     "CREATE TABLE IF NOT EXISTS roomQueue( \
-        room_ID int(5) NOT NULL, \
+        room_ID int(8) NOT NULL, \
         user_ID_one varchar(50), \
         user_ID_two varchar(50), \
         user_ID_three varchar(50), \

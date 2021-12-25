@@ -87,33 +87,45 @@ class RentRoom{
     }
 
     function createRoom(){
-        // query to insert record
-        $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?,?);";
+        try{
+            // query to insert record
+            $query = "INSERT INTO {$this->table_name} values(?,?,?,?,?,?,?,?,?,?,?,?);";
 
-        // prepare query statement
-        $stmt = $this->conn->prepare($query);
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+            //bind Param to the corresponding question mark placeholder
+            $stmt->bindValue(1,0);
+            $stmt->bindParam(2,$this->user_ID);
+            $stmt->bindParam(3,$this->room_name);
+            $stmt->bindParam(4,$this->address);
+            $stmt->bindParam(5,$this->cost);
+            $stmt->bindParam(6,$this->room_info);
+            $stmt->bindParam(7,$this->room_latitude);
+            $stmt->bindParam(8,$this->room_longitude);
+            $stmt->bindParam(9,$this->room_city);
+            $stmt->bindParam(10,$this->post_date);
+            $stmt->bindParam(11,$this->live_number);
+            $stmt->bindParam(12,$this->room_area);
+            //execute the SQL instruction
+            $stmt->execute();
+            
+            return true;
+        }catch(PDOException $e)
+        {
+            // tell the user
+            echo json_encode(array("success" => "0","message" => "Unable to create roominfo.")) . "\n";
 
-        $stmt->bindParam(1,$this->room_ID);
-        $stmt->bindParam(2,$this->user_ID);
-        $stmt->bindParam(3,$this->room_name);
-        $stmt->bindParam(4,$this->address);
-        $stmt->bindParam(5,$this->cost);
-        $stmt->bindParam(6,$this->room_info);
-        $stmt->bindParam(7,$this->room_latitude);
-        $stmt->bindParam(8,$this->room_longitude);
-        $stmt->bindParam(9,$this->room_city);
-        $stmt->bindParam(10,$this->post_date);
-        $stmt->bindParam(11,$this->live_number);
-        $stmt->bindParam(12,$this->room_area);
+            throw $e;
+        }
 
         //execute the SQL instruction
-        if($stmt->execute())
-        {
-            return true;
-        }
-        else{
-            return false;
-        }
+        // if($stmt->execute())
+        // {
+        //     return true;
+        // }
+        // else{
+        //     return false;
+        // }
     }
     
 }

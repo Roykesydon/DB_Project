@@ -198,7 +198,7 @@ export default {
   mounted() {
     let elHtml = document.getElementsByTagName("html")[0];
     if (this.$vuetify.theme.dark) elHtml.style.backgroundColor = "#121212";
-    if (this.$cookies.isKey("accessKey")) {
+    if (this.$cookies.isKey("token")) {
       this.alreadyLogin = true;
     }
   },
@@ -242,17 +242,17 @@ export default {
           if (res.data.success) {
             console.log(res.data);
             Vue.$toast.open({
-              message: "登入成功! 正在跳轉頁面",
+              message: "登入成功!",
               type: "success",
               position: "top",
               duration: 2000,
               // all of other options may go here
             });
             this.loginOverlay = false;
-            let _this = this;
-            setTimeout(function () {
-              _this.$router.push("findRoom");
-            }, 2000);
+            // let _this = this;
+            // setTimeout(function () {
+            //   _this.$router.push("findRoom");
+            // }, 2000);
             this.$cookies.set("token", res.data.token);
             this.alreadyLogin = true;
           } else {
@@ -314,8 +314,8 @@ export default {
             setTimeout(function () {
               _this.$router.push("findRoom");
             }, 2000);
-            this.$cookies.set("accessKey", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
-            this.alreadyLogin = true;
+            // this.$cookies.set("token", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
+            // this.alreadyLogin = true;
             console.table(res.data);
           } else {
             console.log("error!");

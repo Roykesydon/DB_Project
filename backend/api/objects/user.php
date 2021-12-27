@@ -17,7 +17,7 @@ class User{
     public function __construct($db){
         $this->conn = $db;
     }
-
+    //addUser
     function addUser()
     {
         // query to insert record
@@ -41,6 +41,25 @@ class User{
         else
         {
             return false;
+        }
+    }
+    
+    function getProfileByUserID()
+    {
+        try{
+            // query to insert record
+            $query = "SELECT `user_ID`, `user_name`, `email`, `phone_number` FROM `user` WHERE `user_ID` = ?";
+
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(1,$this->user_ID);
+            $stmt->execute();
+
+            return $stmt;
+        }catch(PDOException $e)
+        {
+            throw $e;
         }
     }
 }

@@ -49,7 +49,7 @@ class RoomQueue{
         }catch(PDOException $e)
         {
             // tell the user
-            echo json_encode(array("success" => "0","message" => "Unable to create roomQueue.")) . "\n";
+            // echo json_encode(array("success" => "0","message" => "Unable to create roomQueue."));
             throw $e;
         }
 

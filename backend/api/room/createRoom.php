@@ -134,16 +134,16 @@ else
                 //save the file name that is too long
                 $nameTooLong = array();
                 //set roomPictureURLs
-                for($i=0;$i<count($data["files"]);$i++)
+                for($i=0;$i<$fileCount;$i++)
                 {
-                    if(mb_strlen($data["files"][$i],'utf-8') > 300)
+                    if(mb_strlen($_FILES['file1']['name'][$i],'utf-8') > 300)
                     {
-                        echo json_encode(array("success" => 0,"message" => "Unable to create Picture" . $data["files"][$i] . ".Because the picture file name is too long.")) . "\n";
-                        array_push($nameTooLong,$data["files"][$i]);
+                        throw new PDOException("file name is too long to be stored in database.");
+                        array_push($nameTooLong,$_FILES['file1']['name'][$i]);
                     }
                     else
                     {
-                        array_push($roomPictureURLs,$data["files"][$i]);
+                        array_push($roomPictureURLs,$_FILES['file1']['name'][$i]);
                     }
                 }
 
@@ -176,11 +176,9 @@ else
                     {
                         // set response code - 201 created
                         http_response_code(201);
-                
-                        // tell the user
-                        echo json_encode(array("success" => 1,"message" => "Roominfo was created."));
                     }
                     // echo "last insert ID: " . $db->lastInsertId() . "\n";
+                    //get room_ID
                     $room_ID = $db->lastInsertId();
 
                     //create the roomPicture
@@ -200,9 +198,6 @@ else
                     {
                         // set response code - 201 created
                         http_response_code(201);
-                    
-                        // tell the user
-                        echo json_encode(array("success" => 1,"message" => "RoomPicture was created.")) . "\n";
                     }
 
                     //create the roomQueue
@@ -223,9 +218,6 @@ else
                     {
                         // set response code - 201 created
                         http_response_code(201);
-                
-                        // tell the user
-                        echo json_encode(array("success" => 1,"message" => "roomQueue was created.")) . "\n";
                     }
 
                     //create the roomService
@@ -246,9 +238,6 @@ else
                     {
                         // set response code - 201 created
                         http_response_code(201);
-        
-                        // tell the user
-                        echo json_encode(array("success" => 1,"message" => "roomService was created.")) . "\n";
                     }
 
                     //上傳圖片檔到server端
@@ -266,11 +255,13 @@ else
                             # 檢查檔案是否已經存在
                             if (file_exists($uploaddir . $_FILES['file1']['name'][$i]))
                             {
-                                echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . " has already existed.")) . "\n";
-                                // $returnData = msg(0, 422, $_POST['user_ID'] . "file has already existed");
+                                // echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . " has already existed."));
+                                throw new PDOException("file has already existed.");
                             }else if(in_array($_FILES['file1']['name'][$i],$nameTooLong)) 
                             {
-                                echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . "'s file name is too long to be stored in database.")) . "\n";
+                                //檔名太長，不能存進database
+                                // echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . "'s file name is too long to be stored in database."));
+                                throw new PDOException("file name is too long to be stored in database.");
                             }
                             else {
                                 $file = $_FILES['file1']['tmp_name'][$i];
@@ -278,23 +269,25 @@ else
                         
                                 # 將檔案移至指定位置
                                 move_uploaded_file($file, $dest);
-                                echo json_encode(array("success" => 1,"message" => $thisUser . "File successfully uploaded.")) . "\n";
-                                // $returnData = msg(1, 201, $_POST['user_ID'] . "File successfully uploaded.\n");
+                                // echo json_encode(array("success" => 1,"message" => $thisUser . "File successfully uploaded."));
                             }
                         } else {
-                            echo json_encode(array("success" => 0,"message" => $thisUser . "failed upload.")) . "\n";
+                            // echo json_encode(array("success" => 0,"message" => $thisUser . "failed upload."));
+                            throw new PDOException("failed upload.");
                         }
 
                     }
 
                     //commit the transaction
                     $db->commit();
-
+                    // tell the user
+                    echo json_encode(array("success" => 1,"message" => "Room is successfully created."));
                 }catch(PDOException $e)
                 {
+                    //error
                     http_response_code(503);
-                    echo $e->getMessage() . "\n";
-                    echo json_encode(array("success" => 0,"message" => "Unable to create whole room.")) . "\n";
+                    // echo $e->getMessage() . "\n";
+                    echo json_encode(array("success" => 0,"message" => "Unable to create whole room. Because " . $e->getMessage()));
                     //Rolls back the transaction
                     $db->rollBack();
                 }
@@ -319,12 +312,13 @@ else
                 echo json_encode(array("success" => 0,"message" => "Unable to create room. Room_longtitude is empty."));
             else if(empty($data["room_city"]))
                 echo json_encode(array("success" => 0,"message" => "Unable to create room. Room_city is empty."));
-            else if($fileCount < 0)
+            else if($fileCount <= 0)
                 echo json_encode(array("success" => 0,"message" => "Unable to create room. File is empty."));
         }
     }else{
-        echo "invalid token\n";
+        echo json_encode(array("success" => 0,"message" => "invalid token."));
     }
 }
 //close the database connection
 $db = null;
+?>

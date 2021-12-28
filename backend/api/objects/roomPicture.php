@@ -45,7 +45,7 @@ class RoomPicture{
         }catch(PDOException $e)
         {            
             // tell the user
-            echo json_encode(array("success" => "0","message" => "Unable to create roomPicture.")) . "\n";
+            // echo json_encode(array("success" => "0","message" => "Unable to create roomPicture."));
             throw $e;
         }
         // if($error)

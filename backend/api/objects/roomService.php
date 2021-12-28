@@ -49,7 +49,7 @@ class RoomService{
         }catch(PDOException $e)
         {
             // tell the user
-            echo json_encode(array("success" => "0","message" => "Unable to create roomService.")) . "\n";
+            // echo json_encode(array("success" => "0","message" => "Unable to create roomService."));
             throw $e;
         }
 

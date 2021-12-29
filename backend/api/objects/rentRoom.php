@@ -113,7 +113,7 @@ class RentRoom{
         }catch(PDOException $e)
         {
             // tell the user
-            echo json_encode(array("success" => "0","message" => "Unable to create roominfo.")) . "\n";
+            // echo json_encode(array("success" => "0","message" => "Unable to create roominfo."));
 
             throw $e;
         }

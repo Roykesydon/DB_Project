@@ -121,7 +121,8 @@ else
                     "電梯" => 0,
                 );
                 // echo "tag count : " . count($data["tag"]);
-                //set the services
+                //set the services.
+                $data["tag"]=explode(",",$data["tag"]);
                 for($i=0;$i < count($data["tag"]);$i++)
                 {
                     $service[$data["tag"][$i]] = 1;

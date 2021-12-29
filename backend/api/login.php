@@ -27,9 +27,9 @@ if($_SERVER["REQUEST_METHOD"] != "POST"):
     $returnData = msg(0,404,'Page Not Found!');
 
 // CHECKING EMPTY FIELDS
-elseif(!isset($data->email)
+elseif(!isset($data->user_ID)
     || !isset($data->password)
-    || empty(trim($data->email))
+    || empty(trim($data->user_ID))
     || empty(trim($data->password))
     ):
 
@@ -38,13 +38,16 @@ elseif(!isset($data->email)
 
 // IF THERE ARE NO EMPTY FIELDS THEN-
 else:
-    $email = trim($data->email);
+    $user_ID = trim($data->user_ID);
     $password = trim($data->password);
 
     // CHECKING THE EMAIL FORMAT (IF INVALID FORMAT)
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)):
-        $returnData = msg(0,422,'Invalid Email Address!');
-    
+    // if(!filter_var($email, FILTER_VALIDATE_EMAIL)):
+    //     $returnData = msg(0,422,'Invalid Email Address!');
+    if(strlen($user_ID) < 3 || strlen($user_ID) > 50):
+        $returnData = msg(0,422,'user_ID must be <= 50 and >= 3');
+
+
     // IF PASSWORD IS LESS THAN 8 THE SHOW THE ERROR
     elseif(strlen($password) < 8):
         $returnData = msg(0,422,'Your password must be at least 8 characters long!');
@@ -52,9 +55,9 @@ else:
     // THE USER IS ABLE TO PERFORM THE LOGIN ACTION
     else:
         try{
-            $fetch_user_by_email = "SELECT * FROM `user` WHERE `email`=:email";
-            $query_stmt = $conn->prepare($fetch_user_by_email);
-            $query_stmt->bindValue(':email', $email,PDO::PARAM_STR);
+            $fetch_user_by_user_ID = "SELECT * FROM `user` WHERE `user_ID`=:user_ID";
+            $query_stmt = $conn->prepare($fetch_user_by_user_ID);
+            $query_stmt->bindValue(':user_ID', $user_ID,PDO::PARAM_STR);
             $query_stmt->execute();
 
             // IF THE USER IS FOUNDED BY EMAIL
@@ -85,7 +88,7 @@ else:
 
             // IF THE USER IS NOT FOUNDED BY EMAIL THEN SHOW THE FOLLOWING ERROR
             else:
-                $returnData = msg(0,422,'Invalid Email Address!');
+                $returnData = msg(0,422,'Invalid user_ID!');
             endif;
         }
         catch(PDOException $e){

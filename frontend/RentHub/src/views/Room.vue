@@ -12,45 +12,65 @@
           <!-- <v-card color="primary"  class="text-h5 mb-2 mt-3 pa-10 pt-2 " style="float:left; z-index=-1;position: absolute;top:-10px; left:80px;" width="400px"><div class="text-truncate">{{ ownerRoomName }}</div></v-card> -->
           <div class="text-truncate text-h3 ma-3 ml-0">{{ ownerRoomName }}</div>
           <v-hover v-slot="{ hover }">
-            <v-card elevation="24" style="z-index=10;">
-              <v-expand-transition
-                ><v-card
-                  width="30%"
-                  :color="hover ? '' : 'transparent'"
-                  v-show="hover"
-                  disabled
-                  :class="{
-                    'show-card': hover,
-                    'transparent--text': !hover,
-                    'ma-5 pa-3 mx-auto': true,
-                  }"
-                  style="
-                    z-index: 10;
-                    position: absolute;
-                    top: 0px;
-                    left: -230px;
-                  "
-                  elevation="0"
-                  >點按圖片可切換全圖模式</v-card
-                ></v-expand-transition
-              >
-              <v-carousel
-                height="290px"
-                hide-delimiter-background
-                delimiter-icon="mdi-minus"
-                show-arrows-on-hover
-              >
-                <v-carousel-item v-for="(item_src, i) in roomInfo.src" :key="i">
-                  <v-img
-                    :src="item_src"
-                    aspect-ratio="2.0"
-                    class="my-auto"
-                    :contain="roomImageContain"
-                    @click="roomImageContain = !roomImageContain"
-                    height="100%"
-                  ></v-img>
-                </v-carousel-item>
-              </v-carousel>
+            <v-card elevation="24" style="z-index=10;" color="transparent">
+              <v-tabs v-model="tab"  dark background-color="transparent">
+                <v-tab :class="(tab==0)?'subtitle-1':'subtitle-2'"> 地圖 </v-tab>
+                <v-tab :class="(tab==1)?'subtitle-1':'subtitle-2'"> 圖片 </v-tab>
+              </v-tabs>
+
+              <v-tabs-items v-model="tab">
+                <v-tab-item class="fill-height">
+                  <v-card width="100%" height="290px" class="text-center fill-height">
+                    <div id="map2" class="fill-height"></div>
+                  </v-card>
+                </v-tab-item>
+
+                <v-tab-item>
+                  <v-expand-transition
+                    ><v-card
+                      width="30%"
+                      :color="hover ? '' : 'transparent'"
+                      v-show="hover"
+                      disabled
+                      :dark="true"
+                      :class="{
+                        'show-card': hover,
+                        'transparent--text': !hover,
+                        'ma-5 pa-3 mx-auto': true,
+                        
+                      }"
+                      style="
+                        z-index: 10;
+                        position: absolute;
+                        top: 0px;
+                        right: 10px;
+                      "
+                      elevation="0"
+                      >點按圖片可切換全圖模式</v-card
+                    ></v-expand-transition
+                  >
+                  <v-carousel
+                    height="290px"
+                    hide-delimiter-background
+                    delimiter-icon="mdi-minus"
+                    show-arrows-on-hover
+                  >
+                    <v-carousel-item
+                      v-for="(item_src, i) in roomInfo.src"
+                      :key="i"
+                    >
+                      <v-img
+                        :src="item_src"
+                        aspect-ratio="2.0"
+                        class="my-auto"
+                        :contain="roomImageContain"
+                        @click="roomImageContain = !roomImageContain"
+                        height="100%"
+                      ></v-img>
+                    </v-carousel-item>
+                  </v-carousel>
+                </v-tab-item>
+              </v-tabs-items>
             </v-card>
           </v-hover>
           <div class="d-flex mb-0 sc3 mt-5">
@@ -373,7 +393,7 @@ export default {
     // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.$config.GOOGLE-MAP-API-KEY )
     // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.googleMapAPI )
     console.log(this.$route.params["id"]);
-    this.isRoomOwner = true;
+    this.isRoomOwner = false;
     if (!this.isRoomOwner) {
       this.notOwnAddress = "測試地址";
       this.selectCity = "台北市";
@@ -410,11 +430,14 @@ export default {
     document.head.appendChild(recaptchaScript);
 
     initMap();
+
+    console.log(this.tab)
   },
 
   data: () => ({
     roomImageContain: false,
     map: null,
+    tab: null,
     notOwnAddress: "",
     address: "",
     ownerRoomName: "",
@@ -596,7 +619,8 @@ export default {
   }),
 
   methods: {
-    deleteRoom() {},
+    deleteRoom() {},  
+
 
     getRoomRoute(id) {
       return "/room/" + String(id);
@@ -873,7 +897,10 @@ export default {
       };
       this.geocoder = new google.maps.Geocoder();
       // 建立地圖
-      this.map = new google.maps.Map(document.getElementById("map"), {
+
+      let renderMap = "map";
+      if (!this.isRoomOwner) renderMap = "map2";
+      this.map = new google.maps.Map(document.getElementById(renderMap), {
         center: location, // 中心點座標
         zoom: 16, // 1-20，數字愈大，地圖愈細：1是世界地圖，20就會到街道
         /*
@@ -927,6 +954,7 @@ export default {
       });
     },
     test() {
+      console.log(this.tab)
       let location = {
         lat: 25.1374865, // 經度
         lng: 121.5647688, // 緯度

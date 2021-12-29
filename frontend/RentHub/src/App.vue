@@ -49,23 +49,15 @@
           @mousedown.stop=""
           color="#292929"
         >
-          <!-- <v-card
-            color="secondary"
-            style="z-index=-1;position: absolute; top:-50px; left:150px;"
-            width="80px"
-            height = "80px"
-          >
-            <v-icon x-large color="white" class="mx-auto" style="z-index=-1;position: absolute; top:20px; left:20px;"> mdi-account-plus </v-icon>
-          </v-card> -->
           <v-form ref="loginForm" v-model="signUpValid" lazy-validation>
             <v-text-field
               class="ma-3"
-              label="信箱"
-              prepend-icon="mdi-email-outline"
+              label="帳號"
+              prepend-icon="mdi-account-circle-outline"
               counter
               maxlength="50"
-              :rules="[rules.required, rules.email]"
-              v-model="email"
+              :rules="[rules.required, rules.id]"
+              v-model="user_ID"
               hide-details="auto"
             ></v-text-field>
             <v-text-field
@@ -214,6 +206,8 @@ export default {
   methods: {
     signOut() {
       this.$cookies.remove("token");
+      this.$cookies.remove("alreadyLogin");
+      this.$cookies.remove("user_ID");
       this.alreadyLogin = false;
       Vue.$toast.open({
         message: "登出成功! 重新導至首頁",
@@ -228,13 +222,13 @@ export default {
       }, 2000);    
     },
     getProfileUrl() {
-      return "/profile/" + "123456";
+      return "/profile/" + this.$cookies.get("user_ID");
     },
     login() {
       if (!this.$refs.loginForm.validate()) return;
       let userInfo = {
         password: this.password,
-        email: this.email,
+        user_ID: this.user_ID,
       };
       this.$axios
         .post("http://localhost:8000/api/login.php", userInfo)
@@ -254,10 +248,12 @@ export default {
             //   _this.$router.push("findRoom");
             // }, 2000);
             this.$cookies.set("token", res.data.token);
+            this.$cookies.set("user_ID", this.user_ID);
             this.alreadyLogin = true;
+            this.$cookies.set("alreadyLogin", true);
           } else {
             let errorMessage = res.data.message;
-            if (errorMessage == "Invalid Email Address!")
+            if (errorMessage == "Invalid user_ID!")
               errorMessage = "信箱不存在";
             else if (errorMessage == "Invalid Password!")
               errorMessage = "密碼錯誤";
@@ -370,6 +366,7 @@ export default {
     name: null,
     showPassword: false,
     showCheckPassword: false,
+    user_ID:"",
   }),
 };
 </script>

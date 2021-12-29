@@ -29,8 +29,6 @@ function msg($success,$status,$message,$extra = []){
 }
 
 //instantiate authentication objects
-$allHeaders = getallheaders();
-$auth = new Auth($db,$allHeaders);
 // echo $auth->getSecret();
 $returnMsg = [
     "success" => 0,
@@ -47,29 +45,23 @@ if ($_SERVER["REQUEST_METHOD"] != "GET")
     echo json_encode($returnMsg);
 }
 else{
-    if($auth->isAuth())
-    {
-        try{
-            //get the user data
-            $stmt = $user->getProfileByUserID();
-            // echo var_dump($stmt->fetchAll());
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if($result !== false)
-            {
-                array_push($returnData["record"],$result);
-                echo json_encode($returnData);
-            }
-            else{
-                $returnMsg = msg(0,404,"The user_ID doesn't exist.");
-                echo json_encode($returnMsg);
-            }
-        }catch(PDOException $e)
+    try{
+        //get the user data
+        $stmt = $user->getProfileByUserID();
+        // echo var_dump($stmt->fetchAll());
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if($result !== false)
         {
-            $returnMsg = msg(0,400,"Error!." . $e->getMessage());
+            array_push($returnData["record"],$result);
+            echo json_encode($returnData);
+        }
+        else{
+            $returnMsg = msg(0,404,"The user_ID doesn't exist.".$_GET['user_ID']);
             echo json_encode($returnMsg);
         }
-    }else{
-        $returnMsg = msg(0,401,"invalid token");
+    }catch(PDOException $e)
+    {
+        $returnMsg = msg(0,400,"Error!." . $e->getMessage());
         echo json_encode($returnMsg);
     }
 }

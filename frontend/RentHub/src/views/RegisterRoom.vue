@@ -159,6 +159,7 @@
 
 <script>
 import * as CONFIG from "../../public/config";
+import Vue from "vue";
 export default {
   name: "RegisterRoom",
 
@@ -296,7 +297,6 @@ export default {
       for (let i = 0; i < this.uploadPictures.length; i++)
         formData.append("file1[]", this.uploadPictures[i]);
 
-      formData.append("user_ID", "12345678");
       formData.append("tag", this.selectTags);
       formData.append("room_city", this.selectCity);
       formData.append("room_info", this.description);
@@ -319,8 +319,8 @@ export default {
 
       console.log();
       console.log(formData);
-
-      this.$axios
+      if(this.$cookies.get("alreadyLogin")){
+        this.$axios
         .post("http://localhost:8000/api/room/createRoom.php", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -328,8 +328,10 @@ export default {
           },
         })
         .then((res) => {
+          console.log(res.data)
           if (res.data.success) {
             console.log("success!");
+            // console.log(res.data.message);
             Vue.$toast.open({
               message: "登記成功!",
               type: "success",
@@ -337,20 +339,11 @@ export default {
               duration: 2000,
               // all of other options may go here
             });
-            this.signUpOverlay = false;
-            let _this = this;
-            this.$cookies.set("accessKey", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
-            this.alreadyLogin = true;
-            console.table(res.data);
           } else {
             console.log("登記失敗!");
-            console.log(res);
             let errorMessage = res.data.message;
-            if (errorMessage == "This E-mail already in use!")
-              errorMessage = "Email 已經被使用";
-            else if (errorMessage == "This user_ID already in use!")
-              errorMessage = "帳號已經被使用";
-
+            if (errorMessage == "invalid token")
+              errorMessage = "用戶資訊已失效 請重新登入";
             Vue.$toast.open({
               message: errorMessage,
               type: "error",
@@ -366,6 +359,19 @@ export default {
           console.log("network error!");
           console.error(error.response.data.message);
         });
+      }
+      else{
+        Vue.$toast.open({
+          message: "您必須先登入",
+          type: "info",
+          position: "top",
+          duration: 4000,
+          // all of other options may go here
+        });
+      }
+      
+
+
       console.log(this.uploadPictures);
     },
     willAnimatePanTo(map, destLatLng, optionalZoomLevel) {

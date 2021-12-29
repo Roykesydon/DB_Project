@@ -34,7 +34,6 @@
                     class="ma-3 my-auto"
                     v-model="phone_number"
                     counter
-                    :rules="[rules.required, rules.phoneNumber]"
                     maxlength="25"
                     hide-details="auto"
                     readonly
@@ -55,7 +54,17 @@
                 <v-col cols="3" class="my-auto">
                   <div class="text-h5 text-lg-right">信箱：</div>
                 </v-col>
-                <v-col cols="9">
+                <v-col cols="9" v-if="!isSelfProfile">
+                  <v-text-field
+                    class="ma-3 my-auto"
+                    v-model="email"
+                    counter
+                    readonly
+                    maxlength="50"
+                    hide-details="auto"
+                  ></v-text-field
+                ></v-col>
+                <v-col cols="9" v-if="isSelfProfile">
                   <v-text-field
                     class="ma-3 my-auto"
                     v-model="email"
@@ -212,16 +221,20 @@ export default {
   },
 
   mounted() {
-    this.isSelfProfile = true;
+    console.log(this.$route.params["id"], this.$cookies.get("user_ID"));
+    if (this.$route.params["id"] == this.$cookies.get("user_ID"))
+      this.isSelfProfile = true;
+    else this.isSelfProfile = false;
+    this.getUserData();
   },
 
   data: () => ({
     isSelfProfile: false,
-    profileImage:'../assets/blank-profile-picture.png',
+    profileImage: "../assets/blank-profile-picture.png",
     name: "Roykesydone",
     rules: CONFIG.rules,
-    phone_number: "12345678910",
-    email: "haha@jaskdjaks.com",
+    phone_number: "無資料",
+    email: "無資料",
     benched: 20,
     uploadPicture: null,
     items: [
@@ -364,8 +377,37 @@ export default {
       return "/room/" + String(id);
     },
 
-    getUserPofilePictureUrl(){
-      return "http://localhost:8000/api/user/getProfileImage.php?user_ID="+this.$route.params["id"];
+    getUserPofilePictureUrl() {
+      return (
+        "http://localhost:8000/api/user/getProfileImage.php?user_ID=" +
+        this.$route.params["id"]
+      );
+    },
+
+    getUserData() {
+      let _this = this;
+      this.$axios
+        .get("http://localhost:8000/api/user/getProfileByUserID.php", {
+          params: { user_ID: this.$route.params["id"] },
+        })
+        .then((res) => {
+          console.log(res.data.record)
+          _this.email = res.data.record[0]['email'];
+          _this.name = res.data.record[0]['user_name'];
+          _this.phone_number = res.data.record[0]['phone_number'];
+          
+        })
+        .catch((error) => {
+          Vue.$toast.open({
+            message: "發生錯誤",
+            type: "error",
+            position: "top",
+            duration: 3000,
+            // all of other options may go here
+          });
+          console.log("network error!");
+          console.error(error.response);
+        });
     },
 
     updateProfile() {
@@ -378,7 +420,7 @@ export default {
       // formData.append("selectCity", this.selectCity);
       // formData.append("description", this.description);
       this.$axios
-        .post("http://localhost:8000/api/user/uploadProfile.php", formData, {
+        .get("http://localhost:8000/api/user/uploadProfile.php", formData, {
           headers: {
             Authorization: `Bearer ${this.$cookies.get("token")}`,
           },

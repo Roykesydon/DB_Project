@@ -54,14 +54,18 @@ else :
            echo '暫存名稱: ' . $_FILES['file1']['tmp_name'][$i] . ".\n";
  
            $uploaddir = "../files/roomImages/";
+           mkdir(dirname(dirname(__FILE__)) . "/files/roomImages/" . $_POST['user_ID']);
+
+           $_FILES['file1']['name'][$i] = count($_FILES['file1']['name']) + 1 . substr($_FILES['file1']['name'][$i],-4);
        
            # 檢查檔案是否已經存在
-           if (file_exists($uploaddir . $_FILES['file1']['name'][$i]))
+           if (file_exists($uploaddir . $_POST['user_ID'] . "/" . $_FILES['file1']['name'][$i]))
            {
+             echo $uploaddir . $_POST['user_ID'] . $_FILES['file1']['name'][$i];
              $returnData = msg(0, 422, $_POST['user_ID'] . "file has already existed");
            } else {
              $file = $_FILES['file1']['tmp_name'][$i];
-             $dest = $uploaddir . $_FILES['file1']['name'][$i];
+             $dest = $uploaddir . $_POST['user_ID'] . "/" . $_FILES['file1']['name'][$i];
        
              # 將檔案移至指定位置
              move_uploaded_file($file, $dest);

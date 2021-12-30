@@ -27,7 +27,7 @@ class RentRoom{
     function readByUserId(){
         try{
             // query to read single record
-            $query = "SELECT * FROM `rentRoom` NATURAL JOIN `roomPicture` WHERE `user_ID` = ?;";
+            $query = "SELECT * FROM `rentRoom` NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `user_ID` = ?;";
             // prepare query statement
             $stmt = $this->conn->prepare($query);
         
@@ -55,6 +55,29 @@ class RentRoom{
             // $this->post_date = $row['post_date'];
             // $this->live_number = $row['live_number'];
             // $this->room_area = $row["room_area"];
+        }catch(PDOException $e)
+        {
+            echo $e->getMessage();
+            throw $e;
+        }
+    }
+
+    // used when filling up the update product form
+    function getRoomByFilter(){
+        try{
+            // query to read single record
+            $query = "SELECT * FROM `rentRoom` NATURAL JOIN `roomPicture` WHERE `user_ID` = ?;";
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+        
+            // bind id of product to be updated
+            $stmt->bindParam(1, $this->user_ID);
+        
+            // execute query
+            $stmt->execute();
+
+            return $stmt;
+        
         }catch(PDOException $e)
         {
             echo $e->getMessage();

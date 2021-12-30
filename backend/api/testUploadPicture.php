@@ -14,6 +14,23 @@ function msg($success, $status, $message, $extra = [])
     ], $extra);
 }
 
+function random_filename($length, $directory = '', $extension = '')
+{
+    // default to this files directory if empty...
+    $dir = !empty($directory) && is_dir($directory) ? $directory : dirname(__FILE__);
+
+    do {
+        $key = '';
+        $keys = array_merge(range(0, 9), range('a', 'z'));
+
+        for ($i = 0; $i < $length; $i++) {
+            $key .= $keys[array_rand($keys)];
+        }
+    } while (file_exists($dir . '/' . $key . (!empty($extension) ? '.' . $extension : '')));
+
+    return $key . (!empty($extension) ? '.' . $extension : '');
+}
+
 require './config/database.php';
 require 'JWTHandler.php';
 
@@ -48,29 +65,29 @@ else :
          # 檢查檔案是否上傳成功
          if ($_FILES['file1']['error'][$i] === UPLOAD_ERR_OK)
          {
-           echo '檔案名稱: ' . $_FILES['file1']['name'][$i] . ".\n";
-           echo '檔案類型: ' . $_FILES['file1']['type'][$i] . ".\n";
-           echo '檔案大小: ' . ($_FILES['file1']['size'][$i] / 1024) . "KB\n";
-           echo '暫存名稱: ' . $_FILES['file1']['tmp_name'][$i] . ".\n";
- 
-           $uploaddir = "../files/roomImages/";
-           mkdir(dirname(dirname(__FILE__)) . "/files/roomImages/" . $_POST['user_ID']);
+            echo '檔案名稱: ' . $_FILES['file1']['name'][$i] . ".\n";
+            echo '檔案類型: ' . $_FILES['file1']['type'][$i] . ".\n";
+            echo '檔案大小: ' . ($_FILES['file1']['size'][$i] / 1024) . "KB\n";
+            echo '暫存名稱: ' . $_FILES['file1']['tmp_name'][$i] . ".\n";
 
-           $_FILES['file1']['name'][$i] = count($_FILES['file1']['name']) + 1 . substr($_FILES['file1']['name'][$i],-4);
+            $uploaddir = "../files/roomImages/" . $_POST['user_ID'];
+            mkdir(dirname(dirname(__FILE__)) . "/files/roomImages/" . $_POST['user_ID']);
+
+            move_uploaded_file($_FILES['file1']['tmp_name'][$i], $uploaddir . "/" . $tempFileName);
+          // move_uploaded_file($_FILES['file1']['tmp_name'][$i], $temp);
+          //  # 檢查檔案是否已經存在
+          //  if (file_exists($uploaddir . $_POST['user_ID'] . "/" . $_FILES['file1']['name'][$i]))
+          //  {
+          //    echo $uploaddir . $_POST['user_ID'] . $_FILES['file1']['name'][$i];
+          //    $returnData = msg(0, 422, $_POST['user_ID'] . "file has already existed");
+          //  } else {
+          //    $file = $_FILES['file1']['tmp_name'][$i];
+          //    $dest = $uploaddir . $_POST['user_ID'] . "/" . $_FILES['file1']['name'][$i];
        
-           # 檢查檔案是否已經存在
-           if (file_exists($uploaddir . $_POST['user_ID'] . "/" . $_FILES['file1']['name'][$i]))
-           {
-             echo $uploaddir . $_POST['user_ID'] . $_FILES['file1']['name'][$i];
-             $returnData = msg(0, 422, $_POST['user_ID'] . "file has already existed");
-           } else {
-             $file = $_FILES['file1']['tmp_name'][$i];
-             $dest = $uploaddir . $_POST['user_ID'] . "/" . $_FILES['file1']['name'][$i];
-       
-             # 將檔案移至指定位置
-             move_uploaded_file($file, $dest);
-             $returnData = msg(1, 201, $_POST['user_ID'] . "File successfully uploaded.\n");
-           }
+          //    # 將檔案移至指定位置
+          //    move_uploaded_file($file, $dest);
+          //    $returnData = msg(1, 201, $_POST['user_ID'] . "File successfully uploaded.\n");
+          //  }
          } else {
            $returnData = msg(0, 503, $_POST['user_ID'] . $_FILES['file1']['error']);
          }

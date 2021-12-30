@@ -45,6 +45,24 @@ $returnData = [
 $cityList = array("新北市","臺北市","桃園市","臺中市","臺南市","高雄市","新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣","臺東縣","澎湖縣","金門縣","連江縣","基隆市","新竹市","嘉義市");
 // $tagList = array("Wi-Fi","有線網路","電視","冰箱","停車位","冷氣","洗衣機","開伙","養寵物","電梯");
 
+function random_filename($length, $directory = '', $extension = '')
+{
+    // default to this files directory if empty...
+    $dir = !empty($directory) && is_dir($directory) ? $directory : dirname(__FILE__);
+
+    do {
+        $key = '';
+        $keys = array_merge(range(0, 9), range('a', 'z'));
+
+        for ($i = 0; $i < $length; $i++) {
+            $key .= $keys[array_rand($keys)];
+        }
+    } while (file_exists($dir . '/' . $key . (!empty($extension) ? '.' . $extension : '')));
+
+    return $key . (!empty($extension) ? '.' . $extension : '');
+}
+
+$fileNameArr = array();
 
 // IF REQUEST METHOD IS NOT EQUAL TO POST
 if ($_SERVER["REQUEST_METHOD"] != "POST") 
@@ -137,15 +155,10 @@ else
                 //set roomPictureURLs
                 for($i=0;$i<$fileCount;$i++)
                 {
-                    if(mb_strlen($_FILES['file1']['name'][$i],'utf-8') > 300)
-                    {
-                        throw new PDOException("file name is too long to be stored in database.");
-                        array_push($nameTooLong,$_FILES['file1']['name'][$i]);
-                    }
-                    else
-                    {
-                        array_push($roomPictureURLs,$_FILES['file1']['name'][$i]);
-                    }
+                    $fileType = end(explode('.', $_FILES['file1']['name'][$i]));
+                    $tempFileName = random_filename(150,'',$fileType);
+                    array_push($fileNameArr,$tempFileName);
+                    array_push($roomPictureURLs,$tempFileName);
                 }
 
 
@@ -246,32 +259,26 @@ else
                         # 檢查檔案是否上傳成功
                         if ($_FILES['file1']['error'][$i] === UPLOAD_ERR_OK)
                         {
-                            // echo '檔案名稱: ' . $_FILES['file1']['name'][$i] . ".\n";
-                            // echo '檔案類型: ' . $_FILES['file1']['type'][$i] . ".\n";
-                            // echo '檔案大小: ' . ($_FILES['file1']['size'][$i] / 1024) . "KB\n";
-                            // echo '暫存名稱: ' . $_FILES['file1']['tmp_name'][$i] . ".\n";
+
                     
-                            $uploaddir = dirname(dirname(dirname(__FILE__))) . "/files/roomImages/";
+                            $uploaddir = "../../files/roomImages/" . $thisUser;
+                            mkdir($uploaddir);
+                
+                            move_uploaded_file($_FILES['file1']['tmp_name'][$i], $uploaddir . "/" . $fileNameArr[$i]);
                         
                             # 檢查檔案是否已經存在
-                            if (file_exists($uploaddir . $_FILES['file1']['name'][$i]))
-                            {
-                                // echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . " has already existed."));
-                                throw new PDOException("file has already existed.");
-                            }else if(in_array($_FILES['file1']['name'][$i],$nameTooLong)) 
-                            {
-                                //檔名太長，不能存進database
-                                // echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . "'s file name is too long to be stored in database."));
-                                throw new PDOException("file name is too long to be stored in database.");
-                            }
-                            else {
-                                $file = $_FILES['file1']['tmp_name'][$i];
-                                $dest = $uploaddir . $_FILES['file1']['name'][$i];
+                            // if (file_exists($uploaddir . $_FILES['file1']['name'][$i]))
+                            // {
+                            //     // echo json_encode(array("success" => 0,"message" => $_FILES['file1']['name'][$i] . " has already existed."));
+                            //     throw new PDOException("file has already existed.");
+                            // }else {
+                            //     $file = $_FILES['file1']['tmp_name'][$i];
+                            //     $dest = $uploaddir . $_FILES['file1']['name'][$i];
                         
-                                # 將檔案移至指定位置
-                                move_uploaded_file($file, $dest);
-                                // echo json_encode(array("success" => 1,"message" => $thisUser . "File successfully uploaded."));
-                            }
+                            //     # 將檔案移至指定位置
+                            //     move_uploaded_file($file, $dest);
+                            //     // echo json_encode(array("success" => 1,"message" => $thisUser . "File successfully uploaded."));
+                            // }
                         } else {
                             // echo json_encode(array("success" => 0,"message" => $thisUser . "failed upload."));
                             throw new PDOException("failed upload.");

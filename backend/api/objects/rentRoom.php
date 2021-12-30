@@ -62,6 +62,27 @@ class RentRoom{
         }
     }
 
+    function readRoomByRoomID(){
+        try{
+            // query to read single record
+            $query = "SELECT * FROM `rentRoom` NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `room_ID` = ?;";
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+        
+            // bind id of product to be updated
+            $stmt->bindParam(1, $this->room_ID);
+        
+            // execute query
+            $stmt->execute();
+
+            return $stmt;
+        }catch(PDOException $e)
+        {
+            echo $e->getMessage();
+            throw $e;
+        }
+    }
+
     // used when filling up the update product form
     function getRoomByFilter(){
         try{

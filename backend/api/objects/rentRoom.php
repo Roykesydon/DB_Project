@@ -87,7 +87,7 @@ class RentRoom{
 
     function readAllRoom($index){
         // query to read single record
-        $query = "SELECT * FROM {$this->table_name} ORDER BY 'room_ID' LIMIT ?, ?;";
+        $query = "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` ORDER BY 'room_ID' LIMIT ?, ?;";
 
         // prepare query statement
         $stmt = $this->conn->prepare( $query );

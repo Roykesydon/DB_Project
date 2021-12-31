@@ -182,7 +182,7 @@ class RentRoom{
 
     function updateRoom(){
         try{
-            // query to insert record
+            // query to update record
             $query = "UPDATE {$this->table_name} 
                         set `room_name` = ?,
                             `address` = ?,
@@ -223,6 +223,25 @@ class RentRoom{
         }
 
 
+    }
+
+    function deleteRoom()
+    {
+        try{
+            // query to delete record
+            $query = "DELETE FROM `rentRoom` WHERE `room_ID` = ?;";
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+            //bind Param to the corresponding question mark placeholder
+            $stmt->bindValue(1,$this->room_ID);
+            //execute the SQL instruction
+            $stmt->execute();
+            
+            return true;
+        }catch(PDOException $e)
+        {
+            throw $e;
+        }
     }
     
 }

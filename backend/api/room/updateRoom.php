@@ -35,7 +35,6 @@ $roomService = new RoomService($db);
 //instantiate authentication objects
 $allHeaders = getallheaders();
 $auth = new Auth($db,$allHeaders);
-// echo $auth->getSecret();
 $returnData = [
     "success" => 0,
     "status" => 401,

@@ -63,5 +63,47 @@ class RoomService{
         // }
     }
 
+    function updateRoomService()
+    {
+        try{
+            // query to insert record
+            $query = "UPDATE {$this->table_name}
+                        set `wifi` = ?,
+                            `internet` = ?,
+                            `tv` = ?,
+                            `refrigerator` = ?,
+                            `parking` = ?,
+                            `ac` = ?,
+                            `washing_machine` = ?,
+                            `can_cooking` = ?,
+                            `can_keep_pet` = ?,
+                            `elevator` = ?
+                      WHERE `room_ID` = ?;";
+
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(1,$this->wifi);
+            $stmt->bindParam(2,$this->internet);
+            $stmt->bindParam(3,$this->tv);
+            $stmt->bindParam(4,$this->refrigerator);
+            $stmt->bindParam(5,$this->parking);
+            $stmt->bindParam(6,$this->ac);
+            $stmt->bindParam(7,$this->washing_machine);
+            $stmt->bindParam(8,$this->can_cooking);
+            $stmt->bindParam(9,$this->can_keep_pet);
+            $stmt->bindParam(10,$this->elevator);
+            $stmt->bindParam(11,$this->room_ID);
+            //execute the SQL stmt
+            $stmt->execute();
+
+            return true;
+        }catch(PDOException $e)
+        {
+            throw $e;
+        }
+
+    }
+
 }
 ?>

@@ -84,10 +84,10 @@ class RentRoom{
     }
 
     // used when filling up the update product form
-    function getRoomByFilter(){
+    function getRoomByFilter($index,$keyword){
         try{
             // query to read single record
-            $query = "SELECT * FROM `rentRoom` NATURAL JOIN `roomPicture` WHERE `user_ID` = ?;";
+            $query = "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` ORDER BY 'room_ID' LIMIT ?, ?;";
             // prepare query statement
             $stmt = $this->conn->prepare($query);
         
@@ -95,7 +95,7 @@ class RentRoom{
             $stmt->bindParam(1, $this->user_ID);
         
             // execute query
-            $stmt->execute();
+            $stmt->execute(array($index*20, 20));
 
             return $stmt;
         
@@ -178,6 +178,51 @@ class RentRoom{
         // else{
         //     return false;
         // }
+    }
+
+    function updateRoom(){
+        try{
+            // query to insert record
+            $query = "UPDATE {$this->table_name} 
+                        set `room_name` = ?,
+                            `address` = ?,
+                            `cost` = ?,
+                            `room_info` = ?,
+                            `room_latitude` = ?,
+                            `room_longitude` = ?,
+                            `room_city` = ?,
+                            `post_date` = ?,
+                            `live_number` = ?,
+                            `room_area` = ?
+                      WHERE `room_ID` = ?;";
+
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+            //bind Param to the corresponding question mark placeholder
+            $stmt->bindValue(1,$this->room_name);
+            $stmt->bindParam(2,$this->address);
+            $stmt->bindParam(3,$this->cost);
+            $stmt->bindParam(4,$this->room_info);
+            $stmt->bindParam(5,$this->room_latitude);
+            $stmt->bindParam(6,$this->room_longitude);
+            $stmt->bindParam(7,$this->room_city);
+            $stmt->bindParam(8,$this->post_date);
+            $stmt->bindParam(9,$this->live_number);
+            $stmt->bindParam(10,$this->room_area);
+            $stmt->bindParam(11,$this->room_ID);
+            //execute the SQL instruction
+            $stmt->execute();
+            
+            return true;
+        }catch(PDOException $e)
+        {
+            // tell the user
+            // echo json_encode(array("success" => "0","message" => "Unable to create roominfo."));
+
+            throw $e;
+        }
+
+
     }
     
 }

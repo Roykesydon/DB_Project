@@ -67,7 +67,7 @@ $fileNameArr = array();
 // IF REQUEST METHOD IS NOT EQUAL TO POST
 if ($_SERVER["REQUEST_METHOD"] != "POST") 
 {
-    echo array("success" => 0 , "status" => 404,"message" => "Page Not Found!");
+    echo json_encode(array("success" => 0 , "status" => 404,"message" => "Page Not Found!"));
 }
 else
 {

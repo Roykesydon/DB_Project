@@ -107,23 +107,23 @@ else
                     $now_email_stmt->bindParam(1,$thisUser);
                     $now_email_stmt->execute();
                     $now_email = $now_email_stmt->fetch(PDO::FETCH_ASSOC);
-                }catch(PDOException $e)
-                {
-                    echo $e->getMessage();
-                }
-                if(strcmp($check_email['email'],$now_email['email']) != 0 && $check_email_stmt->rowCount())
-                    $returnMsg = msg(0,422, 'This E-mail already in use!');
-                else
-                {
-                    $User->email = $data["email"];
-                    $User->user_name = $data["user_name"];
-                    $User->phone_number = $data["phoneNumber"];
-                    $User->user_ID = $thisUser;
+                // }catch(PDOException $e)
+                // {
+                //     echo $e->getMessage();
+                // }
+                    if(strcmp($check_email['email'],$now_email['email']) != 0 && $check_email_stmt->rowCount())
+                        $returnMsg = msg(0,422, 'This E-mail already in use!');
+                    else
+                    {
+                        $User->email = $data["email"];
+                        $User->user_name = $data["user_name"];
+                        $User->phone_number = $data["phoneNumber"];
+                        $User->user_ID = $thisUser;
 
-                    //Initiates the transaction
-                    $db->beginTransaction();
+                        //Initiates the transaction
+                        $db->beginTransaction();
 
-                    try{
+                        // try{
                         if($User->updateProfile())
                         {
                             // set response code - 200 success
@@ -153,16 +153,26 @@ else
                         // set response code - 200 OK
                         http_response_code(200);
                         $returnMsg = msg(1,200,"Update User profile success!");
-                    }catch(PDOException $e)
-                    {
-                        //error
-                        http_response_code(503);
-                        // echo $e->getMessage() . "\n";
-                        $returnMsg = msg(0,503,"Unable to update User profile. Because " . $e->getMessage());
-                        // echo json_encode(array("success" => 0,"message" => "Unable to create whole room. Because " . $e->getMessage()));
-                        //Rolls back the transaction
-                        $db->rollBack();
+                    // }catch(PDOException $e)
+                    // {
+                    //     //error
+                    //     http_response_code(503);
+                    //     // echo $e->getMessage() . "\n";
+                    //     $returnMsg = msg(0,503,"Unable to update User profile. Because " . $e->getMessage());
+                    //     // echo json_encode(array("success" => 0,"message" => "Unable to create whole room. Because " . $e->getMessage()));
+                    //     //Rolls back the transaction
+                    //     $db->rollBack();
+                    // }
                     }
+                }catch(PDOException $e)
+                {
+                    //error
+                    http_response_code(503);
+                    // echo $e->getMessage() . "\n";
+                    $returnMsg = msg(0,503,"Unable to update User profile. Because " . $e->getMessage());
+                    // echo json_encode(array("success" => 0,"message" => "Unable to create whole room. Because " . $e->getMessage()));
+                    //Rolls back the transaction
+                    $db->rollBack();
                 }
             }
         }else{

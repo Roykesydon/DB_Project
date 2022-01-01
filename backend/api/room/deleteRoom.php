@@ -37,6 +37,11 @@ $returnData = [
     "status" => 401,
     "message" => "Unauthorized"
 ];
+$returnMsg = [
+    "success" => 0,
+    "status" => 401,
+    "message" => "Unauthorized"
+];
 
 $fileNameArr = array();
 $URLs = array();
@@ -44,7 +49,8 @@ $URLs = array();
 // IF REQUEST METHOD IS NOT EQUAL TO POST
 if ($_SERVER["REQUEST_METHOD"] != "POST") 
 {
-    echo json_encode(array("success" => 0 , "status" => 404,"message" => "Page Not Found!"));
+    http_response_code(404);
+    $returnMsg = msg(0,404,"Page Not Found!");
 }
 else
 {
@@ -72,32 +78,69 @@ else
         $checkUserID = $stmt->fetch();
         //room owner's user_ID
         $roomUser = $checkUserID['user_ID'];
-        //set the file route
-        $baseURL = "../../files/roomImages/" . $roomUser . "/";
-        //delete the old pictures
-        $query = "SELECT * FROM `roomPicture` WHERE `room_ID` = ?;";
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(1,$room_ID);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        //確定目前的房間是不是這個User的
+        if(strcmp($thisUser,$checkUserID) == 0)
+        {
+            try{
+                //set room_ID
+                $rentRoom->room_ID = $room_ID;
+                //set the file route
+                $baseURL = "../../files/roomImages/" . $roomUser . "/";
+                //delete the old pictures
+                $query = "SELECT * FROM `roomPicture` WHERE `room_ID` = ?;";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(1,$room_ID);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                // echo var_dump($row);
+                array_push($URLs,$row["pictureURL_one"],$row["pictureURL_two"],$row["pictureURL_three"],$row["pictureURL_four"],$row["pictureURL_five"],$row["pictureURL_six"],$row["pictureURL_seven"],$row["pictureURL_eight"]);
+                //delete null value
+                $URLs = array_filter($URLs);
+                // echo var_dump($URLs);
+                for($i = 0;$i<count($URLs);$i++)
+                    $URLs[$i] =  $baseURL . $URLs[$i];
+                //Initiates the transaction
+                $db->beginTransaction();
 
-        array_push($URLs,$row["pictureURL_one"],$row["pictureURL_two"],$row["pictureURL_three"],$row["pictureURL_four"],$row["pictureURL_five"],$row["pictureURL_six"],$row["pictureURL_seven"],$row["pictureURL_eight"]);
-        //delete null value
-        $URLs = array_filter($URLs);
-        for($i = 0;$i<count($URLs);$i++)
-            $URLs[$i] =  $baseURL . $URLs[$i];
-        for($i = 0;$i < count($URLs);$i++)
-            unlink($URLs[$i]);
+                if($rentRoom->deleteRoom())
+                {
+                    // set response code - 200 success
+                    http_response_code(200);
+                }
 
-        # 取得上傳檔案數量
-        $fileCount = count($_FILES['file1']['name']);
+                //delete the room pictures
+                for($i = 0;$i < count($URLs);$i++)
+                    unlink($URLs[$i]);
 
+                //commit the transaction
+                $db->commit();
 
+                $returnMsg = msg(1,200,"Delete room success!");
+            }catch(PDOException $e)
+            {
+                //error
+                http_response_code(503);
+                // echo $e->getMessage() . "\n";
+                echo json_encode(array("success" => 0,"message" => "Unable to update whole room. Because " . $e->getMessage()));
+                //Rolls back the transaction
+                $db->rollBack();
+            }
+        }
+        else{
+            // set response code - 422 bad request
+            http_response_code(403);
+        
+            // tell the user
+            $returnMsg = msg(0,403,"This room isn't yours or room_ID is empty.");
+        }
             
     }else{
-        echo json_encode(array("success" => 0,"message" => "invalid token."));
+        http_response_code(403);
+        $returnMsg = msg(0,403,"invalid token.");
     }
 }
+//return message
+echo json_encode($returnMsg);
 //close the database connection
 $db = null;
 ?>

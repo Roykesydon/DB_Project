@@ -67,7 +67,7 @@ $fileNameArr = array();
 // IF REQUEST METHOD IS NOT EQUAL TO POST
 if ($_SERVER["REQUEST_METHOD"] != "POST") 
 {
-    echo array("success" => 0 , "status" => 404,"message" => "Page Not Found!");
+    echo json_encode(array("success" => 0 , "status" => 404,"message" => "Page Not Found!"));
 }
 else
 {
@@ -118,9 +118,9 @@ else
             else if(!in_array($data["room_city"],$cityList))
                 echo json_encode(array("success" => 0,"message" => "City must be in citylist."));
             else if($data["room_latitude"] < -90.0 || $data["room_latitude"] > 90.0)
-                echo json_encode(array("success" => 0,"message" => "Latitude must be > -90.0 and < 90.0"));
+                echo json_encode(array("success" => 0,"message" => "Latitude must be >= -90.0 and <= 90.0"));
             else if($data["room_longtitude"] < -180.0 || $data["room_longtitude"] > 180.0)
-                echo json_encode(array("success" => 0,"message" => "Longtitude must be > -180.0 and < 180.0"));
+                echo json_encode(array("success" => 0,"message" => "Longtitude must be >= -180.0 and <= 180.0"));
             else{
                 
                 //create room

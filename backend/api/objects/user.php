@@ -47,7 +47,7 @@ class User{
     function getProfileByUserID()
     {
         try{
-            // query to insert record
+            // query to get record
             $query = "SELECT `user_ID`, `user_name`, `email`, `phone_number` FROM `user` WHERE `user_ID` = ?";
 
             // prepare query statement
@@ -57,6 +57,32 @@ class User{
             $stmt->execute();
 
             return $stmt;
+        }catch(PDOException $e)
+        {
+            throw $e;
+        }
+    }
+    //update the User's information
+    function updateProfile()
+    {
+        try{
+            // query to update record
+            $query = "UPDATE `user` 
+                        set `user_name` = ?,
+                            `email` = ?,
+                            `phone_number` = ?
+                      WHERE `user_ID` = ?;";
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+            //bind Param value to question marks
+            $stmt->bindParam(1,$this->user_name);
+            $stmt->bindParam(2,$this->email);
+            $stmt->bindParam(3,$this->phone_number);
+            $stmt->bindParam(4,$this->user_ID);
+            //execute the instruction
+            $stmt->execute();
+
+            return true;
         }catch(PDOException $e)
         {
             throw $e;

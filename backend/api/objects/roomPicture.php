@@ -59,5 +59,42 @@ class RoomPicture{
         // }
     }
 
+    function updateRoomPicture()
+    {
+        try{
+            // query to insert record
+            $query = "UPDATE {$this->table_name} 
+                        set `pictureURL_one` = ?,
+                            `pictureURL_two` = ?,
+                            `pictureURL_three` = ?,
+                            `pictureURL_four` = ?,
+                            `pictureURL_five` = ?,
+                            `pictureURL_six` = ?,
+                            `pictureURL_seven` = ?,
+                            `pictureURL_eight` = ?
+                      WHERE `room_ID` = ?;";
+
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(1,$this->pictureURL_one);
+            $stmt->bindParam(2,$this->pictureURL_two);
+            $stmt->bindParam(3,$this->pictureURL_three);
+            $stmt->bindParam(4,$this->pictureURL_four);
+            $stmt->bindParam(5,$this->pictureURL_five);
+            $stmt->bindParam(6,$this->pictureURL_six);
+            $stmt->bindParam(7,$this->pictureURL_seven);
+            $stmt->bindParam(8,$this->pictureURL_eight);
+            $stmt->bindParam(9,$this->room_ID);
+
+            $stmt->execute();
+
+            return true;
+        }catch(PDOException $e)
+        {            
+            throw $e;
+        }
+    }
+
 }
 ?>

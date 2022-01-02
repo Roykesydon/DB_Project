@@ -67,7 +67,7 @@ cursor.execute(
         pictureURL_seven varchar(300), \
         pictureURL_eight varchar(300), \
         PRIMARY KEY (room_ID), \
-        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) \
+        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) on delete cascade \
     );")
 connection.commit()
 
@@ -85,7 +85,7 @@ cursor.execute(
         can_keep_pet boolean NOT NULL, \
         elevator boolean NOT NULL, \
         PRIMARY KEY (room_ID), \
-        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) \
+        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) on delete cascade \
     );")
 connection.commit()
 
@@ -103,6 +103,6 @@ cursor.execute(
         user_ID_nine varchar(50), \
         user_ID_ten varchar(50), \
         PRIMARY KEY (room_ID), \
-        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) \
+        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) on delete cascade \
     );")
 connection.commit()

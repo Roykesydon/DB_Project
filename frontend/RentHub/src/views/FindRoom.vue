@@ -34,7 +34,7 @@
               style="max-width: 220px; width: 220px"
             >
               <template v-slot:selection="{ item, index }">
-                <v-chip v-if="index === 0"  color="primary">
+                <v-chip v-if="index === 0" color="primary">
                   <span>{{ item }}</span>
                 </v-chip>
                 <span v-if="index === 1" class="grey--text text-caption">
@@ -55,7 +55,7 @@
               style="max-width: 220px; width: 220px"
             >
               <template v-slot:selection="{ item, index }">
-                <v-chip v-if="index === 0"  color="primary">
+                <v-chip v-if="index === 0" color="primary">
                   <span>{{ item }}</span>
                 </v-chip>
                 <span v-if="index === 1" class="grey--text text-caption">
@@ -184,6 +184,7 @@ export default {
     priceMin: 0,
     priceMax: 20000,
     value: 20,
+    fetchIndex: 0,
     roomTags: [
       "Wi-Fi",
       "有線網路",
@@ -194,12 +195,36 @@ export default {
       "洗衣機",
       "開伙",
       "養寵物",
+      "電梯",
     ],
-    cities: ["台北市", "基隆市", "桃園市"],
+    cities: [
+      "新北市",
+      "臺北市",
+      "桃園市",
+      "臺中市",
+      "臺南市",
+      "高雄市",
+      "新竹縣",
+      "苗栗縣",
+      "彰化縣",
+      "南投縣",
+      "雲林縣",
+      "嘉義縣",
+      "屏東縣",
+      "宜蘭縣",
+      "花蓮縣",
+      "臺東縣",
+      "澎湖縣",
+      "金門縣",
+      "連江縣",
+      "基隆市",
+      "新竹市",
+      "嘉義市",
+    ],
     items: [],
   }),
   mounted() {
-    this.fetchTestData();
+    // this.fetchTestData();
     // console.log(document.getElementById("keyWord").value);
     // console.log(this.$cookies.isKey("user_session"));
     // console.log(this.$cookies.get("user_session"));
@@ -286,6 +311,7 @@ export default {
         this.loading = false;
       });
     },
+    
     getPicture(index) {
       return "https://picsum.photos/1920/1080?" + index + String(Date.now());
     },

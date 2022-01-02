@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 // database connection will be here
@@ -58,7 +58,12 @@ $returnMsg = [
 ];
 
 // IF REQUEST METHOD IS NOT EQUAL TO POST
-if ($_SERVER["REQUEST_METHOD"] != "POST") 
+if ($_SERVER["REQUEST_METHOD"] == "OPTIONS") 
+{
+    http_response_code(200);
+    $returnMsg = msg(0,200,"options");
+}
+else if ($_SERVER["REQUEST_METHOD"] != "POST") 
 {
     http_response_code(404);
     $returnMsg = msg(0,404,"Page Not Found!");
@@ -68,7 +73,7 @@ else
     //create data array
     // $data = json_decode(file_get_contents("php://input"),true);
     $data = $_POST;
-
+    
     if($auth->isAuth())
     {
         // enter here if is log in

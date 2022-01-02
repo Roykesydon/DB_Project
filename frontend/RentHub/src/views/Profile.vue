@@ -19,10 +19,23 @@
             <div
               class="text-h4 my-3"
               style="text-align: center"
-              v-if="isSelfProfile"
+              v-if="!isSelfProfile"
             >
               {{ name }}
             </div>
+            <v-row class="mx-auto">
+              <v-col class="mx-auto" cols="7">
+                <v-text-field
+                  class="ma-3 my-auto centered-input text-h4"
+                  v-model="name"
+                  :rules="[rules.required, rules.name]"
+                  v-if="isSelfProfile"
+                  hide-details="auto"
+                  max-width="20px"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
             <v-divider class="my-7"></v-divider>
             <div>
               <v-row>
@@ -69,8 +82,7 @@
                     class="ma-3 my-auto"
                     v-model="email"
                     counter
-                    readonly
-                    :rules="[rules.required, rules.phoneNumber]"
+                    :rules="[rules.required, rules.email]"
                     maxlength="50"
                     hide-details="auto"
                   ></v-text-field
@@ -129,26 +141,6 @@
                       height="350px"
                       max-width="500"
                     >
-                      <!-- <carousel
-                        :perPage="1"
-                        :loop="true"
-                        :centerMode="true"
-                        paginationPosition="bottom-overlay"
-                        :paginationActiveColor="primary"
-                        :paginationEnabled="true"
-                        :navigationEnabled="false"
-                        
-                        class="ma-10"
-                      >
-                        <slide v-for="(item_src, j) in item.src" :key="j">
-                          <v-img
-                            :src="item_src"
-                            aspect-ratio="2.0"
-                            max-height="300"
-                            class="my-auto mx-auto"
-                          ></v-img>
-                        </slide>
-                      </carousel> -->
                       <v-carousel
                         height="250"
                         hide-delimiter-background
@@ -212,6 +204,7 @@
 import Vue from "vue";
 import { Carousel, Slide } from "vue-carousel";
 import * as CONFIG from "../../public/config";
+import app from "../App";
 export default {
   name: "Profile",
 
@@ -231,7 +224,7 @@ export default {
   data: () => ({
     isSelfProfile: false,
     profileImage: "../assets/blank-profile-picture.png",
-    name: "Roykesydone",
+    name: "無資料",
     rules: CONFIG.rules,
     phone_number: "無資料",
     email: "無資料",
@@ -391,11 +384,10 @@ export default {
           params: { user_ID: this.$route.params["id"] },
         })
         .then((res) => {
-          console.log(res.data.record)
-          _this.email = res.data.record[0]['email'];
-          _this.name = res.data.record[0]['user_name'];
-          _this.phone_number = res.data.record[0]['phone_number'];
-          
+          console.log(res.data.record);
+          _this.email = res.data.record[0]["email"];
+          _this.name = res.data.record[0]["user_name"];
+          _this.phone_number = res.data.record[0]["phone_number"];
         })
         .catch((error) => {
           Vue.$toast.open({
@@ -408,6 +400,51 @@ export default {
           console.log("network error!");
           console.error(error.response);
         });
+      this.$axios
+        .get("http://localhost:8000/api/room/readRoomByUserID.php", {
+          params: { user_ID: this.$route.params["id"] },
+        })
+        .then((res) => {
+          console.log(res.data.records);
+          this.items = [];
+          let data = res.data.records;
+          for (let i = 0; i < data.length; i++) {
+            let tmp = {
+              title: data[i].room_name,
+              src: [],
+              address: data[i].address,
+              cost: data[i].cost,
+              capacity: data[i].live_number,
+              roomID: data[i].room_ID,
+            };
+            for (let j = 0; j < data[i].URLs.length; j++) {
+              console.log(
+                "http://localhost:8000/api/room/getRoomPicture.php?user_ID=" +
+                  this.$route.params["id"] +
+                  "&URL=" +
+                  data[i].URLs[j]
+              );
+              tmp.src.push(
+                "http://localhost:8000/api/room/getRoomPicture.php?user_ID=" +
+                  this.$route.params["id"] +
+                  "&URL=" +
+                  data[i].URLs[j]
+              );
+            }
+            this.items.push(tmp);
+          }
+        })
+        .catch((error) => {
+          Vue.$toast.open({
+            message: "發生錯誤",
+            type: "error",
+            position: "top",
+            duration: 3000,
+            // all of other options may go here
+          });
+          console.log("network error!");
+          console.error(error);
+        });
     },
 
     updateProfile() {
@@ -415,13 +452,13 @@ export default {
       console.log(`Bearer ${this.$cookies.get("token")}`);
       let formData = new FormData();
       formData.append("file", this.uploadPicture);
-      // formData.append("user_ID", "12345678");
-      // formData.append("selectTags", this.selectTags);
-      // formData.append("selectCity", this.selectCity);
-      // formData.append("description", this.description);
+      formData.append("user_name", this.name);
+      formData.append("email", this.email);
+      formData.append("phoneNumber", this.phone_number);
       this.$axios
-        .get("http://localhost:8000/api/user/uploadProfile.php", formData, {
+        .post("http://localhost:8000/api/user/updateProfile.php", formData, {
           headers: {
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${this.$cookies.get("token")}`,
           },
         })
@@ -452,15 +489,34 @@ export default {
           }
         })
         .catch((error) => {
+          // Vue.$toast.open({
+          //   message: "發生錯誤",
+          //   type: "error",
+          //   position: "top",
+          //   duration: 3000,
+          //   // all of other options may go here
+          // });
+          console.log("network error!");
+          console.error(error.response.data);
+          let errorMessage = error.response.data.message;
+          if (errorMessage == "invalid token.") {
+            errorMessage = "登入過期，請重新登入";
+            console.log(app);
+            this.$cookies.remove("token");
+            this.$cookies.remove("alreadyLogin");
+            this.$cookies.remove("user_ID");
+            setTimeout(function () {
+              location.reload();
+            }, 1500);
+          }
+
           Vue.$toast.open({
-            message: "發生錯誤",
+            message: errorMessage,
             type: "error",
             position: "top",
             duration: 3000,
             // all of other options may go here
           });
-          console.log("network error!");
-          console.error(error.response);
         });
     },
   },
@@ -487,6 +543,9 @@ export default {
   border-radius: 10px;
 }
 
+.centered-input >>> input {
+  text-align: center;
+}
 /* .VueCarousel-pagination{
   float:left;
   position: absolute;

@@ -112,7 +112,7 @@
                 dense
                 multiple
                 class="my-auto"
-                :rules="[rules.arrayRequired]"
+                :rules="[rules.arrayRequired,rules.files]"
                 accept="image/png, image/jpeg, image/bmp"
                 v-model="uploadPictures"
                 prepend-icon="mdi-camera"
@@ -291,8 +291,10 @@ export default {
      **/
     registerRoom() {
       this.dialog = false;
+      console.log(this.uploadPictures[0]);
       if (!this.$refs.form.validate()) return;
       // console.log(this.uploadPictures);
+
       let formData = new FormData();
       for (let i = 0; i < this.uploadPictures.length; i++)
         formData.append("file1[]", this.uploadPictures[i]);
@@ -300,8 +302,8 @@ export default {
       formData.append("tag", this.selectTags);
       formData.append("room_city", this.selectCity);
       formData.append("room_info", this.description);
-      formData.append("cost",this.roomCost);
-      formData.append("address",this.address);
+      formData.append("cost", this.roomCost);
+      formData.append("address", this.address);
       formData.append("room_name", this.roomName);
       formData.append("room_latitude", this.lat);
       formData.append("room_longtitude", this.lng);
@@ -319,48 +321,47 @@ export default {
 
       console.log();
       console.log(formData);
-      if(this.$cookies.get("alreadyLogin")){
+      if (this.$cookies.get("alreadyLogin")) {
         this.$axios
-        .post("http://localhost:8000/api/room/createRoom.php", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${this.$cookies.get("token")}`,
-          },
-        })
-        .then((res) => {
-          console.log(res.data)
-          if (res.data.success) {
-            console.log("success!");
-            // console.log(res.data.message);
-            Vue.$toast.open({
-              message: "登記成功!",
-              type: "success",
-              position: "top",
-              duration: 2000,
-              // all of other options may go here
-            });
-          } else {
-            console.log("登記失敗!");
-            let errorMessage = res.data.message;
-            if (errorMessage == "invalid token")
-              errorMessage = "用戶資訊已失效 請重新登入";
-            Vue.$toast.open({
-              message: errorMessage,
-              type: "error",
-              position: "top",
-              duration: 4000,
-              // all of other options may go here
-            });
-            console.log(res);
-            console.log(res.data.message);
-          }
-        })
-        .catch((error) => {
-          console.log("network error!");
-          console.error(error.response.data.message);
-        });
-      }
-      else{
+          .post("http://localhost:8000/api/room/createRoom.php", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${this.$cookies.get("token")}`,
+            },
+          })
+          .then((res) => {
+            console.log(res.data);
+            if (res.data.success) {
+              console.log("success!");
+              // console.log(res.data.message);
+              Vue.$toast.open({
+                message: "登記成功!",
+                type: "success",
+                position: "top",
+                duration: 2000,
+                // all of other options may go here
+              });
+            } else {
+              console.log("登記失敗!");
+              let errorMessage = res.data.message;
+              if (errorMessage == "invalid token")
+                errorMessage = "用戶資訊已失效 請重新登入";
+              Vue.$toast.open({
+                message: errorMessage,
+                type: "error",
+                position: "top",
+                duration: 4000,
+                // all of other options may go here
+              });
+              console.log(res);
+              console.log(res.data.message);
+            }
+          })
+          .catch((error) => {
+            console.log("network error!");
+            console.error(error.response.data.message);
+          });
+      } else {
         Vue.$toast.open({
           message: "您必須先登入",
           type: "info",
@@ -369,8 +370,6 @@ export default {
           // all of other options may go here
         });
       }
-      
-
 
       console.log(this.uploadPictures);
     },
@@ -582,6 +581,12 @@ export default {
           _this.moveToOnlyMarker();
         } else {
           console.log("查無此處");
+          Vue.$toast.open({
+            message: "查無此處",
+            type: "error",
+            position: "top",
+            duration: 4000,
+          });
         }
       });
     },

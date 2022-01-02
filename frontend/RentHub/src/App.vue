@@ -202,6 +202,11 @@ export default {
       });
       return themeColors;
     },
+    // alreadyLogin(){
+    //   if(this.$cookies.isKey("alreadyLogin"))
+    //     return true;
+    //   return false;
+    // }
   },
   methods: {
     signOut() {
@@ -210,16 +215,16 @@ export default {
       this.$cookies.remove("user_ID");
       this.alreadyLogin = false;
       Vue.$toast.open({
-        message: "登出成功! 重新導至首頁",
+        message: "登出成功!",
         type: "success",
         position: "top",
         duration: 3000,
         // all of other options may go here
       });
-      let _this = this;
-      setTimeout(function () {
-        _this.$router.push("/");
-      }, 2000);    
+      // let _this = this;
+      // setTimeout(function () {
+      //   _this.$router.push("/");
+      // }, 2000);
     },
     getProfileUrl() {
       return "/profile/" + this.$cookies.get("user_ID");
@@ -251,10 +256,10 @@ export default {
             this.$cookies.set("user_ID", this.user_ID);
             this.alreadyLogin = true;
             this.$cookies.set("alreadyLogin", true);
+            this.alreadyLogin = true;
           } else {
             let errorMessage = res.data.message;
-            if (errorMessage == "Invalid user_ID!")
-              errorMessage = "信箱不存在";
+            if (errorMessage == "Invalid user_ID!") errorMessage = "帳號不存在";
             else if (errorMessage == "Invalid Password!")
               errorMessage = "密碼錯誤";
             Vue.$toast.open({
@@ -299,17 +304,17 @@ export default {
           if (res.data.success) {
             console.log("success!");
             Vue.$toast.open({
-              message: "註冊成功! 正在跳轉頁面",
+              message: "註冊成功!",
               type: "success",
               position: "top",
               duration: 2000,
               // all of other options may go here
             });
             this.signUpOverlay = false;
-            let _this = this;
-            setTimeout(function () {
-              _this.$router.push("findRoom");
-            }, 2000);
+            // let _this = this;
+            // setTimeout(function () {
+            //   _this.$router.push("findRoom");
+            // }, 2000);
             // this.$cookies.set("token", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
             // this.alreadyLogin = true;
             console.table(res.data);
@@ -357,7 +362,6 @@ export default {
     signUpValid: false,
     loginOverlay: false,
     loginOrSignUp: 0,
-    alreadyLogin: false,
     account: null,
     email: null,
     phoneNumber: null,
@@ -366,7 +370,8 @@ export default {
     name: null,
     showPassword: false,
     showCheckPassword: false,
-    user_ID:"",
+    user_ID: "",
+    alreadyLogin:false,
   }),
 };
 </script>

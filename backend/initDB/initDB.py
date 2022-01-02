@@ -8,19 +8,21 @@ with open('config.yml', 'r') as f:
 connection = pymysql.connect(host=cfg['db']['host'],user=cfg['db']['user'],password=cfg['db']['password'],db=cfg['db']['database'],charset='utf8mb4')
 
 cursor = connection.cursor()
-cursor.execute("DROP TABLE IF EXISTS rentRoom;")
-connection.commit()
+
 
 cursor.execute("DROP TABLE IF EXISTS roomPicture;")
-connection.commit()
-
-cursor.execute("DROP TABLE IF EXISTS user;")
 connection.commit()
 
 cursor.execute("DROP TABLE IF EXISTS roomService;")
 connection.commit()
 
 cursor.execute("DROP TABLE IF EXISTS roomQueue;")
+connection.commit()
+
+cursor.execute("DROP TABLE IF EXISTS rentRoom;")
+connection.commit()
+
+cursor.execute("DROP TABLE IF EXISTS user;")
 connection.commit()
 
 cursor.execute(

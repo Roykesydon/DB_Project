@@ -10,17 +10,25 @@
       <v-row class="fill-height" height="100%" width="50%" style="width: 50%">
         <v-col md="6" v-if="!isRoomOwner" class="">
           <!-- <v-card color="primary"  class="text-h5 mb-2 mt-3 pa-10 pt-2 " style="float:left; z-index=-1;position: absolute;top:-10px; left:80px;" width="400px"><div class="text-truncate">{{ ownerRoomName }}</div></v-card> -->
-          <div class="text-truncate text-h3 ma-3 ml-0">{{ ownerRoomName }}</div>
+          <div class="text-truncate text-h3 ma-3 ml-0">{{ roomName }}</div>
           <v-hover v-slot="{ hover }">
             <v-card elevation="24" style="z-index=10;" color="transparent">
-              <v-tabs v-model="tab"  dark background-color="transparent">
-                <v-tab :class="(tab==0)?'subtitle-1':'subtitle-2'"> 地圖 </v-tab>
-                <v-tab :class="(tab==1)?'subtitle-1':'subtitle-2'"> 圖片 </v-tab>
+              <v-tabs v-model="tab" dark background-color="transparent">
+                <v-tab :class="tab == 0 ? 'subtitle-1' : 'subtitle-2'">
+                  地圖
+                </v-tab>
+                <v-tab :class="tab == 1 ? 'subtitle-1' : 'subtitle-2'">
+                  圖片
+                </v-tab>
               </v-tabs>
 
               <v-tabs-items v-model="tab">
                 <v-tab-item class="fill-height">
-                  <v-card width="100%" height="290px" class="text-center fill-height">
+                  <v-card
+                    width="100%"
+                    height="290px"
+                    class="text-center fill-height"
+                  >
                     <div id="map2" class="fill-height"></div>
                   </v-card>
                 </v-tab-item>
@@ -37,7 +45,6 @@
                         'show-card': hover,
                         'transparent--text': !hover,
                         'ma-5 pa-3 mx-auto': true,
-                        
                       }"
                       style="
                         z-index: 10;
@@ -55,10 +62,7 @@
                     delimiter-icon="mdi-minus"
                     show-arrows-on-hover
                   >
-                    <v-carousel-item
-                      v-for="(item_src, i) in roomInfo.src"
-                      :key="i"
-                    >
+                    <v-carousel-item v-for="(item_src, i) in src" :key="i">
                       <v-img
                         :src="item_src"
                         aspect-ratio="2.0"
@@ -80,7 +84,7 @@
               placeholder="地址"
               readonly
               outlined
-              v-model="notOwnAddress"
+              v-model="address"
             ></v-text-field>
             <v-text-field
               class="ml-5"
@@ -96,7 +100,8 @@
               placeholder="月租"
               readonly
               outlined
-              v-model="ownerRoomCost"
+              v-model="roomCost"
+              :rules="[rules.required, rules.cost]"
             ></v-text-field>
           </div>
           <v-select
@@ -112,7 +117,7 @@
             class=""
           >
             <template v-slot:selection="{ item, index }">
-              <v-chip color="primary">
+              <v-chip color="primary" :key="index">
                 <span>{{ item }}</span>
               </v-chip>
             </template></v-select
@@ -125,7 +130,7 @@
             label="介紹"
             readonly
             height="300px"
-            v-model="notOwnDescription"
+            v-model="description"
           ></v-textarea>
           <div class="d-flex align-end">
             <v-spacer></v-spacer>
@@ -138,12 +143,12 @@
               <v-card>
                 <v-card-title class="text-h5"> 屋主資訊 </v-card-title>
                 <div class="ma-5 mx-10">
-                  姓名：{{ ownerName }}<br />
-                  電話：{{ ownerPhoneNumber }}<br />
-                  信箱：{{ ownerEmail }}<br />
+                  姓名：{{ name }}<br />
+                  電話：{{ phoneNumber }}<br />
+                  信箱：{{ email }}<br />
                 </div>
                 <v-img
-                  src="../assets/blank-profile-picture.png"
+                  :src="profileSrc"
                   aspect-ratio="1"
                   height="150px"
                   width="150px"
@@ -164,9 +169,72 @@
 
         <v-col md="6" v-if="isRoomOwner">
           <div class="text-h5 mb-2 mt-3">房間資料</div>
-          <v-card width="100%" height="40%" class="text-center fill-height">
-            <div id="map"></div>
-          </v-card>
+          <v-hover v-slot="{ hover }">
+            <v-card elevation="24" style="z-index=10;" color="transparent">
+              <v-tabs v-model="tab" dark background-color="transparent">
+                <v-tab :class="tab == 0 ? 'subtitle-1' : 'subtitle-2'">
+                  地圖
+                </v-tab>
+                <v-tab :class="tab == 1 ? 'subtitle-1' : 'subtitle-2'">
+                  圖片
+                </v-tab>
+              </v-tabs>
+
+              <v-tabs-items v-model="tab">
+                <v-tab-item class="fill-height">
+                  <v-card
+                    width="100%"
+                    height="290px"
+                    class="text-center fill-height"
+                  >
+                    <div id="map" class="fill-height"></div>
+                  </v-card>
+                </v-tab-item>
+
+                <v-tab-item>
+                  <v-expand-transition
+                    ><v-card
+                      width="30%"
+                      :color="hover ? '' : 'transparent'"
+                      v-show="hover"
+                      disabled
+                      :dark="true"
+                      :class="{
+                        'show-card': hover,
+                        'transparent--text': !hover,
+                        'ma-5 pa-3 mx-auto': true,
+                      }"
+                      style="
+                        z-index: 10;
+                        position: absolute;
+                        top: 0px;
+                        right: 10px;
+                      "
+                      elevation="0"
+                      >點按圖片可切換全圖模式</v-card
+                    ></v-expand-transition
+                  >
+                  <v-carousel
+                    height="290px"
+                    hide-delimiter-background
+                    delimiter-icon="mdi-minus"
+                    show-arrows-on-hover
+                  >
+                    <v-carousel-item v-for="(item_src, i) in src" :key="i">
+                      <v-img
+                        :src="item_src"
+                        aspect-ratio="2.0"
+                        class="my-auto"
+                        :contain="roomImageContain"
+                        @click="roomImageContain = !roomImageContain"
+                        height="100%"
+                      ></v-img>
+                    </v-carousel-item>
+                  </v-carousel>
+                </v-tab-item>
+              </v-tabs-items>
+            </v-card>
+          </v-hover>
 
           <div class="d-flex mb-0 sc3 mt-5">
             <v-text-field
@@ -175,6 +243,8 @@
               outlined
               clearable
               id="address"
+              :rules="[rules.required, rules.address]"
+              :value="address"
             ></v-text-field>
             <v-btn
               x-large
@@ -187,84 +257,90 @@
               同步至輸入地址
             </v-btn>
           </div>
-          <div class="d-flex">
-            <v-text-field
-              class=""
-              label="房屋名稱"
-              placeholder="房屋名稱"
-              id="roomName"
-              :value="roomName"
-              outlined
-            ></v-text-field>
-            <v-text-field
-              class="ml-5"
-              label="月租"
-              id="roomCost"
-              :value="roomCost"
-              placeholder="月租"
-              outlined
-            ></v-text-field>
-          </div>
-          <div class="d-flex">
-            <v-select
-              :items="roomTags"
-              item-text="text"
-              attach
-              chips
-              label="標籤"
-              v-model="selectTags"
-              multiple
-              outlined
-              class="mr-5"
-            >
-              <template v-slot:selection="{ item, index }">
-                <v-chip v-if="index == 0" color="primary">
-                  <span>{{ item }}</span>
-                </v-chip>
-                <span v-if="index === 1" class="grey--text text-caption">
-                  (+{{ selectTags.length - 1 }} others)
-                </span>
-              </template></v-select
-            >
-            <v-select
-              :items="cities"
-              item-text="text"
-              attach
-              chips
-              required
-              label="城市"
-              :rules="[rules.required]"
-              v-model="selectCity"
-              outlined
-              class="sc3"
-            >
-              <template v-slot:selection="{ item, index }">
-                <v-chip v-if="index === 0" color="primary">
-                  <span>{{ item }}</span>
-                </v-chip>
-              </template></v-select
-            >
-          </div>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <div class="d-flex">
+              <v-text-field
+                class=""
+                label="房屋名稱"
+                placeholder="房屋名稱"
+                id="roomName"
+                :value="roomName"
+                :rules="[rules.required, rules.roomName]"
+                outlined
+              ></v-text-field>
+              <v-text-field
+                class="ml-5"
+                label="月租"
+                id="roomCost"
+                :value="roomCost"
+                placeholder="月租"
+                :rules="[rules.required, rules.cost]"
+                outlined
+              ></v-text-field>
+            </div>
+            <div class="d-flex">
+              <v-select
+                :items="roomTags"
+                item-text="text"
+                attach
+                chips
+                label="標籤"
+                v-model="selectTags"
+                multiple
+                outlined
+                class="mr-5"
+              >
+                <template v-slot:selection="{ item, index }">
+                  <v-chip v-if="index == 0" color="primary">
+                    <span>{{ item }}</span>
+                  </v-chip>
+                  <span v-if="index === 1" class="grey--text text-caption">
+                    (+{{ selectTags.length - 1 }} others)
+                  </span>
+                </template></v-select
+              >
+              <v-select
+                :items="cities"
+                item-text="text"
+                attach
+                chips
+                required
+                label="城市"
+                :rules="[rules.required]"
+                v-model="selectCity"
+                outlined
+                class="sc3"
+              >
+                <template v-slot:selection="{ item, index }">
+                  <v-chip v-if="index === 0" color="primary">
+                    <span>{{ item }}</span>
+                  </v-chip>
+                </template></v-select
+              >
+            </div>
 
-          <v-divider></v-divider>
+            <v-divider></v-divider>
 
-          <v-textarea
-            no-resize
-            outlined
-            class="hide-scrollbar"
-            name="description"
-            label="介紹"
-            height="300px"
-            id="description"
-            value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
-          ></v-textarea>
-
+            <v-textarea
+              no-resize
+              outlined
+              class="hide-scrollbar"
+              name="description"
+              label="介紹"
+              height="300px"
+              id="description"
+              :value="description"
+            ></v-textarea>
+          </v-form>
           <div class="d-flex">
             <v-file-input
               label="File input"
               outlined
               dense
+              multiple
+              v-model="uploadPictures"
               class="my-auto"
+              :rules="[rules.files]"
             ></v-file-input>
             <v-dialog v-model="dialog" persistent max-width="470">
               <template v-slot:activator="{ on, attrs }">
@@ -296,7 +372,12 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-            <v-btn class="ma-5 my-auto mb-7 mr-0" x-large color="primary">
+            <v-btn
+              class="ma-5 my-auto mb-7 mr-0"
+              x-large
+              color="primary"
+              @click="updateRoom"
+            >
               更新資訊
             </v-btn>
           </div>
@@ -385,6 +466,7 @@
 
 <script>
 import * as CONFIG from "../../public/config";
+import Vue from "vue";
 export default {
   name: "RegisterRoom",
 
@@ -393,33 +475,71 @@ export default {
     // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.$config.GOOGLE-MAP-API-KEY )
     // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.googleMapAPI )
     console.log(this.$route.params["id"]);
+    let _this = this;
+    this.$axios
+      .get("http://localhost:8000/api/room/readRoomByRoomID.php", {
+        params: { room_ID: this.$route.params["id"] },
+      })
+      .then((res) => {
+        console.log(res.data[0]);
+        let data = res.data[0];
+        // console.log(data);
+        if (data.user_ID == _this.$cookies.get("user_ID")) {
+          _this.isRoomOwner = true;
+        } else {
+          _this.isRoomOwner = false;
+        }
+        _this.roomName = data.room_name;
+        _this.roomCost = data.cost;
+        _this.description = data.room_info;
+        _this.selectTags = data.services;
+        _this.selectCity = data.room_city;
+        _this.address = data.address;
+        _this.lng = parseFloat(data.room_longitude);
+        _this.lat = parseFloat(data.room_latitude);
+
+        let tmp = [];
+        for (let j = 0; j < data.URLs.length; j++) {
+          tmp.push(
+            "http://localhost:8000/api/room/getRoomPicture.php?user_ID=" +
+              data.user_ID +
+              "&URL=" +
+              data.URLs[j]
+          );
+        }
+        console.log(data.user_ID);
+        _this.profileSrc =
+          "http://localhost:8000/api/user/getProfileImage.php?user_ID=" +
+          data.user_ID;
+
+        _this.src = tmp;
+        this.$axios
+          .get("http://localhost:8000/api/user/getProfileByUserID.php", {
+            params: { user_ID: data.user_ID },
+          })
+          .then((res) => {
+            console.log(res.data.record);
+            _this.email = res.data.record[0]["email"];
+            _this.name = res.data.record[0]["user_name"];
+            _this.phoneNumber = res.data.record[0]["phone_number"];
+          })
+          .catch((error) => {
+            Vue.$toast.open({
+              message: "發生錯誤",
+              type: "error",
+              position: "top",
+              duration: 3000,
+              // all of other options may go here
+            });
+            console.log("network error!");
+            console.error(error.response);
+          });
+      })
+      .catch((error) => {
+        console.log("network error!");
+        console.error(error.response.data.message);
+      });
     this.isRoomOwner = false;
-    if (!this.isRoomOwner) {
-      this.notOwnAddress = "測試地址";
-      this.selectCity = "台北市";
-      this.selectTags = [
-        "Wi-Fi",
-        "有線網路",
-        "電視",
-        "冰箱",
-        "停車位",
-        "冷氣",
-        "洗衣機",
-        "開伙",
-        "養寵物",
-      ];
-      this.ownerRoomName = "新北市第一大豪宅";
-      this.ownerRoomCost = 8600;
-      this.notOwnDescription =
-        "這屋子有夠棒，這屋子棒到一個不行，這屋子棒到不能再更棒了！要說為什麼，要從這屋子說起，這屋子雖然屋齡高，但老酒越陳越香！這屋子有夠棒，這屋子棒到一個不行，這屋子棒到不能再更棒了！要說為什麼，要從這屋子說起，這屋子雖然屋齡高，但老酒越陳越香這屋子有夠棒，這屋子棒到一個不行，這屋子棒到不能再更棒了！要說為什麼，要從這屋子說起，這屋子雖然屋齡高，但老酒越陳越香";
-      this.ownerPhoneNumber = "085465465123";
-      this.ownerEmail = "123123@123.asdas";
-      this.ownerName = "大地主";
-    } else {
-      this.roomName = "測試名稱";
-      // console.log(document.getElementById("roomName").value)
-      // document.getElementById("roomName").text = "測試名稱"
-    }
     let recaptchaScript = document.createElement("script");
     recaptchaScript.setAttribute(
       "src",
@@ -431,52 +551,39 @@ export default {
 
     initMap();
 
-    console.log(this.tab)
+    console.log(this.tab);
   },
 
   data: () => ({
     roomImageContain: false,
     map: null,
     tab: null,
-    notOwnAddress: "",
     address: "",
-    ownerRoomName: "",
-    ownerRoomCost: 0,
+    address: "",
+    roomName: "",
+    roomCost: 0,
     markers: [],
     roomName: "",
     benched: 20,
+    profileSrc: "../assets/blank-profile-picture.png",
     selectTags: [],
     rules: CONFIG.rules,
     isRoomOwner: true,
-    notOwnDescription: "",
+    description: "",
     dialog: false,
-    ownerPhoneNumber: "",
-    ownerEmail: "",
-    ownerName: "",
+    phoneNumber: "",
+    email: "",
+    name: "",
     roomCost: 0,
-    roomInfo: {
-      title: "台北101超級無敵大全台最高豪宅",
-      src: [
-        "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
-        "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-        "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-        "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
-      ],
-      address: "台北市信義區信義路五段7號",
-      cost: 18000,
-      capacity: 3,
-      squareMeters: 11.0,
-      roomID: 123456,
-    },
+    lat: 0,
+    lng: 0,
+    src: [],
+    uploadPictures: [],
+    markers: [],
     items: [
       {
         title: "台北101超級無敵大全台最高豪宅",
-        src: [
-          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
-          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
-        ],
+        src: [],
         address: "台北市信義區信義路五段7號",
         cost: 18000,
         capacity: 3,
@@ -612,16 +719,187 @@ export default {
       "洗衣機",
       "開伙",
       "養寵物",
+      "電梯",
     ],
-    cities: ["台北市", "基隆市", "桃園市"],
+    cities: [
+      "新北市",
+      "臺北市",
+      "桃園市",
+      "臺中市",
+      "臺南市",
+      "高雄市",
+      "新竹縣",
+      "苗栗縣",
+      "彰化縣",
+      "南投縣",
+      "雲林縣",
+      "嘉義縣",
+      "屏東縣",
+      "宜蘭縣",
+      "花蓮縣",
+      "臺東縣",
+      "澎湖縣",
+      "金門縣",
+      "連江縣",
+      "基隆市",
+      "新竹市",
+      "嘉義市",
+    ],
     selectCity: null,
     nightModeStyles: CONFIG.nightModeStyles,
   }),
 
   methods: {
-    deleteRoom() {},  
+    deleteRoom() {
+      // console.log(userInfo);
+      this.$axios
+        .post(
+          "http://localhost:8000/api/room/deleteRoom.php",
+          {
+            room_ID: this.$route.params["id"],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$cookies.get("token")}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data.success) {
+            console.log("success!");
+            Vue.$toast.open({
+              message: "刪除成功!",
+              type: "success",
+              position: "top",
+              duration: 2000,
+              // all of other options may go here
+            });
+            this.signUpOverlay = false;
+            let _this = this;
+            setTimeout(function () {
+              // _this.$router.pop();
+              _this.$router.push({
+                path: "/profile/" + this.$cookies.get("user_ID"),
+              });
+            }, 1500);
+            // this.$cookies.set("token", "25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
+            // this.alreadyLogin = true;
+            console.table(res.data);
+          } else {
+            console.log(res);
+            console.log(res.data.message);
+          }
+        })
+        .catch((error) => {
+          console.log("network error!");
+          console.error(error.response);
+          let errorMessage = error.response.data.message;
+          if (errorMessage == "invalid token.") {
+            errorMessage = "登入過期，請重新登入";
+            console.log(app);
+            this.$cookies.remove("token");
+            this.$cookies.remove("alreadyLogin");
+            this.$cookies.remove("user_ID");
+            let _this = this;
+            setTimeout(function () {
+              location.reload();
+            }, 1500);
+          }
 
+          Vue.$toast.open({
+            message: errorMessage,
+            type: "error",
+            position: "top",
+            duration: 3000,
+            // all of other options may go here
+          });
+        });
+    },
+    updateRoom() {
+      if (!this.$refs.form.validate()) return;
+      let formData = new FormData();
+      // console.log(this.uploadPictures);
+      for (let i = 0; i < this.uploadPictures.length; i++)
+        formData.append("file1[]", this.uploadPictures[i]);
 
+      formData.append("room_ID", this.$route.params["id"]);
+      formData.append("tag", this.selectTags);
+      formData.append("room_city", this.selectCity);
+      formData.append(
+        "room_info",
+        document.getElementById("description").value
+      );
+      formData.append("cost", document.getElementById("roomCost").value);
+      formData.append("address", document.getElementById("address").value);
+      formData.append("room_name", document.getElementById("roomName").value);
+      formData.append("room_latitude", this.lat);
+      formData.append("room_longitude", this.lng);
+
+      console.log({
+        tag: this.selectTags,
+        room_city: this.selectCity,
+        room_info: this.description,
+        cost: this.roomCost,
+        address: this.address,
+        room_name: this.roomName,
+        room_latitude: this.lat,
+        room_longtitude: this.lng,
+      });
+
+      this.$axios
+        .post("http://localhost:8000/api/room/updateRoom.php", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${this.$cookies.get("token")}`,
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            // console.log(res.data);
+            Vue.$toast.open({
+              message: "更新成功",
+              type: "success",
+              position: "top",
+              duration: 2000,
+            });
+          } else {
+            let errorMessage = res.data.message;
+            Vue.$toast.open({
+              message: errorMessage,
+              type: "error",
+              position: "top",
+              duration: 4000,
+              // all of other options may go here
+            });
+            console.log("error!");
+            console.log(res.data.message);
+          }
+        })
+        .catch((error) => {
+          console.log("network error!");
+          console.error(error);
+          let errorMessage = error.response.data.message;
+          if (errorMessage == "invalid token.") {
+            errorMessage = "登入過期，請重新登入";
+            console.log(app);
+            this.$cookies.remove("token");
+            this.$cookies.remove("alreadyLogin");
+            this.$cookies.remove("user_ID");
+            setTimeout(function () {
+              location.reload();
+            }, 1500);
+          }
+
+          Vue.$toast.open({
+            message: errorMessage,
+            type: "error",
+            position: "top",
+            duration: 3000,
+            // all of other options may go here
+          });
+          let _this = this;
+        });
+    },
     getRoomRoute(id) {
       return "/room/" + String(id);
     },
@@ -790,6 +1068,8 @@ export default {
       let marker = this.markers[0];
       let lat = marker.getPosition().lat();
       let lng = marker.getPosition().lng();
+      this.lat = marker.getPosition().lat();
+      this.lng = marker.getPosition().lng();
       const latlng = {
         lat: parseFloat(lat),
         lng: parseFloat(lng),
@@ -860,7 +1140,7 @@ export default {
       console.log(this.tags);
       let location = null;
       var request = {
-        query: this.address,
+        query: document.getElementById("address").value,
         fields: ["name", "geometry"],
       };
       var service = new google.maps.places.PlacesService(this.map);
@@ -875,6 +1155,8 @@ export default {
             lat: results["0"]["geometry"]["location"]["lat"](),
             lng: results["0"]["geometry"]["location"]["lng"](),
           };
+          _this.lat = results["0"]["geometry"]["location"]["lat"]();
+          _this.lng = results["0"]["geometry"]["location"]["lng"]();
           // for (var i = 0; i < results.length; i++) {
           //   createMarker(results[i]);
           // }
@@ -885,6 +1167,12 @@ export default {
           _this.moveToOnlyMarker();
         } else {
           console.log("查無此處");
+          Vue.$toast.open({
+            message: "查無此處",
+            type: "error",
+            position: "top",
+            duration: 4000,
+          });
         }
       });
     },
@@ -892,8 +1180,8 @@ export default {
     initMap() {
       // 預設顯示的地點：台北市政府親子劇場
       let location = {
-        lat: 25.0374865, // 經度
-        lng: 121.5647688, // 緯度
+        lat: this.lat, // 經度
+        lng: this.lng, // 緯度
       };
       this.geocoder = new google.maps.Geocoder();
       // 建立地圖
@@ -954,7 +1242,7 @@ export default {
       });
     },
     test() {
-      console.log(this.tab)
+      console.log(this.tab);
       let location = {
         lat: 25.1374865, // 經度
         lng: 121.5647688, // 緯度

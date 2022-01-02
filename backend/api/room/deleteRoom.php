@@ -49,7 +49,7 @@ $URLs = array();
 // IF REQUEST METHOD IS NOT EQUAL TO POST
 if ($_SERVER["REQUEST_METHOD"] != "POST") 
 {
-    http_response_code(404);
+    // http_response_code(404);
     $returnMsg = msg(0,404,"Page Not Found!");
 }
 else

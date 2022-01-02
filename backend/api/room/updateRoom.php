@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 // database connection will be here
@@ -68,6 +68,7 @@ $URLs = array();
 // IF REQUEST METHOD IS NOT EQUAL TO POST
 if ($_SERVER["REQUEST_METHOD"] != "POST") 
 {
+    // http_response_code(200);
     echo json_encode(array("success" => 0 , "status" => 404,"message" => "Page Not Found!"));
 }
 else
@@ -114,7 +115,7 @@ else
                 !empty($data["address"]) &&
                 !empty($data["cost"]) &&
                 !empty($data["room_latitude"]) &&
-                !empty($data["room_longtitude"]) && 
+                !empty($data["room_longitude"]) && 
                 !empty($data["room_city"]) &&
                 $fileCount < 9)
             {
@@ -131,8 +132,8 @@ else
                     echo json_encode(array("success" => 0,"message" => "City must be in citylist."));
                 else if($data["room_latitude"] < -90.0 || $data["room_latitude"] > 90.0)
                     echo json_encode(array("success" => 0,"message" => "Latitude must be > -90.0 and < 90.0"));
-                else if($data["room_longtitude"] < -180.0 || $data["room_longtitude"] > 180.0)
-                    echo json_encode(array("success" => 0,"message" => "Longtitude must be > -180.0 and < 180.0"));
+                else if($data["room_longitude"] < -180.0 || $data["room_longitude"] > 180.0)
+                    echo json_encode(array("success" => 0,"message" => "Longitude must be > -180.0 and < 180.0"));
                 else{
                     
                     //update room
@@ -179,7 +180,7 @@ else
                     $rentRoom->cost = $data["cost"];
                     $rentRoom->room_info = $data["room_info"];
                     $rentRoom->room_latitude = $data["room_latitude"];
-                    $rentRoom->room_longitude = $data["room_longtitude"];
+                    $rentRoom->room_longitude = $data["room_longitude"];
                     $rentRoom->room_city = $data["room_city"];
                     $rentRoom->post_date = $data["post_date"];
                     $rentRoom->live_number = $data["live_number"];
@@ -283,7 +284,7 @@ else
                     }catch(PDOException $e)
                     {
                         //error
-                        http_response_code(503);
+                        // http_response_code(503);
                         // echo $e->getMessage() . "\n";
                         echo json_encode(array("success" => 0,"message" => "Unable to update whole room. Because " . $e->getMessage()));
                         //Rolls back the transaction
@@ -306,8 +307,8 @@ else
                     echo json_encode(array("success" => 0,"message" => "Unable to update room. Cost is empty or zero."));
                 else if(empty($data["room_latitude"]))
                     echo json_encode(array("success" => 0,"message" => "Unable to update room. Room_latitude is empty."));
-                else if(empty($data["room_longtitude"]))
-                    echo json_encode(array("success" => 0,"message" => "Unable to update room. Room_longtitude is empty."));
+                else if(empty($data["room_longitude"]))
+                    echo json_encode(array("success" => 0,"message" => "Unable to update room. Room_longitude is empty."));
                 else if(empty($data["room_city"]))
                     echo json_encode(array("success" => 0,"message" => "Unable to update room. Room_city is empty."));
                 else if($fileCount >= 9)

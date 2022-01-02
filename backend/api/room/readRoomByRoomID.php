@@ -60,14 +60,14 @@ else{
     try{
         $stmt = $rentRoom->readRoomByRoomID();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $baseURL = "../../files/roomImages/" . $row["user_ID"] . "/";
+        // $baseURL = "../../files/roomImages/" . $row["user_ID"] . "/";
         //read the room info by user_ID
         //處理URL
         array_push($URLs,$row["pictureURL_one"],$row["pictureURL_two"],$row["pictureURL_three"],$row["pictureURL_four"],$row["pictureURL_five"],$row["pictureURL_six"],$row["pictureURL_seven"],$row["pictureURL_eight"]);
         //delete null value
         $URLs = array_filter($URLs);
-        for($i = 0;$i<count($URLs);$i++)
-            $URLs[$i] =  $baseURL . $URLs[$i];
+        // for($i = 0;$i<count($URLs);$i++)
+        //     $URLs[$i] =  $baseURL . $URLs[$i];
         //處理services
         $temp = array();
         array_push($temp,$row["wifi"],$row["internet"],$row["tv"],$row["refrigerator"],$row["parking"],$row["ac"],$row["washing_machine"],$row["can_cooking"],$row["can_keep_pet"],$row["elevator"]);

@@ -53,7 +53,7 @@ $URLs = array();
 $services = array();
 $tagList = array("Wi-Fi","有線網路","電視","冰箱","停車位","冷氣","洗衣機","開伙","養寵物","電梯");
 
-$baseURL = "../../files/roomImages/" . $_GET['user_ID'] . "/";
+// $baseURL = "../../files/roomImages/" . $_GET['user_ID'] . "/";
 
 //check REQUEST_METHOD
 if ($_SERVER["REQUEST_METHOD"] != "GET") 
@@ -74,8 +74,8 @@ else{
             array_push($URLs,$row["pictureURL_one"],$row["pictureURL_two"],$row["pictureURL_three"],$row["pictureURL_four"],$row["pictureURL_five"],$row["pictureURL_six"],$row["pictureURL_seven"],$row["pictureURL_eight"]);
             //delete null value
             $URLs = array_filter($URLs);
-            for($i = 0;$i<count($URLs);$i++)
-                $URLs[$i] =  $baseURL . $URLs[$i];
+            // for($i = 0;$i<count($URLs);$i++)
+            //     $URLs[$i] =  $baseURL . $URLs[$i];
             //處理services
             $temp = array();
             array_push($temp,$row["wifi"],$row["internet"],$row["tv"],$row["refrigerator"],$row["parking"],$row["ac"],$row["washing_machine"],$row["can_cooking"],$row["can_keep_pet"],$row["elevator"]);

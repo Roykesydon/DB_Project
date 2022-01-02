@@ -4,7 +4,11 @@ echo "testing\n";
 
 $data = array();
 
-echo  substr(readfile("env"), strrpos(readfile("env"), '=') + 1).'\n';
+echo PHP_EOL;
+echo   substr(readfile("../../env"), strrpos(readfile("../../env"), '=') + 1).PHP_EOL.PHP_EOL;
+print_r(explode('=',file_get_contents("/var/www/html/env"))[1].PHP_EOL);
+print_r(gettype(explode('=',file_get_contents("/var/www/html/env"))[1]));
+print_r(gettype("123456"));
 
 echo "index 3 value:" . $data[3];
 

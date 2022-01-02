@@ -1,4 +1,5 @@
-docker-compose.yml
+# docker-compose.yml
 /mysql
 /backend/initDB/config.yml
 /frontend/helloworld/public/config.json
+.env

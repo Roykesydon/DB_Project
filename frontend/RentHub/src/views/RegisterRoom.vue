@@ -15,7 +15,7 @@
         </v-col>
         <v-col md="5" class="fill-width">
           <v-form ref="form" v-model="valid" lazy-validation>
-            <div class="text-h5 mb-2">填寫資料</div>
+            <div class="text-h5 mb-2">填寫資料2</div>
             <div class="d-flex mb-0">
               <v-text-field
                 class="mb-0 pb-0"

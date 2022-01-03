@@ -1,4 +1,4 @@
-# DB_Project
+# Database End of Term Project
 
 
 

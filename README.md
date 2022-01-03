@@ -23,7 +23,7 @@ npm run serve
         db:
             host : localhost
             user : root
-            password : 填寫root的密碼
+            password : "填寫root的密碼"
             database : db_final
 
     - config.js("/frontend/RentHub/public/config.js")

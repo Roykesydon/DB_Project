@@ -157,7 +157,7 @@
         >
       </v-row>
     </div>
-    <mugen-scroll :handler="fetchTestData" :should-handle="!loading">
+    <mugen-scroll :handler="fetchData" :should-handle="!loading">
       <div class="text-center ma-10">
         <v-progress-circular
           v-if="loading"
@@ -224,21 +224,10 @@ export default {
     items: [],
   }),
   mounted() {
-    // this.fetchTestData();
-    // console.log(document.getElementById("keyWord").value);
-    // console.log(this.$cookies.isKey("user_session"));
-    // console.log(this.$cookies.get("user_session"));
-    // this.$cookies.set("user_session","25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX");
-    // console.log(this.$cookies.isKey("user_session"));
-    // console.log(this.$cookies.get("user_session"));
-    // this.$cookies.remove("user_session");
-    // console.log(this.$cookies.isKey("user_session"));
+
   },
   computed: {
-    // selectTagsLength: function () {
-    //   if (this.selectTags == null) return 0;
-    //   else return this.selectTags.length;
-    // },
+
   },
   created: function () {
     VueRangeSlider.methods.handleKeyup = () => console.log;
@@ -263,55 +252,62 @@ export default {
       this.items = [];
       this.keyWord = document.getElementById("keyWord").value;
       console.log(
-        JSON.stringify({
+        {
           keyWord: this.keyWord,
           priceRange: this.priceRange,
           selectTags: this.selectTags,
-        })
+          selectCitites:this.selectCities,
+        }
       );
-
-      this.fetchTestData();
+      this.items=[];
+      this.fetchIndex = 0;
+      this.fetchData();
     },
     sleep(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
     },
-    fetchTestData() {
-      let randomSentence = require("random-sentence");
-      console.log();
+    fetchData() {
+      let _this = this;
       this.loading = true;
+      this.$axios
+        .get("http://localhost:8000/api/room/readAllRoom.php", {
+          params: { index: this.fetchIndex++ },
+        })
+        .then((res) => {
+          console.log(res.data.records);
+          // this.items = [];
+          let data = res.data.records;
+          for (let i = 0; i < data.length; i++) {
+            let tmp = {
+              title: data[i].room_name,
+              src: [],
+              address: data[i].address,
+              cost: data[i].cost,
+              capacity: data[i].live_number,
+              roomID: data[i].room_ID,
+            };
+            for (let j = 0; j < data[i].URLs.length; j++) {
+              tmp.src.push(
+                "http://localhost:8000/api/room/getRoomPicture.php?user_ID=" +
+                  data[i].user_ID +
+                  "&URL=" +
+                  data[i].URLs[j]
+              );
+            }
+            _this.items.push(tmp);
+            
+          }
+          _this.loading = false;;
+        })
+        .catch((error) => {
+          console.log("network error!");
+          console.error(error);
+        });
+      
       console.log("update");
 
-      for (let i = 0; i < 20; i++) {
-        let tmp = Object.assign(
-          {},
-          {
-            title: "台北101超級無敵大全台最高豪宅",
-            src: [
-              "https://picsum.photos/1920/1080",
-              "https://picsum.photos/1920/1080",
-              "https://picsum.photos/1920/1080",
-              "https://picsum.photos/1920/1080",
-            ],
-            address: "台北市信義區信義路五段7號",
-            cost: 18000,
-            capacity: 3,
-            squareMeters: 11.0,
-            roomID: 123456,
-          }
-        );
-        let title = randomSentence({ min: 3, max: 5 });
-        tmp.title = title.slice(0, -1);
-        tmp.cost =
-          Math.floor((Math.random() * (9000 - 3000) + 3000) / 100) * 100;
-        tmp.src = [];
-        for (let j = 0; j < 4; j++) tmp.src.push(this.getPicture(i * 4 + j));
-        this.items.push(tmp);
-      }
-      this.sleep(2000).then((response) => {
-        this.loading = false;
-      });
     },
-    
+
     getPicture(index) {
       return "https://picsum.photos/1920/1080?" + index + String(Date.now());
     },

@@ -165,9 +165,7 @@ export default {
 
   mounted() {
     let recaptchaScript = document.createElement("script");
-    // // AIzaSyA07oLGCFBea5dZRB179KhJKhrbkUzTzpE
-    // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.$config.GOOGLE-MAP-API-KEY )
-    // recaptchaScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key='+ this.googleMapAPI )
+
     recaptchaScript.setAttribute(
       "src",
       "https://maps.googleapis.com/maps/api/js?key=" +
@@ -344,7 +342,7 @@ export default {
             } else {
               console.log("登記失敗!");
               let errorMessage = res.data.message;
-              if (errorMessage == "invalid token")
+              if (errorMessage == "invalid token.")
                 errorMessage = "用戶資訊已失效 請重新登入";
               Vue.$toast.open({
                 message: errorMessage,
@@ -478,6 +476,10 @@ export default {
       }
     },
 
+
+    /*
+    * Get lat and lng of marker, write it to address
+    */
     relocateAddressWithMarker() {
       let marker = this.markers[0];
       let lat = marker.getPosition().lat();
@@ -507,6 +509,10 @@ export default {
         .catch((e) => window.alert("Geocoder failed due to: " + e));
     },
 
+
+    /*
+    * move camera to the first marker
+    */
     moveToOnlyMarker() {
       if (this.markers.length == 1) {
         this.smoothlyAnimatePanTo(this.map, this.markers[0].position);
@@ -550,6 +556,10 @@ export default {
       this.markers = [];
     },
 
+
+    /*
+    * locate the camera and marker according to the address
+    */
     relocateMapWithAddress() {
       console.log(this.tags);
       let location = null;
@@ -571,10 +581,6 @@ export default {
             lat: results["0"]["geometry"]["location"]["lat"](),
             lng: results["0"]["geometry"]["location"]["lng"](),
           };
-          // for (var i = 0; i < results.length; i++) {
-          //   createMarker(results[i]);
-          // }
-          // map.setCenter(results[0].geometry.location);
           _this.deleteMarkers();
           _this.addMarker(location, _this.map);
           _this.showMarkers();
@@ -592,31 +598,20 @@ export default {
     },
 
     initMap() {
-      // 預設顯示的地點：台北市政府親子劇場
       let location = {
-        lat: 25.0374865, // 經度
-        lng: 121.5647688, // 緯度
+        lat: 25.0374865, 
+        lng: 121.5647688, 
       };
       this.geocoder = new google.maps.Geocoder();
-      // 建立地圖
+
       this.map = new google.maps.Map(document.getElementById("map"), {
-        center: location, // 中心點座標
-        zoom: 16, // 1-20，數字愈大，地圖愈細：1是世界地圖，20就會到街道
-        /*
-          roadmap 顯示默認道路地圖視圖。
-          satellite 顯示 Google 地球衛星圖像。
-          hybrid 顯示正常和衛星視圖的混合。
-          terrain 顯示基於地形信息的物理地圖。
-        */
+        center: location, 
+        zoom: 16, 
+
         mapTypeId: "roadmap",
         disableDefaultUI: true,
       });
 
-      // 放置marker
-      // let marker = new google.maps.Marker({
-      //   position: location,
-      //   map: this.map,
-      // });
       this.addMarker(location, this.map);
 
       this.map.setOptions({
@@ -624,17 +619,6 @@ export default {
       });
     },
     async geoCoding(address) {
-      // const result = document.querySelector('.result');
-
-      // fetch('https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=台北市南港區忠孝東路七段576號&inputtype=textquery&fields=formatted_address,name,rating,opening_hours,geometry&key='+this.googleMapAPI, {mode: 'no-cors'})
-      //   .then(response =>{
-      //     console.log(response)
-      //     return  response.json();//解析成一個json 物件
-      //   }).then((jsonData) => {
-      //     console.log(jsonData);
-      //   }).catch((err) => {
-      //     console.log('錯誤:', err);
-      //   });
       var request = {
         query: address,
         fields: ["name", "geometry"],
@@ -650,10 +634,6 @@ export default {
             lat: results["0"]["geometry"]["location"]["lat"](),
             lng: results["0"]["geometry"]["location"]["lng"](),
           };
-          // for (var i = 0; i < results.length; i++) {
-          //   createMarker(results[i]);
-          // }
-          // map.setCenter(results[0].geometry.location);
         } else {
           // console.log("查無此處");
           return null;

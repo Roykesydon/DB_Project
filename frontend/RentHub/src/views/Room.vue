@@ -158,6 +158,9 @@
                 ></v-img>
                 <v-card-actions>
                   <v-spacer></v-spacer>
+                  <v-btn color="secondary" text :href="getProfileRoute()">
+                    個人資料
+                  </v-btn>
                   <v-btn color="primary" text @click="dialog = false">
                     關閉
                   </v-btn>
@@ -489,6 +492,7 @@ export default {
         } else {
           _this.isRoomOwner = false;
         }
+        _this.user_ID = data.user_ID;
         _this.roomName = data.room_name;
         _this.roomCost = data.cost;
         _this.description = data.room_info;
@@ -580,6 +584,7 @@ export default {
     src: [],
     uploadPictures: [],
     markers: [],
+    valid:true,
     items: [
       {
         title: "台北101超級無敵大全台最高豪宅",
@@ -750,6 +755,9 @@ export default {
   }),
 
   methods: {
+    getProfileRoute(){
+      return "/profile/" + this.user_ID;
+    },
     deleteRoom() {
       // console.log(userInfo);
       this.$axios
@@ -1082,10 +1090,6 @@ export default {
             console.log(response.results[0].formatted_address);
             _this.address = response.results[0].formatted_address;
 
-            // _this.deleteMarkers();
-            // _this.addMarker(latlng, _this.map)
-            // infowindow.setContent(response.results[0].formatted_address);
-            // infowindow.open(map, newMarker);
           } else {
             window.alert("No results found");
           }
@@ -1178,34 +1182,21 @@ export default {
     },
 
     initMap() {
-      // 預設顯示的地點：台北市政府親子劇場
       let location = {
-        lat: this.lat, // 經度
-        lng: this.lng, // 緯度
+        lat: this.lat, 
+        lng: this.lng, 
       };
       this.geocoder = new google.maps.Geocoder();
-      // 建立地圖
 
       let renderMap = "map";
       if (!this.isRoomOwner) renderMap = "map2";
       this.map = new google.maps.Map(document.getElementById(renderMap), {
-        center: location, // 中心點座標
-        zoom: 16, // 1-20，數字愈大，地圖愈細：1是世界地圖，20就會到街道
-        /*
-          roadmap 顯示默認道路地圖視圖。
-          satellite 顯示 Google 地球衛星圖像。
-          hybrid 顯示正常和衛星視圖的混合。
-          terrain 顯示基於地形信息的物理地圖。
-        */
+        center: location, 
+        zoom: 16, 
         mapTypeId: "roadmap",
         disableDefaultUI: true,
       });
 
-      // 放置marker
-      // let marker = new google.maps.Marker({
-      //   position: location,
-      //   map: this.map,
-      // });
       this.addMarker(location, this.map);
 
       this.map.setOptions({

@@ -288,8 +288,7 @@ export default {
       this.loading = true;
       let promise = [];
       let randomSentence = require("random-sentence");
-      // console.log(await this.sleep(3000));
-      // console.log("ok");
+
       let users = [];
       for (let i = 0; i < 5; i++) {
         let userInfo = {
@@ -304,11 +303,11 @@ export default {
       }
       console.log(users);
       for (let i = 0; i < users.length; i++) {
-        // console.log(i);
+
         await this.register(users[i]);
       }
       for (let i = 0; i < users.length; i++) {
-        // console.log(i);
+
         await this.login(users[i]);
         console.log(users[i].token);
         if (users[i].token == "") console.log("login error");
@@ -321,9 +320,7 @@ export default {
       this.loading = false;
     },
     mounted() {
-      // this.sleep(2000).then((response) => {
-      //   this.showTitle = true;
-      // });
+
     },
   },
 };

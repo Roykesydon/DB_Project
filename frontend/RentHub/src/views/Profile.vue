@@ -489,13 +489,6 @@ export default {
           }
         })
         .catch((error) => {
-          // Vue.$toast.open({
-          //   message: "發生錯誤",
-          //   type: "error",
-          //   position: "top",
-          //   duration: 3000,
-          //   // all of other options may go here
-          // });
           console.log("network error!");
           console.error(error.response.data);
           let errorMessage = error.response.data.message;
@@ -546,13 +539,4 @@ export default {
 .centered-input >>> input {
   text-align: center;
 }
-/* .VueCarousel-pagination{
-  float:left;
-  position: absolute;
-} */
-
-/* .VueCarousel-dot{
-  float:left;
-  position: absolute;
-} */
 </style>

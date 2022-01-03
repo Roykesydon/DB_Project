@@ -15,7 +15,7 @@ npm run serve
 
 ## Execute project
 
-### 2. Write config
+### 1. Write config
     - .env
         MARIADB_ROOT_PASSWORD=填寫root的密碼
         

@@ -244,5 +244,24 @@ class RentRoom{
         }
     }
     
+
+    function getCityRoomCount()
+    {
+        try{
+            // query to count room
+            $query = "SELECT count(`room_ID`) as total_room FROM `rentRoom` WHERE `room_city` = ?;";
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);
+            //bind Param to the corresponding question mark placeholder
+            $stmt->bindParam(1,$this->room_city);
+            //execute the SQL instruction
+            $stmt->execute();
+
+            return $stmt;
+        }catch(PDOException $e)
+        {
+            throw $e;
+        }
+    }
 }
 ?>

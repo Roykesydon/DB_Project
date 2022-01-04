@@ -33,7 +33,7 @@ elseif(!isset($data->user_ID)
     || empty(trim($data->password))
     ):
 
-    $fields = ['fields' => ['email','password']];
+    $fields = ['fields' => ['user_ID','password']];
     $returnData = msg(0,422,'Please Fill in all Required Fields!',$fields);
 
 // IF THERE ARE NO EMPTY FIELDS THEN-

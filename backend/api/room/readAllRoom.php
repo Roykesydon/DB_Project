@@ -61,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] != "GET")
 else{
     try{
         //query rentRoom
+        // echo $index;
         $stmt = $rentRoom->readAllRoom($index); 
         while($row = $stmt->fetch(PDO::FETCH_ASSOC))
         {
@@ -106,6 +107,7 @@ else{
         http_response_code(200);
 
         // show products data in json format
+        // echo $index;
         echo json_encode($rentRoom_arr);
     }catch(PDOException $e)
     {

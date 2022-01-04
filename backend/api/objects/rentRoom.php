@@ -84,19 +84,134 @@ class RentRoom{
     }
 
     // used when filling up the update product form
-    function getRoomByFilter($index,$keyword){
+    function getRoomByFilter($index,$keyword,$city,$tag,$smallCost,$largeCost){
+        // echo 'keyword is '.$keyword."\n";
+        // echo 'index is '.$index."\n";
+        // echo 'city is '.$city."\n";
+        // echo 'tag is '.$tag."\n";
+        // echo 'smallCost is '.$smallCost."\n";
+        // echo 'largeCost is '.$largeCost."\n";
+        $keywordArr = array();
+        $count = 0;
+        try{
+            $query = "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` ";
+            if(!is_null($keyword)){
+                $count += 1;
+                // $query .= "WHERE `room_name` LIKE '%$keyword%' ";
+                $query .= "WHERE `room_name` LIKE ? ";
+                array_push($keywordArr,'%'.$keyword.'%');
+            }
+            if(!is_null($city)){
+                if($count > 0){
+                    $count += 1;
+                    $query .= " INTERSECT ";
+                    // $query .= "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `room_city` LIKE '%$city[0]%'";
+                    $query .= "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `room_city` LIKE ?";
+                    array_push($keywordArr,'%'.$city[0].'%');
+                    for($i=1;$i<sizeof($city);$i++){
+                        // $query .= " OR `room_city` LIKE '%$city[$i]%' ";
+                        $query .= " OR `room_city` LIKE ? ";
+                        array_push($keywordArr,'%'.$city[$i].'%');
+                    }
+                } else {
+                    $count += 1;
+                    // $query .= "WHERE `room_city` LIKE '%$city[0]%'";
+                    $query .= "WHERE `room_city` LIKE ?";
+                    array_push($keywordArr,'%'.$city[0].'%');
+                    for($i=1;$i<sizeof($city);$i++){
+                        // $query .= " OR `room_city` LIKE '%$city[$i]%' ";
+                        $query .= " OR `room_city` LIKE ? ";
+                        array_push($keywordArr,'%'.$city[$i].'%');
+                    }
+                }
+            }
+            if(!is_null($smallCost) || !is_null($largeCost)){
+                if($count > 0){
+                    $count += 1;
+                    $query .= " INTERSECT ";
+                    $query .= " SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `cost` > $smallCost AND `cost` < $largeCost";
+                    // $query .= " SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `cost` > ? AND `cost` < ?";
+                } else {
+                    $count += 1;
+                    $query .= " WHERE `cost` > $smallCost AND `cost` < $largeCost";
+                    // $query .= " WHERE `cost` > ? AND `cost` < ?";
+                }
+                // array_push($keywordArr,(int)$smallCost);
+                // array_push($keywordArr,(int)$largeCost);
+            }
+            echo "\n";
+            // $query .= " ORDER BY `room_ID` LIMIT ".$index*20;
+            // $query .= " ,20";
+            $query .= " ORDER BY `room_ID` LIMIT ?, ?;";
+            array_push($keywordArr,$index*20);
+            array_push($keywordArr,20);
+            // echo $query."\n";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute($keywordArr);
+            // $stmt->execute();
+            return $stmt;
+        
+        }catch(PDOException $e)
+        {
+            echo $e->getMessage();
+            throw $e;
+        }
+    }
+
+    function getRoomByKeyword($keyword){
         try{
             // query to read single record
-            $query = "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` ORDER BY 'room_ID' LIMIT ?, ?;";
+            $query = "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `room_name` LIKE ?";
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);        
+            // execute query
+            $stmt->execute(array('%'.$keyword.'%'));
+            return $stmt;
+        
+        }catch(PDOException $e)
+        {
+            echo $e->getMessage();
+            throw $e;
+        }
+    }
+
+    function getRoomByCity($City){
+        try{
+            // query to read single record
+            $cities = array();
+            $query = "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `room_city` LIKE ?";
+            array_push($cities,'%'.$City[0].'%');
+            for($i=1;$i<sizeof($City);$i++){
+                $query .= " OR `room_city` LIKE ?";
+                array_push($cities,'%'.$City[$i].'%');
+            }
+            // prepare query statement
+            $stmt = $this->conn->prepare($query);        
+            // execute query
+            // echo $query;
+            $stmt->execute($cities);
+            return $stmt;
+        
+        }catch(PDOException $e)
+        {
+            echo $e->getMessage();
+            throw $e;
+        }
+    }
+
+    function getRoomByCost($lowerCost,$higherCost){
+        try{
+            // query to read single record
+            // SELECT * FROM `rentRoom` NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `cost` BETWEEN 0 AND 100000000
+            $query = "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `cost` BETWEEN ? AND ? ";
             // prepare query statement
             $stmt = $this->conn->prepare($query);
-        
-            // bind id of product to be updated
-            $stmt->bindParam(1, $this->user_ID);
-        
+            $stmt->bindParam(1,$lowerCost,PDO::PARAM_INT);
+            $stmt->bindParam(2,$higherCost,PDO::PARAM_INT);
             // execute query
-            $stmt->execute(array($index*20, 20));
-
+            // $stmt->execute(array((int)$lowerCost,(int)$higherCost));
+            $stmt->execute();
+            // $stmt->debugDumpParams();
             return $stmt;
         
         }catch(PDOException $e)
@@ -107,6 +222,7 @@ class RentRoom{
     }
 
     function readAllRoom($index){
+        // echo $index;
         // query to read single record
         $query = "SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` ORDER BY 'room_ID' LIMIT ?, ?;";
 

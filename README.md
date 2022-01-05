@@ -47,6 +47,13 @@ pipenv install
 pipenv run python initDB.py
 ```
 
+## Add testing data
+
+The button "新增測試資料" in the home page will insert below items to database:
+- 5 account.
+- 1 room for every city with every created accout above.
+
+
 ## Port
  - 3306 : Database(This port is for initializing database)
  - 8000 : API

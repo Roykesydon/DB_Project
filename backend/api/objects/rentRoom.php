@@ -94,11 +94,11 @@ class RentRoom{
                 }
             }
         }
-        for($i=0;$i<sizeof($tagListTmp);$i++){
-            if($tagListTmp[$i] != 1){
-                $tagListTmp[$i] = 0;
-            }
-        }
+        // for($i=0;$i<sizeof($tagListTmp);$i++){
+        //     if($tagListTmp[$i] != 1){
+        //         $tagListTmp[$i] = 0;
+        //     }
+        // }
         // var_dump($tagListTmp);
 
         // echo 'keyword is '.$keyword."\n";
@@ -157,13 +157,191 @@ class RentRoom{
             }
             if(!is_null($tag)){
                 if($count > 0){
+                    $first = true;
                     $count += 1;
                     $query .= " INTERSECT ";
-                    $query .= " SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `wifi` = $tagListTmp[0] AND `internet` = $tagListTmp[1] AND `tv` = $tagListTmp[2] AND `refrigerator` = $tagListTmp[3] AND `parking` = $tagListTmp[4] AND `ac` = $tagListTmp[5]  AND `washing_machine` = $tagListTmp[6] AND `can_cooking` = $tagListTmp[7] AND `can_keep_pet` = $tagListTmp[8] AND `elevator` = $tagListTmp[9]";
+                    $query .= " SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE";
+                    for($i=0;$i<sizeof($tagListTmp);$i++){
+                        if($tagListTmp[$i] == 1){
+                            switch ($i) {
+                                case 0:
+                                    if($first){
+                                        $query .= " `wifi` = $tagListTmp[0] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `wifi` = $tagListTmp[0] ";
+                                    }
+                                    break;
+                                case 1:
+                                    if($first){
+                                        $query .= " `internet` = $tagListTmp[1] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `internet` = $tagListTmp[1] ";
+                                    }
+                                    break;
+                                case 2:
+                                    if($first){
+                                        $query .= " `tv` = $tagListTmp[2] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `tv` = $tagListTmp[2] ";
+                                    }
+                                    break;
+                                case 3:
+                                    if($first){
+                                        $query .= " `refrigerator` = $tagListTmp[3] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `refrigerator` = $tagListTmp[3] ";
+                                    }
+                                    break;
+                                case 4:
+                                    if($first){
+                                        $query .= " `parking` = $tagListTmp[4] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `parking` = $tagListTmp[4] ";
+                                    }
+                                    break;
+                                case 5:
+                                    if($first){
+                                        $query .= " `ac` = $tagListTmp[5] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `ac` = $tagListTmp[5] ";
+                                    }
+                                    break;
+                                case 6:
+                                    if($first){
+                                        $query .= " `washing_machine` = $tagListTmp[6] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `washing_machine` = $tagListTmp[6] ";
+                                    }
+                                    break;
+                                case 7:
+                                    if($first){
+                                        $query .= " `can_cooking` = $tagListTmp[7] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `can_cooking` = $tagListTmp[7] ";
+                                    }
+                                    break;
+                                case 8:
+                                    if($first){
+                                        $query .= " `can_keep_pet` = $tagListTmp[8] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `can_keep_pet` = $tagListTmp[8] ";
+                                    }
+                                    break;
+                                case 9:
+                                    if($first){
+                                        $query .= " `elevator` = $tagListTmp[9] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `elevator` = $tagListTmp[9] ";
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                     // $query .= " SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `cost` > ? AND `cost` < ?";
                 } else {
+                    $first = true;
                     $count += 1;
-                    $query .= " WHERE `wifi` = $tagListTmp[0] AND `internet` = $tagListTmp[1] AND `tv` = $tagListTmp[2] AND `refrigerator` = $tagListTmp[3] AND `parking` = $tagListTmp[4] AND `ac` = $tagListTmp[5]  AND `washing_machine` = $tagListTmp[6] AND `can_cooking` = $tagListTmp[7] AND `can_keep_pet` = $tagListTmp[8] AND `elevator` = $tagListTmp[9]";
+                    $query .= " SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE";
+                    for($i=0;$i<sizeof($tagListTmp);$i++){
+                        if($tagListTmp[$i] == 1){
+                            switch ($i) {
+                                case 0:
+                                    if($first){
+                                        $query .= " `wifi` = $tagListTmp[0] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `wifi` = $tagListTmp[0] ";
+                                    }
+                                    break;
+                                case 1:
+                                    if($first){
+                                        $query .= " `internet` = $tagListTmp[1] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `internet` = $tagListTmp[1] ";
+                                    }
+                                    break;
+                                case 2:
+                                    if($first){
+                                        $query .= " `tv` = $tagListTmp[2] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `tv` = $tagListTmp[2] ";
+                                    }
+                                    break;
+                                case 3:
+                                    if($first){
+                                        $query .= " `refrigerator` = $tagListTmp[3] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `refrigerator` = $tagListTmp[3] ";
+                                    }
+                                    break;
+                                case 4:
+                                    if($first){
+                                        $query .= " `parking` = $tagListTmp[4] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `parking` = $tagListTmp[4] ";
+                                    }
+                                    break;
+                                case 5:
+                                    if($first){
+                                        $query .= " `ac` = $tagListTmp[5] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `ac` = $tagListTmp[5] ";
+                                    }
+                                    break;
+                                case 6:
+                                    if($first){
+                                        $query .= " `washing_machine` = $tagListTmp[6] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `washing_machine` = $tagListTmp[6] ";
+                                    }
+                                    break;
+                                case 7:
+                                    if($first){
+                                        $query .= " `can_cooking` = $tagListTmp[7] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `can_cooking` = $tagListTmp[7] ";
+                                    }
+                                    break;
+                                case 8:
+                                    if($first){
+                                        $query .= " `can_keep_pet` = $tagListTmp[8] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `can_keep_pet` = $tagListTmp[8] ";
+                                    }
+                                    break;
+                                case 9:
+                                    if($first){
+                                        $query .= " `elevator` = $tagListTmp[9] ";
+                                        $first = false;
+                                    } else {
+                                        $query .= " AND `elevator` = $tagListTmp[9] ";
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                     // $query .= " WHERE `cost` > ? AND `cost` < ?";
                 }
                 // array_push($keywordArr,(int)$smallCost);
@@ -175,7 +353,7 @@ class RentRoom{
             $query .= " ORDER BY `room_ID` LIMIT ?, ?;";
             array_push($keywordArr,$index*20);
             array_push($keywordArr,20);
-            // echo $query."\n";
+            echo $query."\n";
             $stmt = $this->conn->prepare($query);
             $stmt->execute($keywordArr);
             // $stmt->execute();

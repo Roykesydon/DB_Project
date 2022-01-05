@@ -347,13 +347,13 @@ class RentRoom{
                 // array_push($keywordArr,(int)$smallCost);
                 // array_push($keywordArr,(int)$largeCost);
             }
-            echo "\n";
+            // echo "\n";
             // $query .= " ORDER BY `room_ID` LIMIT ".$index*20;
             // $query .= " ,20";
             $query .= " ORDER BY `room_ID` LIMIT ?, ?;";
             array_push($keywordArr,$index*20);
             array_push($keywordArr,20);
-            echo $query."\n";
+            // echo $query."\n";
             $stmt = $this->conn->prepare($query);
             $stmt->execute($keywordArr);
             // $stmt->execute();

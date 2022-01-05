@@ -85,6 +85,22 @@ class RentRoom{
 
     // used when filling up the update product form
     function getRoomByFilter($index,$keyword,$city,$tag,$smallCost,$largeCost){
+
+        $tagListTmp = array("Wi-Fi","有線網路","電視","冰箱","停車位","冷氣","洗衣機","開伙","養寵物","電梯");
+        for($i=0;$i<sizeof($tag);$i++){
+            for($j=0;$j<sizeof($tagListTmp);$j++){
+                if($tag[$i] == $tagListTmp[$j]){
+                    $tagListTmp[$j] = 1;
+                }
+            }
+        }
+        for($i=0;$i<sizeof($tagListTmp);$i++){
+            if($tagListTmp[$i] != 1){
+                $tagListTmp[$i] = 0;
+            }
+        }
+        // var_dump($tagListTmp);
+
         // echo 'keyword is '.$keyword."\n";
         // echo 'index is '.$index."\n";
         // echo 'city is '.$city."\n";
@@ -134,6 +150,20 @@ class RentRoom{
                 } else {
                     $count += 1;
                     $query .= " WHERE `cost` > $smallCost AND `cost` < $largeCost";
+                    // $query .= " WHERE `cost` > ? AND `cost` < ?";
+                }
+                // array_push($keywordArr,(int)$smallCost);
+                // array_push($keywordArr,(int)$largeCost);
+            }
+            if(!is_null($tag)){
+                if($count > 0){
+                    $count += 1;
+                    $query .= " INTERSECT ";
+                    $query .= " SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `wifi` = $tagListTmp[0] AND `internet` = $tagListTmp[1] AND `tv` = $tagListTmp[2] AND `refrigerator` = $tagListTmp[3] AND `parking` = $tagListTmp[4] AND `ac` = $tagListTmp[5]  AND `washing_machine` = $tagListTmp[6] AND `can_cooking` = $tagListTmp[7] AND `can_keep_pet` = $tagListTmp[8] AND `elevator` = $tagListTmp[9]";
+                    // $query .= " SELECT * FROM {$this->table_name} NATURAL JOIN `roomPicture` NATURAL JOIN `roomService` WHERE `cost` > ? AND `cost` < ?";
+                } else {
+                    $count += 1;
+                    $query .= " WHERE `wifi` = $tagListTmp[0] AND `internet` = $tagListTmp[1] AND `tv` = $tagListTmp[2] AND `refrigerator` = $tagListTmp[3] AND `parking` = $tagListTmp[4] AND `ac` = $tagListTmp[5]  AND `washing_machine` = $tagListTmp[6] AND `can_cooking` = $tagListTmp[7] AND `can_keep_pet` = $tagListTmp[8] AND `elevator` = $tagListTmp[9]";
                     // $query .= " WHERE `cost` > ? AND `cost` < ?";
                 }
                 // array_push($keywordArr,(int)$smallCost);

@@ -98,7 +98,8 @@ $Cost = isset($cost) ? explode(',',$cost) : null;
 $keyword = isset($keyword) ? $keyword : null;
 $City = isset($city) ? explode(',',$city) : null;
 $Tag = isset($tag) ? explode(',',$tag) : null;
-
+// echo"tag is \n";
+// var_dump($Tag);
 
 //initial array
 $rentRoom_arr = array();
@@ -106,7 +107,6 @@ $rentRoom_arr["records"] = array();
 $URLs = array();
 $services = array();
 $tagList = array("Wi-Fi","有線網路","電視","冰箱","停車位","冷氣","洗衣機","開伙","養寵物","電梯");
-
 
 if ($_SERVER["REQUEST_METHOD"] != "GET") 
 {
@@ -117,58 +117,6 @@ if ($_SERVER["REQUEST_METHOD"] != "GET")
 else{
     try{
         $stmt = $rentRoom->getRoomByFilter($index,$keyword,$City,$Tag,$Cost[0],$Cost[1]);
-        //query rentRoom
-        // $keywordResult = null;
-        // $cityResult = null;
-        // $costResult = null;
-        // if(!is_null($keyword)){
-        //     $tmp = $rentRoom->getRoomByKeyword($keyword);
-        //     $keywordResult = dealReturn($tmp);
-        //     echo "keywordResult is ".sizeof($keywordResult["records"])."\n";
-        // }
-        // if(!is_null($City)){
-        //     $tmp = $rentRoom->getRoomByCity($City);
-        //     $cityResult = dealReturn($tmp);
-        //     echo "cityResult is ".sizeof($cityResult["records"])."\n";
-        // }
-        // if(!is_null($Cost)){
-        //     $tmp = $rentRoom->getRoomByCost($Cost[0],$Cost[1]);
-        //     $costResult = dealReturn($tmp);
-        //     echo "costResult is ".sizeof($costResult["records"])."\n";
-        //     // echo json_encode($costResult);
-        // }
-        // if(!is_null($keywordResult)){
-        //     $result = $keywordResult;
-        //     if(!is_null($cityResult) && sizeof($cityResult) > 0){
-        //         array_intersect($result,$cityResult);   
-        //     }
-        //     if(!is_null($costResult) && sizeof($costResult) > 0){
-        //         array_intersect($result,$costResult);
-        //     }
-        // }elseif(!is_null($cityResult)){
-        //     $result = $cityResult;
-        //     if(!is_null($keywordResult) && sizeof($keywordResult) > 0){
-        //         array_intersect($result,$keywordResult);   
-        //     }
-        //     if(!is_null($costResult) && sizeof($costResult) > 0){
-        //         array_intersect($result,$costResult);
-        //     }
-        // }elseif(!is_null($costResult)){
-        //     $result = $costResult;
-        //     if(!is_null($cityResult) && sizeof($cityResult) > 0){
-        //         array_intersect($result,$cityResult);   
-        //     }
-        //     if(!is_null($keywordResult) && sizeof($keywordResult) > 0){
-        //         array_intersect($result,$keywordResult);
-        //     }
-        // }
-        // if(sizeof($keywordResult["records"]) > 1 && sizeof($cityResult["records"]) > 1){
-        //     // $result = $keywordResult;
-        //     // print_r($cityResult["records"]);
-        //     $result = array_intersect($keywordResult["records"],$cityResult["records"]);
-        // } else {
-        //     echo "no\n";
-        // }
         
 
         // $stmt = array_intersect($keywordResult,);

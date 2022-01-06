@@ -587,5 +587,27 @@ class RentRoom{
             throw $e;
         }
     }
+
+    function foreignKeyError()
+    {
+        try{
+            // query to update record
+            $query = "UPDATE {$this->table_name} 
+                        set `user_ID` = ?
+                      WHERE `room_ID` = ?;";
+            // prepare query statement 
+            $stmt = $this->conn->prepare($query);
+            //bind Param to the corresponding question mark placeholder
+            $stmt->bindParam(1,$this->user_ID);
+            $stmt->bindParam(2,$this->room_ID);
+            //execute the SQL instruction
+            $stmt->execute();
+
+            return true;
+        }catch(PDOException $e)
+        {
+            throw $e;
+        }
+    }
 }
 ?>

@@ -28,7 +28,7 @@ $db=$database->getConnection();
 // initialize object
 $rentRoom = new RentRoom($db);
 $roomPicture = new RoomPicture($db);
-$roomQueue = new RoomQueue($db);
+// $roomQueue = new RoomQueue($db);
 $roomService = new RoomService($db);
 
 
@@ -216,23 +216,23 @@ else
 
                     //create the roomQueue
 
-                    $roomQueue->room_ID = $room_ID;
-                    $roomQueue->user_ID_one = $data["user_ID_one"];
-                    $roomQueue->user_ID_two = $data["user_ID_two"];
-                    $roomQueue->user_ID_three = $data["user_ID_three"];
-                    $roomQueue->user_ID_four = $data["user_ID_four"];
-                    $roomQueue->user_ID_five = $data["user_ID_five"];
-                    $roomQueue->user_ID_six = $data["user_ID_six"];
-                    $roomQueue->user_ID_seven = $data["user_ID_seven"];
-                    $roomQueue->user_ID_eight = $data["user_ID_eight"];
-                    $roomQueue->user_ID_nine = $data["user_ID_nine"];
-                    $roomQueue->user_ID_ten = $data["user_ID_ten"];
+                    // $roomQueue->room_ID = $room_ID;
+                    // $roomQueue->user_ID_one = $data["user_ID_one"];
+                    // $roomQueue->user_ID_two = $data["user_ID_two"];
+                    // $roomQueue->user_ID_three = $data["user_ID_three"];
+                    // $roomQueue->user_ID_four = $data["user_ID_four"];
+                    // $roomQueue->user_ID_five = $data["user_ID_five"];
+                    // $roomQueue->user_ID_six = $data["user_ID_six"];
+                    // $roomQueue->user_ID_seven = $data["user_ID_seven"];
+                    // $roomQueue->user_ID_eight = $data["user_ID_eight"];
+                    // $roomQueue->user_ID_nine = $data["user_ID_nine"];
+                    // $roomQueue->user_ID_ten = $data["user_ID_ten"];
 
-                    if($roomQueue->createRoomQueue())
-                    {
-                        // set response code - 201 created
-                        http_response_code(201);
-                    }
+                    // if($roomQueue->createRoomQueue())
+                    // {
+                    //     // set response code - 201 created
+                    //     http_response_code(201);
+                    // }
 
                     //create the roomService
 

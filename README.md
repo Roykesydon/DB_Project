@@ -36,6 +36,7 @@ npm run serve
 ### 2. Run project with docker-compose
 ```
 in DB_Project開啟服務(需先填完所有config):
+docker-compose build --no-cache
 docker-compose up
 ```
 

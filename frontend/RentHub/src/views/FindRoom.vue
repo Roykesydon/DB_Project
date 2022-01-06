@@ -223,12 +223,8 @@ export default {
     ],
     items: [],
   }),
-  mounted() {
-
-  },
-  computed: {
-
-  },
+  mounted() {},
+  computed: {},
   created: function () {
     VueRangeSlider.methods.handleKeyup = () => console.log;
     VueRangeSlider.methods.handleKeydown = () => console.log;
@@ -251,15 +247,13 @@ export default {
     searchWithFilter() {
       this.items = [];
       this.keyWord = document.getElementById("keyWord").value;
-      console.log(
-        {
-          keyWord: this.keyWord,
-          priceRange: this.priceRange,
-          selectTags: this.selectTags,
-          selectCitites:this.selectCities,
-        }
-      );
-      this.items=[];
+      // console.log({
+      //   keyWord: this.keyWord,
+      //   priceRange: this.priceRange,
+      //   selectTags: this.selectTags,
+      //   selectCitites: this.selectCities,
+      // });
+      this.items = [];
       this.fetchIndex = 0;
       this.fetchData();
     },
@@ -269,9 +263,30 @@ export default {
     fetchData() {
       let _this = this;
       this.loading = true;
+      console.log({
+        index: this.fetchIndex,
+        keyword: this.keyWord,
+        cost: this.priceRange.join(','),
+        tag: this.selectTags.join(','),
+        city: this.selectCities.join(','),
+      });
+
+      let tmp =    {
+        index: this.fetchIndex++,
+        keyword: this.keyWord,
+        cost: this.priceRange.join(','),
+        tag: null,
+        city: null,
+      };
+
+      if(this.selectCities.length!=0)
+        tmp.city = this.selectCities.join(',');
+      if(this.selectTags.length!=0)
+        tmp.tag = this.selectTags.join(',');
+
       this.$axios
-        .get("http://localhost:8000/api/room/readAllRoom.php", {
-          params: { index: this.fetchIndex++ },
+        .get("http://localhost:8000/api/room/readRoomBySearch.php", {
+          params: tmp,
         })
         .then((res) => {
           console.log(res.data.records);
@@ -295,17 +310,15 @@ export default {
               );
             }
             _this.items.push(tmp);
-            
           }
-          _this.loading = false;;
+          _this.loading = false;
         })
         .catch((error) => {
           console.log("network error!");
           console.error(error);
         });
-      
-      console.log("update");
 
+      console.log("update");
     },
 
     getPicture(index) {

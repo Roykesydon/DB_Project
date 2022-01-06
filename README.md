@@ -51,7 +51,7 @@ pipenv run python initDB.py
 
 The button "新增測試資料" in the home page will insert below items to database:
 - 5 account.
-- 1 room for every city with every created accout above.
+- 1 room for every city with every created account above.
 
 
 ## Port

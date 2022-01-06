@@ -89,21 +89,3 @@ cursor.execute(
         FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) on delete cascade \
     );")
 connection.commit()
-
-cursor.execute(
-    "CREATE TABLE IF NOT EXISTS roomQueue( \
-        room_ID int(8) NOT NULL, \
-        user_ID_one varchar(50), \
-        user_ID_two varchar(50), \
-        user_ID_three varchar(50), \
-        user_ID_four varchar(50), \
-        user_ID_five varchar(50), \
-        user_ID_six varchar(50), \
-        user_ID_seven varchar(50), \
-        user_ID_eight varchar(50), \
-        user_ID_nine varchar(50), \
-        user_ID_ten varchar(50), \
-        PRIMARY KEY (room_ID), \
-        FOREIGN KEY (room_ID) REFERENCES rentRoom(room_ID) on delete cascade \
-    );")
-connection.commit()

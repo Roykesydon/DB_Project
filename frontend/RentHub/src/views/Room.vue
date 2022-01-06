@@ -391,7 +391,7 @@
 
         <v-col md="5" class="fill-width fill-height">
           <v-card class="pa-10" outlined color="transparent" height="1000px">
-            <span class="text-h4 mb-4">同城市的其他房屋</span>
+            <span class="text-h4 mb-4">同城市的房屋</span>
             <v-virtual-scroll
               :bench="benched"
               :items="items"
@@ -502,6 +502,7 @@ export default {
         _this.lng = parseFloat(data.room_longitude);
         _this.lat = parseFloat(data.room_latitude);
 
+        _this.updateSameCityRoom();
         let tmp = [];
         for (let j = 0; j < data.URLs.length; j++) {
           tmp.push(
@@ -543,6 +544,7 @@ export default {
         console.log("network error!");
         console.error(error.response.data.message);
       });
+
     this.isRoomOwner = false;
     let recaptchaScript = document.createElement("script");
     recaptchaScript.setAttribute(
@@ -584,135 +586,8 @@ export default {
     src: [],
     uploadPictures: [],
     markers: [],
-    valid:true,
+    valid: true,
     items: [
-      {
-        title: "台北101超級無敵大全台最高豪宅",
-        src: [],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: [
-          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
-          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
-        ],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: [
-          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
-          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-          "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-          "https://attach.setn.com/newsimages/2020/11/08/2869857-PH.jpg",
-        ],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
-      {
-        title: "台北101",
-        src: ["https://cdn.vuetifyjs.com/images/cards/foster.jpg"],
-        address: "台北市信義區信義路五段7號",
-        cost: 18000,
-        capacity: 3,
-        squareMeters: 11.0,
-        roomID: 123456,
-      },
     ],
     roomTags: [
       "Wi-Fi",
@@ -755,8 +630,82 @@ export default {
   }),
 
   methods: {
-    getProfileRoute(){
+    getProfileRoute() {
       return "/profile/" + this.user_ID;
+    },
+
+    fetchData(fetchIndex, _city) {
+      let _this = this;
+      console.log({
+        index: fetchIndex,
+        cost: [0, 20000].join(","),
+        city: _city,
+      });
+
+      let tmp = {
+        index: fetchIndex,
+        cost: [0, 20000].join(","),
+        city: _city,
+      };
+
+      this.$axios
+        .get("http://localhost:8000/api/room/readRoomBySearch.php", {
+          params: tmp,
+        })
+        .then((res) => {
+          console.log(res.data.records);
+          // this.items = [];
+          let data = res.data.records;
+          for (let i = 0; i < data.length; i++) {
+            let tmp = {
+              title: data[i].room_name,
+              src: [],
+              address: data[i].address,
+              cost: data[i].cost,
+              capacity: data[i].live_number,
+              roomID: data[i].room_ID,
+            };
+            for (let j = 0; j < data[i].URLs.length; j++) {
+              tmp.src.push(
+                "http://localhost:8000/api/room/getRoomPicture.php?user_ID=" +
+                  data[i].user_ID +
+                  "&URL=" +
+                  data[i].URLs[j]
+              );
+            }
+            _this.items.push(tmp);
+          }
+          _this.loading = false;
+        })
+        .catch((error) => {
+          console.log("network error!");
+          console.error(error);
+        });
+
+      console.log("update");
+    },
+
+    updateSameCityRoom() {
+      this.$axios
+        .get("http://localhost:8000/api/room/getCityRoomCount.php", {
+          params: { roomCity: this.selectCity },
+        })
+        .then((res) => {
+          console.log(res.data);
+          let count = res.data;
+          if (count <= 20) {
+            this.fetchData(0, this.selectCity);
+          } else {
+            this.fetchData(
+              Math.floor(Math.random() * parseInt(count / 20)),
+              this.selectCity
+            );
+          }
+        })
+        .catch((error) => {
+          console.log("network error!");
+          console.error(error.response);
+        });
     },
     deleteRoom() {
       // console.log(userInfo);
@@ -1089,7 +1038,6 @@ export default {
           if (response.results[0]) {
             console.log(response.results[0].formatted_address);
             _this.address = response.results[0].formatted_address;
-
           } else {
             window.alert("No results found");
           }
@@ -1183,16 +1131,16 @@ export default {
 
     initMap() {
       let location = {
-        lat: this.lat, 
-        lng: this.lng, 
+        lat: this.lat,
+        lng: this.lng,
       };
       this.geocoder = new google.maps.Geocoder();
 
       let renderMap = "map";
       if (!this.isRoomOwner) renderMap = "map2";
       this.map = new google.maps.Map(document.getElementById(renderMap), {
-        center: location, 
-        zoom: 16, 
+        center: location,
+        zoom: 16,
         mapTypeId: "roadmap",
         disableDefaultUI: true,
       });

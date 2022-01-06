@@ -23,8 +23,21 @@
       </v-carousel-item>
     </v-carousel>
     <div id="floatDiv">
-      <div class="text-h1 font-weight-black">RentHub</div>
-      <div class="text-h4 font-weight-thin">也許不是台灣最好的租屋網</div>
+      <div class="text-h1 font-weight-black">
+        RentHub
+        <v-progress-circular
+          :rotate="-90"
+          :size="100"
+          :width="15"
+          v-if="loading"
+          :value="loadingProgress"
+          class="mb-3"
+          color="primary"
+        >
+          <!-- {{ loadingProgress }} -->
+        </v-progress-circular>
+      </div>
+      <div class="text-h4 font-weight-thin mt-3">也許不是台灣最好的租屋網</div>
       <v-btn
         class="ma-2"
         :loading="loading"
@@ -51,6 +64,7 @@ export default {
       "ralph-ravi-kayden-FqqiAvJejto-unsplash.jpg",
     ],
     loading: false,
+    loadingProgress:0,
     cities: [
       "新北市",
       "臺北市",
@@ -203,12 +217,16 @@ export default {
               console.log(imageBlob);
               // imageBlob.lastModifiedDate = new Date();
               // imageBlob.name = this.makeRandomString(10)+".jpg";
-              imageBlob = new File([imageBlob], this.makeRandomString(10)+".jpg");
+              imageBlob = new File(
+                [imageBlob],
+                this.makeRandomString(10) + ".jpg"
+              );
               console.log(imageBlob);
               images.push(imageBlob);
             });
+            
         }
-
+        
         for (let i = 0; i < images.length; i++)
           formData.append("file1[]", images[i]);
 
@@ -257,6 +275,7 @@ export default {
             console.log("network error!");
             console.error(error.response.data.message);
           });
+        this.loadingProgress += 0.9;
       }
     },
 
@@ -288,7 +307,7 @@ export default {
       this.loading = true;
       let promise = [];
       let randomSentence = require("random-sentence");
-
+      this.loadingProgress = 0;
       let users = [];
       for (let i = 0; i < 5; i++) {
         let userInfo = {
@@ -303,11 +322,9 @@ export default {
       }
       console.log(users);
       for (let i = 0; i < users.length; i++) {
-
         await this.register(users[i]);
       }
       for (let i = 0; i < users.length; i++) {
-
         await this.login(users[i]);
         console.log(users[i].token);
         if (users[i].token == "") console.log("login error");
@@ -316,12 +333,11 @@ export default {
       for (let i = 0; i < users.length; i++) {
         console.log(users[i].token);
         await this.registerRoom(users[i].token);
+        this.loadingProgress = 20*(i+1);
       }
       this.loading = false;
     },
-    mounted() {
-
-    },
+    mounted() {},
   },
 };
 </script>

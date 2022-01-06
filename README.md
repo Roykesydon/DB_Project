@@ -43,6 +43,8 @@ docker-compose up
 ### 3. Init database (Only needed for the first execution)
 ```
 初始化資料庫(需先啟動服務):
+Python版本要3.8
+
 cd backend/initDB/
 pipenv install
 pipenv run python initDB.py

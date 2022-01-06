@@ -1,5 +1,5 @@
 db:
     host : localhost
-    user : 自己填
+    user : root
     password : "自己填"
     database : db_final

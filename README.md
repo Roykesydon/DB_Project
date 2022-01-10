@@ -1,7 +1,7 @@
 # Database End of Term Project
 
 [![video](https://user-images.githubusercontent.com/64363701/148587597-812811aa-b970-4b0b-908c-b64f05ca47c3.png)](https://youtu.be/0UhB-6Ct-FI)
-點擊上方 banner 可以查看 demo 影片
+點擊上方的 banner 可以查看 demo 影片
 
 ## For development
 

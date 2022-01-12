@@ -113,11 +113,11 @@
             <v-card
               class="ma-10 mx-auto my-0 rounded-xl"
               elevation="20"
-              height="290px"
+              height="28vh"
               max-width="500"
             >
               <v-carousel
-                height="200"
+                height="19vh"
                 hide-delimiter-background
                 delimiter-icon="mdi-minus"
                 show-arrows-on-hover

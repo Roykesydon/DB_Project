@@ -396,7 +396,7 @@
               :bench="benched"
               :items="items"
               height="620"
-              item-height="330"
+              item-height="310"
               class="sc3 pa-5"
             >
               <template v-slot:default="{ item }">
@@ -405,11 +405,11 @@
                     <v-card
                       class="ma-0 mx-auto my-0"
                       elevation="20"
-                      height="280px"
+                      height="26vh"
                       max-width="400"
                     >
                       <v-carousel
-                        height="220"
+                        height="18vh"
                         hide-delimiter-background
                         delimiter-icon="mdi-minus"
                         show-arrows-on-hover
@@ -426,7 +426,7 @@
                         </v-carousel-item>
                       </v-carousel>
                       <v-row>
-                        <v-col cols="8">
+                        <v-col cols="7">
                           <span>
                             <div class="text-h5 ma-3 mb-0 text-truncate">
                               {{ item.title }}
@@ -444,9 +444,9 @@
                             </div>
                           </span>
                         </v-col>
-                        <v-col cols="4" class="my-auto mx-auto text-md-center">
+                        <v-col cols="5" class="my-auto mx-auto text-right">
                           <v-btn
-                            class="ma-2 pr-5"
+                            class="ma-2 mr-5"
                             outlined
                             color="primary"
                             :href="getRoomRoute(item.roomID)"

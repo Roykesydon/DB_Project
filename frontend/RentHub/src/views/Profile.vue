@@ -129,20 +129,20 @@
               :bench="benched"
               :items="items"
               height="620"
-              item-height="400"
-              class="sc3 pa-5"
+              item-height="320"
+              class="sc3 pa-0"
             >
               <template v-slot:default="{ item }">
                 <v-list-item>
                   <v-list-item-content>
                     <v-card
-                      class="ma-10 mx-auto my-0"
+                      class="ma-5 mx-auto my-0"
                       elevation="20"
-                      height="350px"
-                      max-width="500"
+                      height="29vh"
+                      max-width="25vw"
                     >
                       <v-carousel
-                        height="250"
+                        height="20vh"
                         hide-delimiter-background
                         delimiter-icon="mdi-minus"
                         show-arrows-on-hover
@@ -177,9 +177,9 @@
                             </div>
                           </span>
                         </v-col>
-                        <v-col cols="4" class="my-auto mx-auto text-md-center">
+                        <v-col cols="4" class="my-auto mx-auto text-right">
                           <v-btn
-                            class="ma-2 pr-5"
+                            class="ma-2 mr-5"
                             outlined
                             color="primary"
                             :href="getRoomRoute(item.roomID)"

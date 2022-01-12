@@ -17,7 +17,6 @@ services:
         ipv4_address: 10.5.0.2
 
   apache:
-    container_name: apache
     image: mobingi/ubuntu-apache2-php7:7.2
     restart: always
     ports:

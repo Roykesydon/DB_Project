@@ -131,7 +131,7 @@
                 </v-carousel-item>
               </v-carousel>
               <v-row>
-                <v-col cols="8">
+                <v-col cols="7">
                   <span>
                     <div class="text-h6 ma-3 mb-0 text-truncate">
                       {{ item.title }}
@@ -141,9 +141,9 @@
                     </div>
                   </span>
                 </v-col>
-                <v-col cols="4" class="my-auto mx-auto text-md-center">
+                <v-col cols="5" class="my-auto mx-auto text-right">
                   <v-btn
-                    class="ma-2 pr-5"
+                    class="ma-2 pr-5 mr-5"
                     outlined
                     color="secondary"
                     :href="getRoomRoute(item.roomID)"

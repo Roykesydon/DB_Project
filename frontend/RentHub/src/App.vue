@@ -1,5 +1,4 @@
 <template>
-  <!-- 我對於把幾乎所有東西都寫在 View 感到抱歉，這專案給的時間有點不足 -->
   <v-app :style="cssProps">
     <v-app-bar app color="primary" dark>
       <a href="/" class="block-link">

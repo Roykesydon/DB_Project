@@ -2,15 +2,6 @@
   <v-app :style="cssProps">
     <v-app-bar app color="primary" dark>
       <a href="/" class="block-link">
-        <!-- <div class="d-flex align-center">
-          <v-img
-            alt="Vuetify Logo"
-            class="shrink mr-2"
-            contain
-            src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-            transition="scale-transition"
-            width="40"
-          /> -->
         <span class="text-h4 ml-4 mr-2 white--text"> RentHub </span>
         <!-- </div> -->
       </a>
